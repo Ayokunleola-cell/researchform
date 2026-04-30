@@ -1,0 +1,43 @@
+fastapi==0.95.1
+uvicorn[standard]
+sqlalchemy
+# asyncpg==0.29.0
+alembic
+pydantic<2.0.0
+# pydantic-settings<2.0.0
+python-jose[cryptography]
+passlib
+bcrypt==3.2.2
+python-multipart
+httpx
+aiosqlite
+email-validator
+
+# Analysis pipeline
+anthropic
+pandas
+numpy
+scipy
+statsmodels
+pingouin
+matplotlib
+seaborn
+openpyxl
+pyreadstat
+chardet
+
+# Document generation
+python-docx
+reportlab
+
+# Background tasks
+# celery==5.4.0
+# redis==5.0.4
+
+# Utils
+python-dotenv
+aiofiles
+
+# Testing
+pytest
+pytest-asyncio
