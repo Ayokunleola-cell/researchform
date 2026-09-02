@@ -8,7 +8,7 @@ from typing import Optional
 import uuid, os, shutil
 from datetime import datetime
 
-from api.deps import get_db, get_current_user, limiter
+from api.deps import get_db, get_current_user, get_optional_user, limiter
 from api.models.database import AnalysisJob, Survey, JobStatus, User
 from config import settings
 from services.credits import (
@@ -1706,13 +1706,16 @@ async def queue_stats(user: User = Depends(get_current_user)):
 
 # ── AI Variable Advisor ──────────────────────────────────────────────────────
 @router.post("/variable-advisor")
-async def variable_advisor(request: Request, current_user=Depends(get_current_user)):
+async def variable_advisor(request: Request, current_user: Optional[User] = Depends(get_optional_user)):
     """
     Reads the full research brief (RQs, hypotheses, objectives, topic, population)
     and returns AI-suggested dependent/independent/control variables with reasoning.
     Falls back to heuristic extraction if Claude is unavailable.
     """
     import re as _re
+    import logging
+    _logger = logging.getLogger(__name__)
+
     body = await request.json()
     brief = body.get("brief", {})
 
@@ -1768,11 +1771,12 @@ async def variable_advisor(request: Request, current_user=Depends(get_current_us
     # ── Try Claude AI for rich contextual suggestions ────────────────────────
     try:
         import anthropic
-        api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "") or getattr(settings, "ANTHROPIC_API_KEY", "")
         if not api_key:
-            raise ValueError("No API key")
+            raise ValueError("No ANTHROPIC_API_KEY available")
 
         client = anthropic.Anthropic(api_key=api_key)
+
 
         prompt = f"""You are an expert research statistician helping a student identify their variables.
 

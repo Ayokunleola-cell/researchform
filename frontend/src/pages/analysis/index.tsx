@@ -1,6 +1,7 @@
 // src/pages/analysis/index.tsx
 
 import React, { useEffect, useState, useCallback } from 'react';
+import Cookies from 'js-cookie';
 
 import AppLayout from '../../components/layout/AppLayout';
 
@@ -4454,24 +4455,31 @@ export default function AnalysisIndexPage() {
     setAdvisorResult(null);
     setAdvisorApplied(false);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/analysis/variable-advisor`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ brief })
-      });
-      if (!res.ok) {
-        throw new Error(`Advisor service returned status ${res.status}`);
+      let data;
+      try {
+        const res = await analysisApi.variableAdvisor({ brief });
+        data = res.data;
+      } catch (apiErr: any) {
+        const token = typeof window !== 'undefined' ? (Cookies.get('rf_token') || localStorage.getItem('auth_token')) : null;
+        const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/analysis/variable-advisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ brief })
+        });
+        if (!resp.ok) {
+          const errBody = await resp.json().catch(() => ({}));
+          throw new Error(errBody.detail || `Server returned ${resp.status}`);
+        }
+        data = await resp.json();
       }
-      const data = await res.json();
       setAdvisorResult(data);
-      toast.success('AI Variable recommendations ready!', { icon: '✨' });
+      toast.success('AI recommendations ready!', { icon: '✨' });
     } catch (err: any) {
       console.error('Variable advisor error:', err);
-      toast.error('Unable to fetch AI suggestions. Please enter variables manually.');
+      toast.error(err?.message || 'Unable to fetch AI suggestions. Please check connection or enter variables manually.');
     } finally {
       setAdvisorLoading(false);
     }
@@ -4486,7 +4494,7 @@ export default function AnalysisIndexPage() {
       update('independent_variable', advisorResult.independent_variable.name);
     }
     setAdvisorApplied(true);
-    toast.success('Variables populated into mapping fields below!', { duration: 4000 });
+    toast.success('Variables populated into fields below!', { duration: 3500 });
   };
 
   const MAX_FILE_SIZE_MB = 10;
@@ -5755,102 +5763,107 @@ export default function AnalysisIndexPage() {
                     </div>
 
                     {/* ── AI Variable Advisor Interactive Guide ── */}
-                    <div className="rounded-2xl p-4 sm:p-5 transition-all shadow-sm"
+                    <div className="rounded-xl p-3.5 transition-all shadow-sm"
                       style={{
                         background: advisorResult
-                          ? 'linear-gradient(135deg, rgba(99,102,241,0.06), rgba(16,185,129,0.04))'
-                          : 'linear-gradient(135deg, rgba(99,102,241,0.03), rgba(139,92,246,0.02))',
+                          ? 'linear-gradient(135deg, rgba(99,102,241,0.05), rgba(16,185,129,0.03))'
+                          : 'rgba(99,102,241,0.025)',
                         border: advisorResult
-                          ? '1.5px solid rgba(99,102,241,0.3)'
-                          : '1.5px dashed rgba(99,102,241,0.25)',
+                          ? '1px solid rgba(99,102,241,0.28)'
+                          : '1px solid rgba(99,102,241,0.18)',
                       }}>
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                      {/* Compact Header Bar */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
                             style={{ background: 'linear-gradient(135deg, var(--brand), #8b5cf6)', color: '#fff' }}>
-                            <RiBrainFill size={18} />
+                            <RiBrainFill size={15} />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-sm font-bold" style={{ color: 'var(--text)' }}>AI Variable & Test Advisor</h3>
-                              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full"
-                                style={{ background: 'rgba(99,102,241,0.12)', color: 'var(--brand)' }}>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-xs font-bold" style={{ color: 'var(--text)' }}>AI Variable & Test Advisor</span>
+                              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full"
+                                style={{ background: 'rgba(99,102,241,0.1)', color: 'var(--brand)' }}>
                                 Auto AI Guide
                               </span>
                             </div>
-                            <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+                            <p className="text-[11px] leading-tight text-ellipsis overflow-hidden mt-0.5" style={{ color: 'var(--text-3)' }}>
                               Unsure what variables to pick? The AI reads your research questions & hypotheses from Step 3 to recommend the exact Outcome and Predictor variables.
                             </p>
                           </div>
                         </div>
+
+                        {/* Reduced, sleek compact button */}
                         <button
                           type="button"
                           onClick={handleVariableAdvisor}
                           disabled={advisorLoading}
-                          className="btn shrink-0 flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all shadow-sm"
+                          className="btn shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all shadow-sm self-start sm:self-center"
                           style={{
                             background: 'linear-gradient(135deg, var(--brand), #6366f1)',
                             color: '#fff',
                             border: 'none',
-                            opacity: advisorLoading ? 0.7 : 1,
+                            opacity: advisorLoading ? 0.75 : 1,
+                            fontSize: '11px',
+                            height: '28px',
                           }}>
                           {advisorLoading ? (
                             <>
-                              <RiLoader4Line size={15} className="animate-spin" />
-                              <span>Analyzing Brief...</span>
+                              <RiLoader4Line size={13} className="animate-spin" />
+                              <span>Analyzing...</span>
                             </>
                           ) : (
                             <>
-                              <RiSparklingFill size={14} />
-                              <span>{advisorResult ? 'Re-Analyze Questions' : 'Auto AI: Get Recommendations'}</span>
+                              <RiSparklingFill size={12} />
+                              <span>{advisorResult ? 'Re-Analyze' : 'Auto AI: Recommend'}</span>
                             </>
                           )}
                         </button>
                       </div>
 
-                      {/* When advisor results are available */}
+                      {/* Result Cards Display */}
                       {advisorResult && (
-                        <div className="mt-4 pt-3 border-t space-y-3.5 animate-fadeIn" style={{ borderColor: 'rgba(99,102,241,0.15)' }}>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        <div className="mt-3 pt-2.5 border-t space-y-2.5 animate-fadeIn" style={{ borderColor: 'rgba(99,102,241,0.12)' }}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             {/* DV Card */}
-                            <div className="p-3.5 rounded-xl transition-all"
-                              style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.18)' }}>
-                              <div className="flex items-center justify-between mb-1.5">
-                                <span className="text-[11px] font-bold uppercase tracking-wide flex items-center gap-1.5" style={{ color: 'var(--brand)' }}>
-                                  <span className="w-2 h-2 rounded-full" style={{ background: 'var(--brand)' }} />
+                            <div className="p-3 rounded-lg transition-all"
+                              style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.16)' }}>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--brand)' }}>
+                                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--brand)' }} />
                                   Outcome Variable (DV)
                                 </span>
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full"
                                   style={{ background: 'rgba(99,102,241,0.12)', color: 'var(--brand)' }}>
                                   {advisorResult.dependent_variable?.scale || 'Continuous'}
                                 </span>
                               </div>
-                              <p className="text-sm font-extrabold mb-1" style={{ color: 'var(--text)' }}>
+                              <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--text)' }}>
                                 {advisorResult.dependent_variable?.name || '(Not determined)'}
                               </p>
-                              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                              <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-2)' }}>
                                 {advisorResult.dependent_variable?.why}
                               </p>
                             </div>
 
                             {/* IV Card */}
-                            <div className="p-3.5 rounded-xl transition-all"
-                              style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.18)' }}>
-                              <div className="flex items-center justify-between mb-1.5">
-                                <span className="text-[11px] font-bold uppercase tracking-wide flex items-center gap-1.5" style={{ color: 'var(--success)' }}>
-                                  <span className="w-2 h-2 rounded-full" style={{ background: 'var(--success)' }} />
+                            <div className="p-3 rounded-lg transition-all"
+                              style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.16)' }}>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--success)' }}>
+                                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--success)' }} />
                                   Predictor / Grouping (IV)
                                 </span>
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full"
                                   style={{ background: 'rgba(16,185,129,0.12)', color: 'var(--success)' }}>
                                   {advisorResult.independent_variable?.scale || 'Nominal'}
-                                  {advisorResult.independent_variable?.n_groups ? ` (${advisorResult.independent_variable.n_groups} groups)` : ''}
+                                  {advisorResult.independent_variable?.n_groups ? ` (${advisorResult.independent_variable.n_groups} grp)` : ''}
                                 </span>
                               </div>
-                              <p className="text-sm font-extrabold mb-1" style={{ color: 'var(--text)' }}>
+                              <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--text)' }}>
                                 {advisorResult.independent_variable?.name || '(Not determined)'}
                               </p>
-                              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                              <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-2)' }}>
                                 {advisorResult.independent_variable?.why}
                               </p>
                             </div>
@@ -5858,48 +5871,47 @@ export default function AnalysisIndexPage() {
 
                           {/* Implied Test Card */}
                           {advisorResult.implied_test && (
-                            <div className="p-3 rounded-xl flex items-start gap-3"
-                              style={{ background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                              <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                            <div className="p-2.5 rounded-lg flex items-start gap-2.5"
+                              style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.18)' }}>
+                              <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5"
                                 style={{ background: 'rgba(245,158,11,0.15)', color: '#d97706' }}>
-                                <RiCpuFill size={14} />
+                                <RiCpuFill size={12} />
                               </div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-bold" style={{ color: '#b45309' }}>
-                                    Implied Golden Rule Test: {advisorResult.implied_test}
-                                  </span>
-                                </div>
-                                <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-[11px] font-bold" style={{ color: '#b45309' }}>
+                                  Implied Golden Rule Test: {advisorResult.implied_test}
+                                </span>
+                                <p className="text-[11px] mt-0.5 leading-snug" style={{ color: 'var(--text-2)' }}>
                                   {advisorResult.implied_test_reason}
                                 </p>
                               </div>
                             </div>
                           )}
 
-                          {/* Action footer */}
-                          <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-1">
-                            <p className="text-xs italic" style={{ color: 'var(--text-3)' }}>
-                              💡 {advisorResult.advice || 'Click Apply to fill the variable boxes below automatically. You can edit them at any time.'}
+                          {/* Action Footer */}
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-0.5">
+                            <p className="text-[11px] italic" style={{ color: 'var(--text-3)' }}>
+                              💡 {advisorResult.advice || 'Click Apply to populate the variable boxes below automatically.'}
                             </p>
                             <button
                               type="button"
                               onClick={handleApplyAdvisorVariables}
                               disabled={advisorApplied}
-                              className="btn btn-sm shrink-0 flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-lg shadow-sm"
+                              className="btn btn-sm shrink-0 flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold rounded-lg shadow-sm"
                               style={{
                                 background: advisorApplied ? 'rgba(16,185,129,0.12)' : 'var(--brand)',
                                 color: advisorApplied ? 'var(--success)' : '#fff',
                                 border: advisorApplied ? '1px solid rgba(16,185,129,0.3)' : 'none',
+                                height: '26px',
                               }}>
                               {advisorApplied ? (
                                 <>
-                                  <RiCheckboxCircleFill size={14} />
-                                  <span>Variables Applied!</span>
+                                  <RiCheckboxCircleFill size={13} />
+                                  <span>Applied to Form</span>
                                 </>
                               ) : (
                                 <>
-                                  <RiAddFill size={14} />
+                                  <RiAddFill size={13} />
                                   <span>Apply These Variables</span>
                                 </>
                               )}
