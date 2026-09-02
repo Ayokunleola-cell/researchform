@@ -5946,9 +5946,9 @@ export default function AnalysisIndexPage() {
 
                     </Field>
 
-                    <Field label="Independent Variable(s) — Predictor" error={touched ? stepErrors.independent_variable : undefined}
+                    <Field label="Independent Variable(s) — Predictor / Grouping" error={touched ? stepErrors.independent_variable : undefined}
 
-                      hint="The variable(s) that may explain or influence the outcome">
+                      hint="The variable(s) that explain or influence the outcome, or categorical groups/factors to compare (e.g. ai_adoption, gender, department). Comma-separated.">
 
                       <MultiVarInput id="brief-iv" value={brief.independent_variable}
 
