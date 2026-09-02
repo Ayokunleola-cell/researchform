@@ -5788,7 +5788,7 @@ export default function AnalysisIndexPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
-                            style={{ background: 'linear-gradient(135deg, var(--brand), #8b5cf6)', color: '#fff' }}>
+                            style={{ background: 'linear-gradient(135deg, var(--brand), #8b5cf6)', color: 'var(--brand-text)' }}>
                             <RiBrainFill size={15} />
                           </div>
                           <div className="min-w-0">
@@ -5812,9 +5812,9 @@ export default function AnalysisIndexPage() {
                           disabled={advisorLoading}
                           className="btn shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all shadow-sm self-start sm:self-center"
                           style={{
-                            background: 'linear-gradient(135deg, var(--brand), #6366f1)',
-                            color: '#fff',
-                            border: 'none',
+                            background: 'var(--brand)',
+                            color: 'var(--brand-text)',
+                            border: '1px solid transparent',
                             opacity: advisorLoading ? 0.75 : 1,
                             fontSize: '11px',
                             height: '28px',
@@ -5886,11 +5886,11 @@ export default function AnalysisIndexPage() {
                             <div className="p-2.5 rounded-lg flex items-start gap-2.5"
                               style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                               <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5"
-                                style={{ background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: '#d97706' }}>
+                                style={{ background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: 'var(--warning)' }}>
                                 <RiCpuFill size={12} />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <span className="text-[11px] font-bold" style={{ color: '#b45309' }}>
+                                <span className="text-[11px] font-bold" style={{ color: 'var(--warning)' }}>
                                   Implied Golden Rule Test: {advisorResult.implied_test}
                                 </span>
                                 <p className="text-[11px] mt-0.5 leading-snug" style={{ color: 'var(--text-2)' }}>
@@ -5911,10 +5911,17 @@ export default function AnalysisIndexPage() {
                               disabled={advisorApplied}
                               className="btn btn-sm shrink-0 flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold rounded-lg shadow-sm"
                               style={{
-                                background: advisorApplied ? 'color-mix(in srgb, var(--success) 12%, transparent)' : 'var(--brand)',
-                                color: advisorApplied ? 'var(--success)' : '#fff',
-                                border: advisorApplied ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : 'none',
+                                background: advisorApplied
+                                  ? 'var(--surface-3)'
+                                  : 'var(--brand)',
+                                color: advisorApplied
+                                  ? 'var(--success)'
+                                  : 'var(--brand-text)',
+                                border: advisorApplied
+                                  ? '1px solid var(--border-2)'
+                                  : '1px solid transparent',
                                 height: '26px',
+                                opacity: advisorApplied ? 0.9 : 1,
                               }}>
                               {advisorApplied ? (
                                 <>
