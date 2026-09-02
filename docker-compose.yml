@@ -1,13 +1,14 @@
 version: "3.9"
 
 services:
-  # PostgreSQL
+  # PostgreSQL (production DB)
   postgres:
     image: postgres:15-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: researchform
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -19,9 +20,10 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis
+  # Redis (session / task queue)
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
     healthcheck:
@@ -35,41 +37,56 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/researchform
-      SYNC_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/researchform
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/0
+      DATABASE_URL:        postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/researchform
+      SYNC_DATABASE_URL:  postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/researchform
+      REDIS_URL:          redis://redis:6379/0
+      CELERY_BROKER_URL:  redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      SECRET_KEY: ${SECRET_KEY:-change_me_in_production}
-      ALLOWED_ORIGINS: '["http://localhost:3000","https://researchform.app"]'
+      SECRET_KEY:         ${SECRET_KEY:?SECRET_KEY must be set}
+      ALGORITHM:          HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-10080}
+      ANTHROPIC_API_KEY:  ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL:   ${OPENROUTER_MODEL:-meta-llama/llama-3.3-70b-instruct:free}
+      ALLOWED_ORIGINS:    '["https://${DOMAIN:-localhost:3000}","http://localhost:3000"]'
+      FRONTEND_URL:       https://${DOMAIN:-localhost:3000}
+      APP_NAME:           ResearchForm
+      DEBUG:              "false"
+      DEV_MODE:           "false"
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET_KEY:-}
+      PAYSTACK_PUBLIC_KEY: ${PAYSTACK_PUBLIC_KEY:-}
+      SIGNUP_BONUS_CREDITS: ${SIGNUP_BONUS_CREDITS:-5}
+      STORAGE_DIR:        storage
+      CHARTS_DIR:         storage/charts
+      REPORTS_DIR:        storage/reports
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
       - storage_data:/app/storage
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Celery Worker (for heavier async jobs)
+  # Celery Worker (async analysis jobs)
   worker:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/researchform
-      SYNC_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/researchform
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/0
+      DATABASE_URL:        postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/researchform
+      SYNC_DATABASE_URL:  postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/researchform
+      REDIS_URL:          redis://redis:6379/0
+      CELERY_BROKER_URL:  redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      SECRET_KEY:         ${SECRET_KEY:?SECRET_KEY must be set}
+      ANTHROPIC_API_KEY:  ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     volumes:
-      - ./backend:/app
       - storage_data:/app/storage
     depends_on:
       - backend
@@ -80,17 +97,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:8000}
+    restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:8000}
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
     depends_on:
       - backend
-    command: npm run dev
 
 volumes:
   pgdata:

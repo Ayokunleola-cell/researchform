@@ -26,7 +26,7 @@ def run_regression():
     log("Health Check: PASS")
 
     # 2. Register User
-    test_email = f"qa_{rand_str()}@example.com"
+    test_email = f"qa_{rand_str()}@test.com"
     test_pass = "secure_password123"
     payload = {
         "full_name": "QA Bot", "email": test_email, 
@@ -95,10 +95,36 @@ def run_regression():
         job_id = res.json().get("id")
         log(f"Analysis Started: PASS (Job ID: {job_id})")
         
-        # 9. Wait for decode pipeline
-        time.sleep(1)
-        res = requests.get(f"{API_URL}/analysis/jobs/{job_id}", headers=headers)
-        status = res.json().get("status")
+        # 9a. Wait for preprocessing stage
+        log("Waiting for awaiting_preprocessing_choice...")
+        for _ in range(15):
+            time.sleep(2)
+            res = requests.get(f"{API_URL}/analysis/jobs/{job_id}", headers=headers)
+            status = res.json().get("status")
+            if status in ["awaiting_preprocessing_choice", "failed"]:
+                break
+                
+        if status == "failed":
+            test_fail(f"Analysis failed during setup: {res.json().get('error_message')}")
+        elif status != "awaiting_preprocessing_choice":
+            test_fail(f"Analysis didn't reach awaiting_preprocessing_choice, stuck at {status}")
+            
+        log("Preprocessing Gate: PASS (Submitting 'auto' choice)")
+        
+        # 9b. Submit preprocessing choice
+        res = requests.post(f"{API_URL}/analysis/jobs/{job_id}/preprocessing-choice", json={"mode": "auto"}, headers=headers)
+        log(f"Preprocessing Choice Response: {res.status_code} - {res.text}")
+        if res.status_code != 200: test_fail(f"Preprocessing choice failed: {res.text}")
+
+        # 9c. Wait for decode pipeline
+        log("Waiting for decode_review...")
+        for _ in range(15):
+            time.sleep(2)
+            res = requests.get(f"{API_URL}/analysis/jobs/{job_id}", headers=headers)
+            status = res.json().get("status")
+            log(f"Poll decode_review status: {status}")
+            if status in ["decode_review", "failed"]:
+                break
         
         if status == "failed":
             error_msg = res.json().get("error_message")
@@ -113,9 +139,14 @@ def run_regression():
         if res.status_code != 200: test_fail("Decode approval failed")
         
         # 11. Wait for completion
-        time.sleep(1.5)
-        res = requests.get(f"{API_URL}/analysis/jobs/{job_id}", headers=headers)
-        status = res.json().get("status")
+        log("Waiting for analysis to complete...")
+        for _ in range(60):
+            time.sleep(2)
+            res = requests.get(f"{API_URL}/analysis/jobs/{job_id}", headers=headers)
+            status = res.json().get("status")
+            if status in ["complete", "failed"]:
+                break
+        
         if status == "failed":
             error_msg = res.json().get("error_message")
             test_fail(f"Analysis failed during AI pipeline: {error_msg}")

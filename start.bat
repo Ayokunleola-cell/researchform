@@ -22,16 +22,16 @@ if exist "%FRONTEND%\.next" (
 
 :: --- Backend Setup ---
 echo [*] Checking Backend...
-if not exist "%BACKEND%\venv" (
+if not exist "%BACKEND%\venv_312" (
     echo [*] Creating Python Virtual Environment...
     cd /d "%BACKEND%"
-    python -m venv venv
-    call venv\Scripts\activate.bat
+    python -m venv venv_312
+    call venv_312\Scripts\activate.bat
     pip install -r requirements.txt
     python dev_db.py
 )
 echo [*] Starting FastAPI Backend on port 8000...
-start "ResearchForm Backend" cmd /c "cd /d "%BACKEND%" && call venv\Scripts\activate.bat && uvicorn main:app --reload --host 127.0.0.1 --port 8000"
+start "ResearchForm Backend" cmd /c "cd /d "%BACKEND%" && call venv_312\Scripts\activate.bat && uvicorn main:app --reload --host 127.0.0.1 --port 8000"
 
 :: --- Frontend Setup ---
 echo [*] Checking Frontend...

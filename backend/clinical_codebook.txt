@@ -1,0 +1,49 @@
+CLINICAL DATASET CODEBOOK
+"Multisite RCT: CBT+Pharmacotherapy vs Standard Care for Anxiety & Depression"
+N = 400 patients | Variables = 68+ | Sites = 6 NHS Trusts
+
+STUDY DESIGN
+------------
+Parallel-arm randomised controlled trial across 6 NHS hospital sites.
+Patients with MDD, GAD, or comorbid presentations randomised 1:1 to:
+  - CBT_Pharma: Cognitive Behavioural Therapy + Pharmacotherapy
+  - Standard_Care: Treatment as usual (medication only)
+Primary outcome: PHQ-9 remission at 12 months (score < 5)
+
+SUGGESTED VARIABLE MAPPINGS FOR STATISTICAL TESTS
+===================================================
+Independent t-test     : treatment_arm × phq9_12mo
+Paired t-test          : phq9_baseline vs phq9_6wk (or gad7_baseline vs gad7_6wk)
+Repeated ANOVA         : phq9_baseline, phq9_6wk, phq9_6mo, phq9_12mo
+One-way ANOVA          : diagnosis × phq9_total_pre
+Welch ANOVA            : hospital × phq9_12mo
+Two-way ANOVA          : treatment_arm × sex × phq9_12mo
+ANCOVA                 : treatment_arm × phq9_12mo (covariate: phq9_baseline)
+MANOVA                 : treatment_arm × [phq9_12mo, gad7_12mo, vitality_score]
+Cronbach α             : phq9_1 … phq9_9
+McDonald Omega         : gad7_1 … gad7_7
+ICC                    : phq9_1 … phq9_9
+KR-20                  : sym_item1 … sym_item8 (binary)
+Pearson Correlation    : phq9_12mo × mental_health_sf
+Spearman Correlation   : severity_grade × treatment_response
+Logistic Regression    : remission ← treatment_arm + age + phq9_baseline + comorbidities
+Poisson Regression     : hospital_visits ← comorbidities + phq9_baseline + age
+Neg. Binomial          : hospital_visits ← comorbidities + medications_count
+Ordinal Regression     : severity_grade ← phq9_total_pre + age + bmi
+Multinomial Logistic   : diagnosis ← age + bmi + phq9_total_pre
+Mediation              : phq9_baseline → mental_health_sf → phq9_12mo
+Moderation             : phq9_baseline × treatment_arm → phq9_12mo
+Cox PH                 : days_to_remission + remission_event ← treatment_arm + age + phq9_baseline
+Kaplan-Meier           : days_to_remission + remission_event
+Log-rank Test          : days_to_remission + remission_event + treatment_arm
+LMM                    : phq9_12mo ← phq9_baseline + treatment_arm | hospital (random)
+GLMM                   : remission ← phq9_baseline + age | hospital (random)
+GEE                    : remission ← phq9_baseline + treatment_arm | ward (clustered)
+PCA                    : phq9_total_pre, gad7_total_pre, cortisol_am, bdnf_pg_ml, crp_mg_l
+Factor Analysis        : phq9_1..9 (depression factor)
+CFA                    : phq9_1..9 (1-factor model)
+SEM                    : phq9_baseline → bdnf_pg_ml → phq9_12mo
+Synthetic Control      : phq9_12mo, study_month, hospital (treatment=NHS_North)
+Time Series            : daily_steps
+Mann-Kendall           : daily_steps (trend test)
+Difference-in-Diff     : treatment_arm, study_month, phq9_12mo

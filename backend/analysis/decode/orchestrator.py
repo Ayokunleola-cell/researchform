@@ -28,10 +28,10 @@ from .transforms.column_cleaner import clean_columns
 from .transforms.label_resolver import resolve_labels
 from .transforms.level_inferrer import infer_levels
 from .transforms.missing_handler import handle_missing
-from .dictionary.builder import build_dictionary
+from .dictionary.builder import build_dictionary, to_json_serializable
 
 
-def decode_file(file_path: str) -> dict:
+def decode_file(file_path: str, job_id: str = None, user_id: str = None) -> dict:
     """Decode an uploaded file (xlsx, csv, sav)."""
     ext = os.path.splitext(file_path)[1].lower().lstrip(".")
 
@@ -48,42 +48,42 @@ def decode_file(file_path: str) -> dict:
     else:
         raise ValueError(f"Unsupported file type: .{ext}")
 
-    return _run_decode(df, meta, source_type, source_filename=os.path.basename(file_path))
+    return _run_decode(df, meta, source_type, source_filename=os.path.basename(file_path), job_id=job_id, user_id=user_id)
 
 
-def decode_from_db(survey_id: str, db) -> dict:
+def decode_from_db(survey_id: str, db, job_id: str = None, user_id: str = None) -> dict:
     """Decode responses stored in the database."""
     from config import settings
-    if getattr(settings, "DEV_MODE", False) and not settings.ANTHROPIC_API_KEY:
-        return {
-            "data_dictionary": {
-                "variables": [
-                    {"clean_name": "gender", "measurement_level": "nominal", "role": "independent"},
-                    {"clean_name": "age", "measurement_level": "ordinal", "role": "independent"},
-                    {"clean_name": "rating", "measurement_level": "ordinal", "role": "dependent"}
-                ],
-                "ratio_vars": [],
-                "interval_vars": [],
-                "ordinal_vars": ["rating"],
-                "nominal_vars": ["gender", "age"]
-            },
-            "warnings": [],
-            "n_rows": 3,
-            "n_columns": 3,
-            "n_complete_rows": 3,
-            "dataframe_pkl": None
-        }
-        
+
     df, meta = parse_from_db(survey_id, db)
-    return _run_decode(df, meta, "survey_db", survey_id=survey_id)
+    if df.empty and getattr(settings, "DEV_MODE", False) and not settings.ANTHROPIC_API_KEY:
+        return {
+                "data_dictionary": {
+                    "variables": [
+                        {"clean_name": "gender", "measurement_level": "nominal", "role": "independent"},
+                        {"clean_name": "age", "measurement_level": "ordinal", "role": "independent"},
+                        {"clean_name": "rating", "measurement_level": "ordinal", "role": "dependent"}
+                    ],
+                    "ratio_vars": [],
+                    "interval_vars": [],
+                    "ordinal_vars": ["rating"],
+                    "nominal_vars": ["gender", "age"]
+                },
+                "warnings": [],
+                "n_rows": 3,
+                "n_columns": 3,
+                "n_complete_rows": 3,
+                "dataframe_pkl": None
+            }
+    return _run_decode(df, meta, "survey_db", survey_id=survey_id, job_id=job_id, user_id=user_id)
 
 
 def _run_decode(df: pd.DataFrame, meta: dict, source_type: str,
-                source_filename: str = None, survey_id: str = None) -> dict:
+                source_filename: str = None, survey_id: str = None, job_id: str = None, user_id: str = None) -> dict:
     warnings = []
 
     # 2.3 Column name sanitisation
-    df, col_map = clean_columns(df, meta)
+    df, col_map = clean_columns(df, meta, job_id=job_id, user_id=user_id)
 
     # 2.4 Value label resolution
     df, value_labels = resolve_labels(df, meta, col_map)
@@ -119,11 +119,12 @@ def _run_decode(df: pd.DataFrame, meta: dict, source_type: str,
     if pkl_path:
         df.to_pickle(pkl_path)
 
-    return {
+    res = {
         "data_dictionary": data_dict,
-        "warnings": [w if isinstance(w, dict) else w.dict() for w in warnings],
-        "n_rows": len(df),
-        "n_columns": len(df.columns),
+        "warnings": [w if isinstance(w, dict) else (w.dict() if hasattr(w, "dict") else str(w)) for w in warnings],
+        "n_rows": int(len(df)),
+        "n_columns": int(len(df.columns)),
         "n_complete_rows": int(df.dropna().shape[0]),
         "dataframe_pkl": pkl_path,
     }
+    return to_json_serializable(res)

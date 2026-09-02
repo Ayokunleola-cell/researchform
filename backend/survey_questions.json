@@ -1,0 +1,533 @@
+[
+  {
+    "type": "section_header",
+    "title": "Participant Information and Consent",
+    "description": "This study is academic. Responses are anonymous and confidential. By continuing you consent to participate.",
+    "variable_name": "s0_consent",
+    "required": false,
+    "position": 1
+  },
+  {
+    "type": "section_header",
+    "title": "Section 1: Demographics",
+    "description": "Please provide background information.",
+    "variable_name": "s1_demo",
+    "required": false,
+    "position": 2
+  },
+  {
+    "type": "single_choice",
+    "title": "What is your gender?",
+    "variable_name": "gender",
+    "required": true,
+    "position": 3,
+    "options": [
+      "Male",
+      "Female",
+      "Non-binary / Other",
+      "Prefer not to say"
+    ],
+    "measurement_level": "nominal"
+  },
+  {
+    "type": "number",
+    "title": "What is your age in years?",
+    "variable_name": "age",
+    "required": true,
+    "position": 4,
+    "validation": {
+      "min": 18,
+      "max": 75
+    },
+    "measurement_level": "ratio"
+  },
+  {
+    "type": "single_choice",
+    "title": "Highest level of education completed?",
+    "variable_name": "education_level",
+    "required": true,
+    "position": 5,
+    "options": [
+      "High School",
+      "Bachelors Degree",
+      "Masters Degree",
+      "PhD / Doctorate",
+      "Professional Certification"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "single_choice",
+    "title": "What is your employment type?",
+    "variable_name": "employment_type",
+    "required": true,
+    "position": 6,
+    "options": [
+      "Full-time",
+      "Part-time",
+      "Contract / Freelance",
+      "Remote / Hybrid"
+    ],
+    "measurement_level": "nominal"
+  },
+  {
+    "type": "single_choice",
+    "title": "Which department do you work in?",
+    "variable_name": "department",
+    "required": true,
+    "position": 7,
+    "options": [
+      "Engineering / IT",
+      "Marketing",
+      "Operations",
+      "Human Resources",
+      "Finance",
+      "Research and Development",
+      "Sales",
+      "Other"
+    ],
+    "measurement_level": "nominal"
+  },
+  {
+    "type": "number",
+    "title": "How many years have you worked at your current organisation?",
+    "variable_name": "tenure_years",
+    "required": true,
+    "position": 8,
+    "validation": {
+      "min": 0,
+      "max": 50
+    },
+    "measurement_level": "ratio"
+  },
+  {
+    "type": "single_choice",
+    "title": "What is the size of your organisation?",
+    "variable_name": "org_size",
+    "required": true,
+    "position": 9,
+    "options": [
+      "Small (1-49 employees)",
+      "Medium (50-249 employees)",
+      "Large (250-999 employees)",
+      "Enterprise (1000+ employees)"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 2: Transformational Leadership (Independent Variable)",
+    "description": "Rate your immediate line manager. Scale: 1 = Strongly Disagree to 5 = Strongly Agree.",
+    "variable_name": "s2_tl",
+    "required": false,
+    "position": 10
+  },
+  {
+    "type": "likert",
+    "title": "My manager articulates a compelling vision for the future.",
+    "variable_name": "tl_q1_vision",
+    "required": true,
+    "position": 11,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "My manager inspires me to perform beyond my own expectations.",
+    "variable_name": "tl_q2_inspire",
+    "required": true,
+    "position": 12,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "My manager actively encourages creative and innovative thinking.",
+    "variable_name": "tl_q3_innovate",
+    "required": true,
+    "position": 13,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "My manager leads by example and is a strong role model.",
+    "variable_name": "tl_q4_role_model",
+    "required": true,
+    "position": 14,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "My manager invests in my professional development.",
+    "variable_name": "tl_q5_develop",
+    "required": true,
+    "position": 15,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 3: Psychological Safety (Mediating Variable)",
+    "description": "Rate the interpersonal climate in your immediate work team.",
+    "variable_name": "s3_ps",
+    "required": false,
+    "position": 16
+  },
+  {
+    "type": "likert",
+    "title": "I feel safe to speak up and share my opinions in my team.",
+    "variable_name": "ps_q1_speak_up",
+    "required": true,
+    "position": 17,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "In this team, mistakes are not held against me.",
+    "variable_name": "ps_q2_mistakes",
+    "required": true,
+    "position": 18,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I can raise problems or concerns without fear of negative consequences.",
+    "variable_name": "ps_q3_challenge",
+    "required": true,
+    "position": 19,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "My unique skills and abilities are valued and recognised by this team.",
+    "variable_name": "ps_q4_unique",
+    "required": true,
+    "position": 20,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 4: Perceived Organisational Support (Moderating Variable)",
+    "description": "Rate your organisation as a whole entity.",
+    "variable_name": "s4_os",
+    "required": false,
+    "position": 21
+  },
+  {
+    "type": "likert",
+    "title": "My organisation genuinely cares about my well-being.",
+    "variable_name": "os_q1_cares",
+    "required": true,
+    "position": 22,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "My organisation strongly considers my goals and personal values.",
+    "variable_name": "os_q2_values",
+    "required": true,
+    "position": 23,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "Help is available when I encounter a problem at work.",
+    "variable_name": "os_q3_help",
+    "required": true,
+    "position": 24,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I feel proud to be associated with this organisation.",
+    "variable_name": "os_q4_proud",
+    "required": true,
+    "position": 25,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 5: Innovation Behaviour (Dependent Variable)",
+    "description": "Rate how frequently you engage in each innovative behaviour at work.",
+    "variable_name": "s5_ib",
+    "required": false,
+    "position": 26
+  },
+  {
+    "type": "likert",
+    "title": "I regularly generate new ideas to improve work processes or products.",
+    "variable_name": "ib_q1_new_ideas",
+    "required": true,
+    "position": 27,
+    "options": [
+      "Never",
+      "Rarely",
+      "Sometimes",
+      "Often",
+      "Always"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I actively champion and promote my ideas to colleagues and management.",
+    "variable_name": "ib_q2_promote",
+    "required": true,
+    "position": 28,
+    "options": [
+      "Never",
+      "Rarely",
+      "Sometimes",
+      "Often",
+      "Always"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I take concrete steps to implement new and creative solutions at work.",
+    "variable_name": "ib_q3_implement",
+    "required": true,
+    "position": 29,
+    "options": [
+      "Never",
+      "Rarely",
+      "Sometimes",
+      "Often",
+      "Always"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I actively seek better methods or approaches to accomplish my work tasks.",
+    "variable_name": "ib_q4_improve",
+    "required": true,
+    "position": 30,
+    "options": [
+      "Never",
+      "Rarely",
+      "Sometimes",
+      "Often",
+      "Always"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 6: Work Outcomes and Engagement",
+    "description": "Please rate your overall work experience.",
+    "variable_name": "s6_outcomes",
+    "required": false,
+    "position": 31
+  },
+  {
+    "type": "rating",
+    "title": "How satisfied are you with your current job overall? (1 = Very Dissatisfied, 5 = Very Satisfied)",
+    "variable_name": "job_satisfaction",
+    "required": true,
+    "position": 32,
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I feel energetic, absorbed, and dedicated in my day-to-day work.",
+    "variable_name": "we_q1_engaged",
+    "required": true,
+    "position": 33,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "slider",
+    "title": "How would you rate your productivity compared to your team average? (0 = Far below average, 100 = Far above average)",
+    "variable_name": "performance_self_rating",
+    "required": true,
+    "position": 34,
+    "settings": {
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default_value": 50
+    },
+    "measurement_level": "ratio"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 7: Technology and Workplace Pressure",
+    "description": "Rate your experience with digital technology in your workplace.",
+    "variable_name": "s7_tech",
+    "required": false,
+    "position": 35
+  },
+  {
+    "type": "likert",
+    "title": "The number of digital tools I need to use at work feels overwhelming.",
+    "variable_name": "ts_q1_overload",
+    "required": true,
+    "position": 36,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neither Agree nor Disagree",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "Frequent technology changes at my organisation cause me frustration.",
+    "variable_name": "ts_q2_change",
+    "required": true,
+    "position": 37,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neither Agree nor Disagree",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "likert",
+    "title": "I feel pressured to be constantly reachable through digital devices outside working hours.",
+    "variable_name": "ts_q3_reachable",
+    "required": true,
+    "position": 38,
+    "options": [
+      "Strongly Disagree",
+      "Disagree",
+      "Neither Agree nor Disagree",
+      "Agree",
+      "Strongly Agree"
+    ],
+    "measurement_level": "ordinal"
+  },
+  {
+    "type": "section_header",
+    "title": "Section 8: Open-Ended Reflection (Optional)",
+    "description": "These questions are optional. Share your personal perspectives in a few sentences.",
+    "variable_name": "s8_open",
+    "required": false,
+    "position": 39
+  },
+  {
+    "type": "long_text",
+    "title": "How does your manager leadership style influence your willingness to try new ideas at work?",
+    "variable_name": "open_q1",
+    "required": false,
+    "position": 40,
+    "measurement_level": "nominal"
+  },
+  {
+    "type": "long_text",
+    "title": "What organisational factors most encourage or discourage innovation in your workplace?",
+    "variable_name": "open_q2",
+    "required": false,
+    "position": 41,
+    "measurement_level": "nominal"
+  }
+]

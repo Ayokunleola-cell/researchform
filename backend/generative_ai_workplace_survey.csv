@@ -1,0 +1,501 @@
+participant_id,age,age_group,gender,education_level,industry_sector,experience_years,company_size,ai_tool_frequency,dl1_vision_communication,dl2_resource_provision,dl3_digital_empowerment,dl4_innovation_support,digital_leadership_mean,ai1_workflow_integration,ai2_prompting_competence,ai3_automation_utility,ai4_daily_dependency,genai_adoption_mean,ts1_complexity_overload,ts2_job_insecurity_fear,ts3_pace_of_change_stress,ts4_constant_connectivity,technostress_mean,we1_vigor_energy,we2_dedication_pride,we3_absorption_flow,we4_enthusiasm_work,work_engagement_mean,ib1_idea_generation,ib2_idea_championing,ib3_idea_implementation,ib4_problem_solving_creativity,ib5_process_optimization,innovative_behavior_mean,tp1_quality_of_work,tp2_deadline_compliance,tp3_goal_achievement,tp4_efficiency_kpi,task_performance_mean
+RESP-1001,30,26-35,Female,Bachelor's,Financial Services,1.3,Medium (50-249),Monthly,4,5,4,4,4.25,4,4,5,5,4.5,2,2,2,2,2.0,4,4,4,4,4.0,4,3,4,4,4,3.8,4,4,3,3,3.5
+RESP-1002,54,46-55,Male,Master's,Education & EdTech,3.7,Medium (50-249),Daily,4,4,4,5,4.25,4,4,3,2,3.25,4,4,4,3,3.75,3,3,3,3,3.0,4,4,4,4,4,4.0,3,3,3,3,3.0
+RESP-1003,42,36-45,Male,Bachelor's,Financial Services,19.9,Enterprise (1000+),Weekly,3,4,3,4,3.5,4,4,5,3,4.0,2,3,3,2,2.5,3,4,3,4,3.5,4,4,4,4,4,4.0,4,4,5,4,4.25
+RESP-1004,28,26-35,Male,Master's,Information Technology,5.2,Large (250-999),Weekly,4,3,3,3,3.25,4,4,4,3,3.75,2,3,2,2,2.25,3,3,2,2,2.5,5,4,4,4,4,4.2,2,3,3,4,3.0
+RESP-1005,27,26-35,Male,Master's,Financial Services,4.4,Large (250-999),Weekly,4,3,5,4,4.0,3,3,3,2,2.75,2,2,1,2,1.75,4,4,4,4,4.0,3,4,3,3,3,3.2,3,4,3,3,3.25
+RESP-1006,31,26-35,Male,Master's,Education & EdTech,4.7,Medium (50-249),Never,4,4,4,5,4.25,3,3,4,3,3.25,2,2,2,2,2.0,3,4,3,4,3.5,3,4,4,4,3,3.6,3,4,4,3,3.5
+RESP-1007,19,18-25,Male,Bachelor's,Information Technology,2.4,Large (250-999),Monthly,3,3,4,4,3.5,2,3,2,2,2.25,1,2,1,1,1.25,2,2,2,2,2.0,3,3,2,3,2,2.6,4,3,2,3,3.0
+RESP-1008,54,46-55,Male,Bachelor's,Information Technology,3.8,Medium (50-249),Daily,5,5,4,5,4.75,4,3,3,5,3.75,3,3,3,2,2.75,4,4,3,4,3.75,5,5,3,4,5,4.4,4,3,4,4,3.75
+RESP-1009,42,36-45,Male,Bachelor's,Healthcare & Biotech,3.8,Large (250-999),Monthly,5,5,4,5,4.75,3,2,2,2,2.25,2,1,3,1,1.75,3,3,3,3,3.0,3,3,2,4,3,3.0,4,4,4,4,4.0
+RESP-1010,38,36-45,Male,Bachelor's,Education & EdTech,1.3,Medium (50-249),Daily,4,4,4,3,3.75,3,3,3,3,3.0,2,2,2,2,2.0,4,4,3,3,3.5,3,3,2,3,3,2.8,4,3,3,3,3.25
+RESP-1011,18,18-25,Male,Bachelor's,Information Technology,9.8,Medium (50-249),Daily,3,4,4,4,3.75,2,3,2,2,2.25,3,3,3,2,2.75,2,1,2,2,1.75,3,3,3,2,3,2.8,3,4,3,2,3.0
+RESP-1012,53,46-55,Male,Professional Certification,Information Technology,4.2,Large (250-999),Daily,4,4,5,4,4.25,4,4,3,4,3.75,3,3,2,3,2.75,1,2,2,2,1.75,4,3,3,4,4,3.6,3,3,3,4,3.25
+RESP-1013,39,36-45,Female,Master's,Information Technology,11.4,Enterprise (1000+),Daily,3,4,3,3,3.25,3,3,4,3,3.25,5,4,5,4,4.5,3,3,2,4,3.0,2,4,3,3,3,3.0,3,2,2,1,2.0
+RESP-1014,33,26-35,Male,Bachelor's,Information Technology,12.4,Small (<50),Weekly,4,4,4,4,4.0,4,4,3,4,3.75,1,1,1,1,1.0,3,3,4,3,3.25,5,4,4,4,4,4.2,4,4,3,4,3.75
+RESP-1015,26,26-35,Male,Bachelor's,Financial Services,2.4,Enterprise (1000+),Weekly,3,2,3,2,2.5,3,3,2,2,2.5,4,3,4,3,3.5,2,1,1,1,1.25,3,3,3,3,3,3.0,3,3,2,2,2.5
+RESP-1016,28,26-35,Female,Bachelor's,Education & EdTech,7.4,Medium (50-249),Rarely,5,4,4,5,4.5,1,2,3,3,2.25,4,4,3,3,3.5,3,2,2,2,2.25,4,4,4,3,4,3.8,4,3,5,5,4.25
+RESP-1017,30,26-35,Male,Master's,Healthcare & Biotech,4.8,Medium (50-249),Weekly,2,3,3,3,2.75,4,4,4,3,3.75,2,3,2,1,2.0,4,4,4,4,4.0,4,5,4,5,5,4.6,3,4,4,5,4.0
+RESP-1018,30,26-35,Female,Master's,Healthcare & Biotech,13.7,Small (<50),Weekly,5,5,4,5,4.75,4,3,2,3,3.0,3,3,2,3,2.75,4,4,3,4,3.75,3,4,3,4,4,3.6,4,4,4,4,4.0
+RESP-1019,28,26-35,Female,Doctorate,Information Technology,2.5,Medium (50-249),Daily,3,4,4,4,3.75,4,4,4,4,4.0,2,3,2,2,2.25,4,4,4,2,3.5,4,4,3,3,3,3.4,3,3,4,4,3.5
+RESP-1020,31,26-35,Male,Bachelor's,Education & EdTech,7.8,Medium (50-249),Daily,4,3,4,3,3.5,3,3,3,4,3.25,3,3,2,3,2.75,2,2,3,2,2.25,4,4,5,4,4,4.2,4,4,4,4,4.0
+RESP-1021,37,36-45,Female,Professional Certification,Financial Services,6.6,Small (<50),Weekly,4,3,4,3,3.5,4,4,4,3,3.75,4,3,4,5,4.0,2,1,2,2,1.75,3,3,4,2,3,3.0,2,2,1,2,1.75
+RESP-1022,22,18-25,Male,Doctorate,Management Consulting,3.1,Medium (50-249),Weekly,3,4,4,4,3.75,4,4,5,4,4.25,3,3,4,3,3.25,3,4,3,3,3.25,5,4,4,4,5,4.4,3,3,3,4,3.25
+RESP-1023,30,26-35,Male,Bachelor's,Healthcare & Biotech,1.9,Enterprise (1000+),Monthly,5,5,3,5,4.5,4,3,4,5,4.0,3,3,3,2,2.75,3,4,4,3,3.5,4,5,4,5,4,4.4,4,4,3,4,3.75
+RESP-1024,31,26-35,Male,Professional Certification,Information Technology,7.3,Small (<50),Daily,3,2,2,2,2.25,4,3,4,4,3.75,2,2,3,3,2.5,2,3,3,2,2.5,3,3,3,2,3,2.8,2,2,2,2,2.0
+RESP-1025,31,26-35,Female,Bachelor's,Healthcare & Biotech,9.1,Large (250-999),Daily,5,5,4,4,4.5,4,4,3,4,3.75,1,1,2,2,1.5,4,5,4,4,4.25,3,4,4,3,4,3.6,4,5,4,5,4.5
+RESP-1026,37,36-45,Female,Master's,Information Technology,3.3,Medium (50-249),Weekly,4,4,4,4,4.0,4,3,4,3,3.5,2,3,3,2,2.5,4,3,4,3,3.5,3,3,3,4,4,3.4,5,4,3,4,4.0
+RESP-1027,26,26-35,Male,Bachelor's,Healthcare & Biotech,7.2,Large (250-999),Daily,2,3,3,3,2.75,4,3,5,3,3.75,4,4,3,4,3.75,3,4,3,2,3.0,4,4,3,4,3,3.6,3,3,4,3,3.25
+RESP-1028,33,26-35,Non-Binary / Prefer not to say,Doctorate,Information Technology,4.0,Medium (50-249),Daily,3,4,3,4,3.5,4,3,3,4,3.5,1,1,1,1,1.0,3,3,3,3,3.0,3,3,3,3,4,3.2,3,3,2,3,2.75
+RESP-1029,30,26-35,Male,Doctorate,Information Technology,8.5,Small (<50),Weekly,5,5,5,4,4.75,4,3,3,4,3.5,1,1,1,1,1.0,4,4,4,4,4.0,4,5,4,4,4,4.2,4,5,5,5,4.75
+RESP-1030,21,18-25,Female,Master's,Education & EdTech,2.3,Small (<50),Daily,3,4,3,3,3.25,4,4,4,4,4.0,3,2,3,2,2.5,2,2,3,2,2.25,3,4,4,4,3,3.6,3,3,4,3,3.25
+RESP-1031,43,36-45,Male,Master's,Information Technology,14.3,Small (<50),Weekly,3,3,3,3,3.0,3,3,3,3,3.0,2,2,2,2,2.0,2,1,1,3,1.75,4,2,2,3,2,2.6,3,3,3,3,3.0
+RESP-1032,30,26-35,Male,Bachelor's,Education & EdTech,3.0,Small (<50),Daily,4,5,5,4,4.5,3,3,2,2,2.5,2,2,2,1,1.75,4,4,3,2,3.25,5,4,4,5,4,4.4,3,5,3,4,3.75
+RESP-1033,25,18-25,Male,Bachelor's,Information Technology,3.8,Large (250-999),Daily,4,4,4,4,4.0,3,2,3,3,2.75,3,2,2,2,2.25,3,4,3,3,3.25,3,3,2,3,3,2.8,5,3,4,4,4.0
+RESP-1034,50,46-55,Female,Bachelor's,Healthcare & Biotech,1.4,Enterprise (1000+),Daily,2,3,3,3,2.75,2,2,3,3,2.5,1,2,1,1,1.25,3,2,3,2,2.5,2,3,3,3,3,2.8,3,3,3,3,3.0
+RESP-1035,55,46-55,Male,Bachelor's,Healthcare & Biotech,1.7,Enterprise (1000+),Monthly,4,3,4,4,3.75,2,3,3,4,3.0,3,2,1,1,1.75,3,2,2,4,2.75,4,3,4,4,3,3.6,3,3,3,3,3.0
+RESP-1036,44,36-45,Male,Master's,Financial Services,5.4,Large (250-999),Daily,4,4,3,3,3.5,4,4,3,3,3.5,3,3,2,3,2.75,3,3,3,2,2.75,3,4,3,3,3,3.2,3,3,4,4,3.5
+RESP-1037,29,26-35,Male,Bachelor's,Information Technology,2.9,Small (<50),Weekly,4,4,5,4,4.25,3,3,3,3,3.0,2,2,1,1,1.5,3,3,3,4,3.25,3,4,4,3,3,3.4,5,5,4,4,4.5
+RESP-1038,25,18-25,Female,Professional Certification,Information Technology,11.8,Medium (50-249),Daily,5,4,3,4,4.0,4,3,5,4,4.0,1,1,1,1,1.0,3,3,3,3,3.0,4,4,4,5,5,4.4,4,5,4,4,4.25
+RESP-1039,41,36-45,Male,Master's,Information Technology,1.1,Medium (50-249),Monthly,4,4,5,4,4.25,3,3,4,4,3.5,2,2,2,1,1.75,3,3,3,3,3.0,3,4,4,3,4,3.6,4,3,3,3,3.25
+RESP-1040,33,26-35,Male,Master's,Information Technology,3.9,Medium (50-249),Daily,4,4,5,5,4.5,3,2,2,3,2.5,3,3,3,3,3.0,3,3,2,2,2.5,3,3,3,3,2,2.8,4,4,3,3,3.5
+RESP-1041,20,18-25,Female,Bachelor's,Healthcare & Biotech,3.5,Medium (50-249),Weekly,5,5,5,5,5.0,4,4,4,3,3.75,2,2,2,3,2.25,5,4,5,5,4.75,4,4,3,5,5,4.2,5,5,5,5,5.0
+RESP-1042,31,26-35,Male,Doctorate,Management Consulting,1.1,Medium (50-249),Weekly,4,3,3,3,3.25,4,5,5,4,4.5,3,2,2,3,2.5,4,3,3,4,3.5,4,4,3,4,3,3.6,3,3,4,4,3.5
+RESP-1043,25,18-25,Male,Professional Certification,Management Consulting,1.8,Medium (50-249),Rarely,3,3,3,3,3.0,2,3,4,3,3.0,3,2,3,2,2.5,4,3,3,4,3.5,3,3,3,2,3,2.8,4,3,4,3,3.5
+RESP-1044,45,46-55,Female,Bachelor's,Education & EdTech,4.2,Medium (50-249),Daily,5,3,4,4,4.0,5,4,4,4,4.25,1,1,1,1,1.0,3,3,3,3,3.0,4,5,4,5,4,4.4,5,5,5,4,4.75
+RESP-1045,27,26-35,Female,Master's,Education & EdTech,5.1,Enterprise (1000+),Daily,5,5,5,5,5.0,3,3,3,3,3.0,3,3,3,3,3.0,3,4,4,4,3.75,4,4,5,4,3,4.0,4,4,4,5,4.25
+RESP-1046,34,36-45,Male,Master's,Healthcare & Biotech,4.1,Large (250-999),Daily,3,2,2,3,2.5,3,4,4,4,3.75,3,3,2,4,3.0,2,3,2,2,2.25,3,3,3,3,3,3.0,2,3,3,3,2.75
+RESP-1047,29,26-35,Female,Bachelor's,Information Technology,5.5,Medium (50-249),Monthly,4,3,3,4,3.5,3,3,3,3,3.0,2,2,2,3,2.25,3,3,3,3,3.0,3,4,3,3,3,3.2,2,3,3,3,2.75
+RESP-1048,31,26-35,Male,Master's,Management Consulting,6.4,Enterprise (1000+),Weekly,4,4,5,4,4.25,3,2,2,2,2.25,4,3,3,4,3.5,3,2,3,2,2.5,3,4,2,4,4,3.4,3,4,4,3,3.5
+RESP-1049,33,26-35,Female,Bachelor's,Healthcare & Biotech,1.1,Enterprise (1000+),Monthly,5,3,3,4,3.75,3,3,3,3,3.0,2,2,2,2,2.0,5,4,5,4,4.5,4,2,4,4,4,3.6,3,3,3,4,3.25
+RESP-1050,30,26-35,Male,Bachelor's,Financial Services,4.7,Medium (50-249),Daily,3,2,4,3,3.0,4,4,3,4,3.75,3,4,4,4,3.75,2,3,2,2,2.25,3,3,3,2,3,2.8,3,3,2,4,3.0
+RESP-1051,54,46-55,Female,Bachelor's,Information Technology,20.9,Medium (50-249),Daily,5,5,5,4,4.75,3,4,3,3,3.25,3,3,3,3,3.0,4,3,4,4,3.75,4,4,4,4,4,4.0,3,4,4,3,3.5
+RESP-1052,36,36-45,Male,Bachelor's,Financial Services,5.4,Medium (50-249),Daily,5,5,5,5,5.0,3,3,2,3,2.75,3,3,2,3,2.75,3,4,3,4,3.5,5,4,4,4,5,4.4,4,3,3,4,3.5
+RESP-1053,45,46-55,Non-Binary / Prefer not to say,Bachelor's,Financial Services,7.8,Enterprise (1000+),Rarely,4,5,4,4,4.25,2,4,3,4,3.25,3,2,3,2,2.5,3,4,3,3,3.25,3,3,4,4,4,3.6,3,3,3,4,3.25
+RESP-1054,49,46-55,Male,Bachelor's,Management Consulting,3.2,Enterprise (1000+),Weekly,3,4,3,4,3.5,3,5,4,4,4.0,3,2,3,2,2.5,3,3,3,4,3.25,3,4,3,4,3,3.4,3,4,2,4,3.25
+RESP-1055,30,26-35,Male,Professional Certification,Financial Services,9.9,Small (<50),Rarely,3,2,3,2,2.5,4,4,4,3,3.75,4,3,4,4,3.75,1,2,3,2,2.0,4,4,5,4,3,4.0,1,2,2,2,1.75
+RESP-1056,49,46-55,Female,Master's,Financial Services,9.9,Medium (50-249),Daily,5,4,4,4,4.25,5,4,3,4,4.0,2,2,2,2,2.0,3,4,4,4,3.75,4,4,4,3,4,3.8,4,5,4,4,4.25
+RESP-1057,17,18-25,Male,Professional Certification,Management Consulting,5.4,Large (250-999),Weekly,4,5,5,5,4.75,3,4,3,3,3.25,2,1,2,1,1.5,4,3,4,4,3.75,3,5,4,5,4,4.2,4,4,4,4,4.0
+RESP-1058,29,26-35,Female,Bachelor's,Information Technology,23.4,Medium (50-249),Weekly,3,4,4,5,4.0,5,4,5,4,4.5,3,3,4,4,3.5,4,4,4,4,4.0,4,4,4,3,4,3.8,3,3,3,3,3.0
+RESP-1059,19,18-25,Female,Bachelor's,Financial Services,1.8,Small (<50),Daily,4,3,4,4,3.75,3,2,2,2,2.25,2,2,2,3,2.25,2,3,2,3,2.5,3,3,3,3,4,3.2,3,3,3,3,3.0
+RESP-1060,31,26-35,Female,Master's,Information Technology,1.1,Enterprise (1000+),Monthly,4,3,4,3,3.5,4,4,5,4,4.25,4,4,4,3,3.75,2,3,4,3,3.0,3,5,3,4,4,3.8,4,3,4,4,3.75
+RESP-1061,30,26-35,Male,Bachelor's,Healthcare & Biotech,9.8,Large (250-999),Rarely,4,3,2,3,3.0,5,5,5,5,5.0,4,4,4,4,4.0,3,3,3,3,3.0,4,4,4,5,4,4.2,4,4,4,4,4.0
+RESP-1062,27,26-35,Male,Bachelor's,Management Consulting,10.9,Enterprise (1000+),Monthly,4,4,4,4,4.0,4,4,4,4,4.0,3,2,2,2,2.25,3,3,3,3,3.0,3,3,4,3,4,3.4,4,5,4,4,4.25
+RESP-1063,38,36-45,Male,Master's,Information Technology,1.8,Enterprise (1000+),Weekly,5,5,5,4,4.75,3,3,4,3,3.25,3,4,3,3,3.25,3,4,3,4,3.5,4,4,4,4,4,4.0,5,4,3,4,4.0
+RESP-1064,27,26-35,Female,Bachelor's,Education & EdTech,2.9,Large (250-999),Daily,2,2,3,3,2.5,4,3,3,3,3.25,1,2,2,1,1.5,2,2,2,2,2.0,3,3,3,4,3,3.2,3,3,3,3,3.0
+RESP-1065,29,26-35,Female,Master's,Information Technology,1.1,Medium (50-249),Daily,5,4,5,5,4.75,5,4,4,4,4.25,4,3,4,3,3.5,4,4,4,4,4.0,4,5,5,4,4,4.4,4,4,4,3,3.75
+RESP-1066,32,26-35,Non-Binary / Prefer not to say,Master's,Management Consulting,3.1,Large (250-999),Rarely,4,4,5,4,4.25,3,3,3,2,2.75,3,3,3,2,2.75,3,4,4,4,3.75,3,4,3,3,4,3.4,4,4,3,3,3.5
+RESP-1067,20,18-25,Female,Bachelor's,Education & EdTech,9.9,Small (<50),Daily,5,5,5,5,5.0,3,3,3,4,3.25,3,4,2,2,2.75,1,3,3,2,2.25,3,3,2,3,4,3.0,4,3,4,3,3.5
+RESP-1068,41,36-45,Female,Bachelor's,Education & EdTech,5.4,Large (250-999),Weekly,3,2,3,2,2.5,4,3,3,4,3.5,2,2,2,2,2.0,2,2,3,4,2.75,4,3,3,4,2,3.2,3,3,3,3,3.0
+RESP-1069,21,18-25,Female,Master's,Information Technology,3.6,Small (<50),Weekly,3,3,3,3,3.0,4,4,5,5,4.5,1,1,1,1,1.0,3,3,3,4,3.25,4,4,3,4,4,3.8,3,3,3,3,3.0
+RESP-1070,56,56+,Male,Bachelor's,Management Consulting,3.8,Large (250-999),Weekly,3,3,3,4,3.25,3,3,4,5,3.75,4,3,3,3,3.25,3,3,3,3,3.0,3,3,4,4,3,3.4,3,3,4,5,3.75
+RESP-1071,39,36-45,Male,Bachelor's,Healthcare & Biotech,1.0,Medium (50-249),Never,4,4,4,4,4.0,3,4,3,2,3.0,1,1,2,2,1.5,4,4,4,4,4.0,3,4,3,4,4,3.6,4,4,4,5,4.25
+RESP-1072,27,26-35,Female,Professional Certification,Information Technology,3.1,Small (<50),Daily,5,5,5,5,5.0,3,4,3,3,3.25,2,2,3,2,2.25,4,4,3,4,3.75,5,5,4,4,4,4.4,4,5,4,4,4.25
+RESP-1073,21,18-25,Female,Bachelor's,Education & EdTech,7.2,Small (<50),Daily,4,4,4,4,4.0,3,3,3,3,3.0,3,3,3,4,3.25,3,2,2,3,2.5,4,3,4,3,3,3.4,2,3,3,3,2.75
+RESP-1074,37,36-45,Male,Master's,Information Technology,22.9,Small (<50),Daily,4,3,4,3,3.5,3,3,3,4,3.25,2,2,3,2,2.25,3,2,3,3,2.75,4,4,3,3,4,3.6,3,4,3,3,3.25
+RESP-1075,44,36-45,Male,Professional Certification,Management Consulting,12.3,Large (250-999),Weekly,3,4,3,3,3.25,5,4,5,4,4.5,4,4,4,5,4.25,3,3,3,3,3.0,3,4,3,3,3,3.2,2,2,2,3,2.25
+RESP-1076,40,36-45,Female,Bachelor's,Information Technology,1.1,Large (250-999),Daily,5,4,4,4,4.25,2,2,3,2,2.25,3,4,4,3,3.5,3,3,3,3,3.0,4,4,4,5,4,4.2,3,3,3,3,3.0
+RESP-1077,38,36-45,Male,Bachelor's,Healthcare & Biotech,14.7,Medium (50-249),Daily,3,4,3,4,3.5,4,5,5,5,4.75,2,2,2,2,2.0,4,5,4,5,4.5,4,4,4,5,4,4.2,4,4,3,3,3.5
+RESP-1078,23,18-25,Female,Bachelor's,Financial Services,10.2,Small (<50),Monthly,5,5,4,5,4.75,5,4,4,4,4.25,2,3,2,3,2.5,4,4,4,4,4.0,5,5,5,5,5,5.0,4,4,5,4,4.25
+RESP-1079,29,26-35,Female,Bachelor's,Information Technology,10.1,Small (<50),Rarely,3,4,3,3,3.25,4,4,5,5,4.5,3,3,2,3,2.75,3,3,3,3,3.0,3,4,3,3,4,3.4,4,4,4,4,4.0
+RESP-1080,22,18-25,Male,Bachelor's,Information Technology,4.7,Small (<50),Daily,5,5,4,5,4.75,3,3,4,3,3.25,2,2,2,1,1.75,4,3,3,4,3.5,2,3,4,4,3,3.2,4,4,3,5,4.0
+RESP-1081,51,46-55,Female,Master's,Information Technology,4.0,Small (<50),Daily,4,5,4,4,4.25,4,3,4,3,3.5,2,2,2,1,1.75,3,3,2,3,2.75,4,4,2,4,3,3.4,4,4,3,4,3.75
+RESP-1082,41,36-45,Male,Bachelor's,Financial Services,3.2,Enterprise (1000+),Rarely,3,3,4,4,3.5,3,3,2,3,2.75,2,2,2,2,2.0,2,3,3,4,3.0,3,3,3,4,4,3.4,4,3,3,3,3.25
+RESP-1083,28,26-35,Female,Master's,Information Technology,1.4,Medium (50-249),Daily,5,3,3,4,3.75,3,4,3,3,3.25,1,1,1,1,1.0,2,3,2,2,2.25,4,2,3,4,2,3.0,4,3,3,3,3.25
+RESP-1084,21,18-25,Female,Professional Certification,Financial Services,2.6,Medium (50-249),Daily,3,3,4,3,3.25,4,4,4,4,4.0,2,3,3,3,2.75,4,5,4,4,4.25,5,4,4,4,4,4.2,4,4,3,4,3.75
+RESP-1085,29,26-35,Non-Binary / Prefer not to say,Master's,Information Technology,2.7,Small (<50),Daily,3,4,4,4,3.75,5,4,4,5,4.5,2,2,3,3,2.5,3,4,4,5,4.0,5,5,4,4,5,4.6,4,4,4,4,4.0
+RESP-1086,24,26-35,Female,Master's,Information Technology,5.0,Medium (50-249),Weekly,4,3,4,4,3.75,3,2,3,3,2.75,1,1,2,1,1.25,3,3,4,3,3.25,4,4,4,3,3,3.6,3,3,3,4,3.25
+RESP-1087,36,36-45,Male,Bachelor's,Education & EdTech,9.3,Medium (50-249),Daily,2,3,4,3,3.0,4,3,2,3,3.0,3,3,3,3,3.0,4,3,4,3,3.5,3,4,4,3,3,3.4,3,4,4,2,3.25
+RESP-1088,43,36-45,Female,Master's,Information Technology,4.9,Large (250-999),Rarely,4,4,4,3,3.75,4,3,4,4,3.75,4,3,4,2,3.25,4,3,4,4,3.75,5,4,4,4,4,4.2,3,2,4,4,3.25
+RESP-1089,54,46-55,Female,Master's,Management Consulting,1.4,Medium (50-249),Weekly,5,4,4,3,4.0,3,3,3,2,2.75,3,3,3,3,3.0,3,3,3,3,3.0,3,3,3,3,3,3.0,2,2,2,3,2.25
+RESP-1090,29,26-35,Female,Bachelor's,Education & EdTech,20.0,Small (<50),Weekly,2,2,2,2,2.0,4,4,5,4,4.25,1,2,3,3,2.25,3,3,3,3,3.0,3,3,3,4,3,3.2,3,3,3,2,2.75
+RESP-1091,24,18-25,Male,Bachelor's,Healthcare & Biotech,18.2,Medium (50-249),Daily,3,4,4,3,3.5,3,2,3,3,2.75,3,4,3,3,3.25,3,3,2,3,2.75,3,3,3,4,3,3.2,3,4,4,3,3.5
+RESP-1092,40,36-45,Female,Doctorate,Financial Services,10.2,Medium (50-249),Weekly,2,4,4,3,3.25,3,3,4,4,3.5,3,3,3,3,3.0,3,2,3,3,2.75,3,3,3,3,4,3.2,3,2,3,3,2.75
+RESP-1093,47,36-45,Male,Bachelor's,Management Consulting,29.5,Medium (50-249),Weekly,3,3,3,4,3.25,4,3,4,4,3.75,3,3,3,3,3.0,3,3,2,3,2.75,3,3,2,4,3,3.0,4,3,3,4,3.5
+RESP-1094,32,26-35,Female,Bachelor's,Information Technology,5.7,Enterprise (1000+),Weekly,3,3,3,3,3.0,3,3,4,3,3.25,2,1,2,1,1.5,3,2,2,3,2.5,3,3,3,4,3,3.2,4,4,3,3,3.5
+RESP-1095,39,36-45,Male,Bachelor's,Information Technology,20.7,Large (250-999),Weekly,2,3,3,2,2.5,3,4,4,4,3.75,3,3,2,3,2.75,3,3,2,2,2.5,3,3,3,3,3,3.0,3,3,2,3,2.75
+RESP-1096,27,26-35,Female,Bachelor's,Information Technology,1.5,Large (250-999),Weekly,3,3,3,3,3.0,3,3,4,3,3.25,3,4,4,4,3.75,2,1,2,2,1.75,2,3,3,2,2,2.4,1,2,2,3,2.0
+RESP-1097,25,26-35,Male,Master's,Education & EdTech,3.7,Medium (50-249),Rarely,4,3,4,3,3.5,4,4,4,3,3.75,2,2,2,2,2.0,3,3,3,3,3.0,3,4,3,3,3,3.2,3,3,3,3,3.0
+RESP-1098,30,26-35,Male,Master's,Information Technology,2.5,Medium (50-249),Monthly,5,5,5,5,5.0,3,4,2,3,3.0,5,5,5,4,4.75,2,3,3,3,2.75,4,3,3,3,4,3.4,3,3,3,3,3.0
+RESP-1099,21,18-25,Male,Master's,Financial Services,2.3,Medium (50-249),Weekly,3,4,4,4,3.75,4,4,4,4,4.0,2,2,2,2,2.0,3,3,3,4,3.25,4,5,5,4,5,4.6,5,3,3,3,3.5
+RESP-1100,19,18-25,Male,Bachelor's,Management Consulting,1.9,Large (250-999),Daily,3,4,4,4,3.75,5,5,5,5,5.0,3,2,3,2,2.5,4,4,3,4,3.75,4,5,4,4,4,4.2,3,4,3,4,3.5
+RESP-1101,21,18-25,Male,Bachelor's,Education & EdTech,6.8,Large (250-999),Daily,4,4,4,4,4.0,5,4,4,4,4.25,1,2,1,2,1.5,4,4,3,4,3.75,4,4,4,4,3,3.8,4,3,3,3,3.25
+RESP-1102,37,36-45,Male,Bachelor's,Financial Services,10.1,Small (<50),Daily,4,3,4,4,3.75,5,4,5,4,4.5,4,3,3,3,3.25,4,3,3,4,3.5,4,5,4,5,5,4.6,3,3,4,4,3.5
+RESP-1103,34,26-35,Female,Bachelor's,Information Technology,6.2,Medium (50-249),Weekly,4,4,4,4,4.0,2,3,2,3,2.5,1,2,1,2,1.5,4,4,4,4,4.0,3,3,3,3,4,3.2,3,4,3,3,3.25
+RESP-1104,32,26-35,Female,Bachelor's,Education & EdTech,2.0,Medium (50-249),Daily,3,3,3,4,3.25,3,4,4,3,3.5,2,2,1,2,1.75,3,4,3,4,3.5,3,4,4,4,3,3.6,3,4,4,3,3.5
+RESP-1105,49,46-55,Male,Master's,Financial Services,11.0,Enterprise (1000+),Daily,5,4,5,5,4.75,3,2,3,3,2.75,2,2,2,2,2.0,3,3,3,4,3.25,4,3,3,3,3,3.2,3,4,4,4,3.75
+RESP-1106,33,26-35,Male,Bachelor's,Information Technology,7.1,Large (250-999),Monthly,5,5,4,5,4.75,1,2,3,3,2.25,2,3,3,2,2.5,3,3,3,3,3.0,5,4,4,4,4,4.2,4,4,4,3,3.75
+RESP-1107,30,26-35,Male,Master's,Information Technology,3.9,Medium (50-249),Monthly,3,2,3,4,3.0,3,3,3,3,3.0,4,4,3,3,3.5,2,1,2,2,1.75,3,3,2,4,3,3.0,2,2,2,3,2.25
+RESP-1108,37,36-45,Male,Bachelor's,Management Consulting,7.7,Small (<50),Rarely,4,3,4,3,3.5,5,5,4,5,4.75,3,2,2,2,2.25,3,2,3,3,2.75,4,4,4,3,4,3.8,3,3,2,2,2.5
+RESP-1109,33,26-35,Female,Bachelor's,Healthcare & Biotech,2.8,Large (250-999),Daily,4,4,4,3,3.75,4,4,4,5,4.25,1,1,1,1,1.0,3,2,3,2,2.5,5,5,5,5,5,5.0,3,4,3,3,3.25
+RESP-1110,24,18-25,Female,Bachelor's,Education & EdTech,3.5,Small (<50),Weekly,3,3,3,3,3.0,3,3,4,3,3.25,5,5,5,4,4.75,2,3,2,3,2.5,3,3,3,3,3,3.0,2,2,3,3,2.5
+RESP-1111,27,26-35,Male,Professional Certification,Management Consulting,16.0,Medium (50-249),Daily,5,4,4,4,4.25,3,3,2,2,2.5,3,2,3,3,2.75,3,3,3,3,3.0,4,3,4,3,3,3.4,4,3,2,3,3.0
+RESP-1112,29,26-35,Female,Master's,Financial Services,3.1,Small (<50),Daily,3,3,3,3,3.0,4,3,4,4,3.75,2,2,2,2,2.0,4,4,4,3,3.75,4,3,3,4,3,3.4,4,4,3,4,3.75
+RESP-1113,47,46-55,Female,Professional Certification,Financial Services,4.8,Large (250-999),Daily,5,5,5,5,5.0,4,3,4,4,3.75,4,2,3,3,3.0,4,4,5,4,4.25,4,4,5,4,4,4.2,3,5,4,4,4.0
+RESP-1114,36,36-45,Male,Bachelor's,Financial Services,14.3,Medium (50-249),Daily,4,5,5,5,4.75,4,4,3,4,3.75,3,2,3,3,2.75,5,3,5,4,4.25,4,5,4,4,4,4.2,4,4,5,4,4.25
+RESP-1115,42,36-45,Female,Bachelor's,Information Technology,8.4,Medium (50-249),Weekly,4,4,4,5,4.25,2,3,2,2,2.25,2,2,1,2,1.75,2,2,3,3,2.5,3,3,2,2,2,2.4,3,4,4,4,3.75
+RESP-1116,54,46-55,Male,Master's,Financial Services,1.4,Enterprise (1000+),Monthly,4,4,4,4,4.0,4,3,3,3,3.25,3,3,2,3,2.75,3,3,4,4,3.5,5,5,4,5,5,4.8,3,3,4,3,3.25
+RESP-1117,36,36-45,Female,Bachelor's,Education & EdTech,2.0,Medium (50-249),Daily,5,5,4,5,4.75,4,4,3,4,3.75,2,2,2,2,2.0,4,4,3,4,3.75,5,5,5,4,4,4.6,4,3,4,4,3.75
+RESP-1118,31,26-35,Male,Master's,Healthcare & Biotech,1.0,Medium (50-249),Weekly,4,3,4,4,3.75,3,4,4,4,3.75,2,3,2,3,2.5,3,3,3,2,2.75,4,4,4,4,3,3.8,5,4,4,3,4.0
+RESP-1119,48,46-55,Female,Bachelor's,Management Consulting,7.0,Medium (50-249),Weekly,3,3,3,4,3.25,3,2,2,2,2.25,1,2,2,2,1.75,2,2,2,2,2.0,3,3,2,4,3,3.0,2,3,3,3,2.75
+RESP-1120,28,26-35,Female,Bachelor's,Financial Services,4.6,Small (<50),Daily,3,5,4,3,3.75,4,4,4,3,3.75,1,1,2,1,1.25,3,4,5,4,4.0,3,3,4,3,4,3.4,4,4,4,4,4.0
+RESP-1121,38,36-45,Female,Bachelor's,Healthcare & Biotech,1.9,Large (250-999),Weekly,5,4,5,5,4.75,4,4,4,4,4.0,4,3,3,3,3.25,3,4,4,3,3.5,4,4,4,4,4,4.0,3,4,2,3,3.0
+RESP-1122,47,46-55,Female,Bachelor's,Healthcare & Biotech,20.0,Small (<50),Daily,4,4,4,4,4.0,4,4,5,4,4.25,3,3,3,3,3.0,4,3,3,3,3.25,3,3,4,4,3,3.4,4,4,4,3,3.75
+RESP-1123,30,26-35,Female,Master's,Financial Services,5.5,Medium (50-249),Weekly,2,3,3,3,2.75,4,4,4,5,4.25,2,3,2,3,2.5,3,3,3,3,3.0,3,3,3,4,3,3.2,3,2,2,3,2.5
+RESP-1124,20,18-25,Female,Bachelor's,Healthcare & Biotech,2.7,Large (250-999),Weekly,3,5,3,4,3.75,4,4,5,5,4.5,4,4,4,4,4.0,3,2,3,3,2.75,4,3,4,3,4,3.6,3,4,3,4,3.5
+RESP-1125,30,26-35,Male,Bachelor's,Information Technology,5.2,Large (250-999),Daily,3,3,3,3,3.0,4,3,3,3,3.25,3,3,3,2,2.75,3,2,3,3,2.75,3,4,4,4,4,3.8,3,3,3,2,2.75
+RESP-1126,29,26-35,Female,Bachelor's,Financial Services,7.8,Large (250-999),Daily,3,4,4,3,3.5,2,2,2,2,2.0,2,2,1,2,1.75,2,2,2,3,2.25,3,2,3,2,3,2.6,2,2,3,3,2.5
+RESP-1127,39,36-45,Male,Bachelor's,Information Technology,1.5,Medium (50-249),Weekly,5,5,5,4,4.75,3,3,3,3,3.0,4,3,3,3,3.25,3,3,3,3,3.0,4,3,3,3,4,3.4,4,4,2,3,3.25
+RESP-1128,47,46-55,Male,Master's,Financial Services,2.9,Small (<50),Rarely,3,3,2,3,2.75,5,5,5,4,4.75,1,1,1,1,1.0,3,4,3,4,3.5,4,5,4,4,4,4.2,4,4,4,4,4.0
+RESP-1129,21,18-25,Male,Doctorate,Financial Services,10.9,Large (250-999),Daily,4,4,5,5,4.5,5,5,5,5,5.0,2,1,2,2,1.75,4,3,3,4,3.5,5,5,5,5,4,4.8,4,3,4,4,3.75
+RESP-1130,31,26-35,Female,Professional Certification,Healthcare & Biotech,4.7,Medium (50-249),Weekly,4,4,5,5,4.5,4,4,4,4,4.0,2,1,1,2,1.5,3,3,3,3,3.0,4,4,5,4,5,4.4,5,4,5,5,4.75
+RESP-1131,31,26-35,Male,Master's,Management Consulting,5.7,Enterprise (1000+),Weekly,5,5,5,5,5.0,4,4,4,5,4.25,3,3,4,3,3.25,3,3,4,4,3.5,4,4,3,3,4,3.6,4,4,4,4,4.0
+RESP-1132,27,26-35,Female,Bachelor's,Healthcare & Biotech,4.4,Enterprise (1000+),Rarely,3,3,4,3,3.25,4,4,4,4,4.0,3,3,3,4,3.25,3,4,4,3,3.5,4,3,4,3,4,3.6,4,4,4,4,4.0
+RESP-1133,23,18-25,Female,Master's,Education & EdTech,1.3,Enterprise (1000+),Monthly,4,5,4,3,4.0,3,3,4,4,3.5,3,3,3,3,3.0,3,3,2,3,2.75,3,3,3,3,3,3.0,3,4,3,3,3.25
+RESP-1134,31,26-35,Non-Binary / Prefer not to say,Bachelor's,Financial Services,2.1,Medium (50-249),Weekly,4,4,4,4,4.0,4,4,3,4,3.75,4,3,3,3,3.25,3,3,2,3,2.75,3,4,4,4,4,3.8,2,2,2,2,2.0
+RESP-1135,45,46-55,Female,Bachelor's,Healthcare & Biotech,4.5,Medium (50-249),Weekly,4,4,4,4,4.0,5,5,4,5,4.75,2,1,2,1,1.5,3,4,3,3,3.25,5,4,4,5,5,4.6,4,5,3,3,3.75
+RESP-1136,31,26-35,Male,Master's,Information Technology,2.4,Large (250-999),Monthly,4,4,4,3,3.75,3,3,3,3,3.0,3,3,2,2,2.5,3,3,2,2,2.5,4,3,4,4,4,3.8,4,3,3,4,3.5
+RESP-1137,28,26-35,Male,Bachelor's,Information Technology,1.3,Medium (50-249),Daily,4,4,4,5,4.25,5,5,5,5,5.0,2,2,3,2,2.25,3,3,4,3,3.25,4,4,4,4,5,4.2,3,4,4,4,3.75
+RESP-1138,41,36-45,Male,Doctorate,Information Technology,12.1,Small (<50),Daily,3,2,3,2,2.5,2,3,4,3,3.0,4,3,4,5,4.0,3,2,3,2,2.5,3,4,3,3,3,3.2,3,3,2,1,2.25
+RESP-1139,28,26-35,Male,Bachelor's,Financial Services,24.8,Enterprise (1000+),Daily,4,4,4,4,4.0,5,5,4,5,4.75,3,2,2,3,2.5,4,4,3,4,3.75,4,4,4,4,3,3.8,4,4,4,4,4.0
+RESP-1140,53,56+,Female,Master's,Information Technology,10.5,Enterprise (1000+),Monthly,4,4,4,4,4.0,2,2,2,4,2.5,2,2,3,1,2.0,2,2,2,2,2.0,3,4,4,3,4,3.6,2,2,2,2,2.0
+RESP-1141,45,46-55,Female,Master's,Information Technology,12.5,Medium (50-249),Monthly,3,3,3,4,3.25,4,4,4,5,4.25,4,3,3,3,3.25,3,4,4,3,3.5,3,4,4,4,4,3.8,4,3,4,3,3.5
+RESP-1142,30,26-35,Male,Doctorate,Information Technology,2.7,Small (<50),Daily,5,5,5,5,5.0,3,3,4,4,3.5,3,3,4,3,3.25,2,3,3,4,3.0,5,4,5,4,5,4.6,5,4,4,4,4.25
+RESP-1143,30,26-35,Female,Master's,Management Consulting,20.4,Medium (50-249),Weekly,4,2,4,3,3.25,3,2,3,3,2.75,2,2,2,2,2.0,3,3,2,2,2.5,3,3,3,2,3,2.8,3,2,2,4,2.75
+RESP-1144,27,26-35,Female,Master's,Information Technology,2.3,Enterprise (1000+),Weekly,3,4,4,4,3.75,4,4,3,4,3.75,3,3,2,2,2.5,3,3,4,4,3.5,3,3,4,4,4,3.6,3,3,3,4,3.25
+RESP-1145,31,26-35,Female,Bachelor's,Financial Services,19.1,Enterprise (1000+),Daily,4,5,5,5,4.75,4,4,5,4,4.25,1,1,2,2,1.5,5,5,5,5,5.0,4,5,5,4,5,4.6,4,4,5,5,4.5
+RESP-1146,18,18-25,Female,Master's,Information Technology,32.6,Medium (50-249),Never,3,4,3,3,3.25,3,3,3,3,3.0,1,1,1,1,1.0,3,5,4,2,3.5,3,3,4,3,3,3.2,4,3,4,3,3.5
+RESP-1147,39,36-45,Female,Bachelor's,Healthcare & Biotech,8.5,Small (<50),Daily,4,4,4,3,3.75,2,2,2,3,2.25,3,2,3,2,2.5,3,2,2,2,2.25,2,3,2,3,3,2.6,3,2,2,3,2.5
+RESP-1148,26,26-35,Female,Master's,Information Technology,24.8,Enterprise (1000+),Daily,3,3,3,4,3.25,4,4,3,4,3.75,3,3,3,3,3.0,3,3,3,3,3.0,4,3,4,4,4,3.8,3,3,3,3,3.0
+RESP-1149,21,18-25,Male,Master's,Information Technology,6.1,Medium (50-249),Weekly,4,4,5,4,4.25,4,4,4,4,4.0,3,3,3,3,3.0,4,4,3,2,3.25,3,4,4,3,3,3.4,4,4,5,5,4.5
+RESP-1150,30,26-35,Male,Master's,Financial Services,2.8,Medium (50-249),Weekly,5,5,4,4,4.5,4,4,4,4,4.0,1,1,1,1,1.0,4,3,3,3,3.25,4,4,3,4,3,3.6,3,3,3,4,3.25
+RESP-1151,47,46-55,Male,Bachelor's,Information Technology,4.4,Enterprise (1000+),Daily,3,4,3,3,3.25,4,4,5,4,4.25,3,2,2,3,2.5,4,3,4,4,3.75,4,4,4,4,3,3.8,3,3,4,5,3.75
+RESP-1152,29,26-35,Female,Bachelor's,Information Technology,6.4,Small (<50),Weekly,3,3,3,4,3.25,3,4,4,4,3.75,1,1,1,1,1.0,4,3,4,5,4.0,3,3,3,3,3,3.0,4,4,4,3,3.75
+RESP-1153,25,18-25,Female,Master's,Information Technology,1.5,Large (250-999),Weekly,3,3,3,4,3.25,5,5,5,5,5.0,4,5,4,4,4.25,3,3,3,4,3.25,4,4,4,4,4,4.0,4,4,3,4,3.75
+RESP-1154,28,26-35,Female,Bachelor's,Information Technology,6.8,Small (<50),Daily,3,3,4,4,3.5,4,4,4,4,4.0,2,1,2,2,1.75,3,4,4,4,3.75,3,3,3,3,4,3.2,4,4,4,4,4.0
+RESP-1155,60,56+,Male,Bachelor's,Information Technology,24.8,Medium (50-249),Daily,5,4,4,4,4.25,3,3,4,3,3.25,4,4,4,4,4.0,3,3,3,3,3.0,4,4,5,5,3,4.2,4,4,4,4,4.0
+RESP-1156,27,26-35,Male,Bachelor's,Information Technology,2.3,Enterprise (1000+),Weekly,4,4,5,5,4.5,2,2,2,3,2.25,3,3,3,3,3.0,4,2,3,4,3.25,3,4,3,4,4,3.6,4,4,3,3,3.5
+RESP-1157,41,36-45,Female,Professional Certification,Education & EdTech,10.4,Medium (50-249),Daily,2,2,2,2,2.0,4,3,4,4,3.75,1,2,1,2,1.5,3,3,3,4,3.25,3,3,3,4,3,3.2,3,3,2,3,2.75
+RESP-1158,43,36-45,Male,Master's,Financial Services,15.3,Enterprise (1000+),Rarely,5,4,5,5,4.75,3,4,3,3,3.25,2,1,1,2,1.5,3,3,4,3,3.25,5,4,4,4,5,4.4,4,3,4,4,3.75
+RESP-1159,23,26-35,Female,Bachelor's,Financial Services,18.3,Large (250-999),Monthly,4,4,4,4,4.0,5,4,4,4,4.25,3,3,1,4,2.75,3,4,3,2,3.0,4,5,5,4,4,4.4,4,4,4,4,4.0
+RESP-1160,38,36-45,Male,Bachelor's,Information Technology,20.3,Medium (50-249),Never,5,4,4,5,4.5,4,4,4,4,4.0,2,2,2,2,2.0,4,4,3,3,3.5,4,5,4,4,4,4.2,4,5,4,4,4.25
+RESP-1161,31,26-35,Male,Bachelor's,Management Consulting,5.4,Medium (50-249),Daily,5,4,4,4,4.25,2,2,2,3,2.25,3,2,3,2,2.5,2,2,2,3,2.25,3,2,3,3,2,2.6,3,4,5,4,4.0
+RESP-1162,39,36-45,Male,Master's,Financial Services,23.7,Medium (50-249),Rarely,4,4,4,4,4.0,4,4,5,4,4.25,2,2,2,2,2.0,3,3,4,4,3.5,4,4,4,3,3,3.6,4,4,4,4,4.0
+RESP-1163,40,36-45,Male,Master's,Information Technology,9.5,Medium (50-249),Weekly,4,4,4,4,4.0,4,4,5,4,4.25,1,1,1,1,1.0,5,4,4,4,4.25,4,5,4,4,5,4.4,4,4,3,4,3.75
+RESP-1164,28,26-35,Male,Bachelor's,Healthcare & Biotech,2.1,Small (<50),Daily,4,5,4,5,4.5,5,5,5,5,5.0,1,1,1,2,1.25,4,3,4,3,3.5,4,4,5,5,5,4.6,4,5,4,5,4.5
+RESP-1165,23,18-25,Female,Bachelor's,Information Technology,4.9,Medium (50-249),Daily,3,4,4,4,3.75,4,4,4,5,4.25,3,2,2,3,2.5,3,5,4,4,4.0,5,4,4,4,4,4.2,4,5,4,5,4.5
+RESP-1166,39,36-45,Male,Bachelor's,Information Technology,8.6,Medium (50-249),Daily,3,4,3,4,3.5,5,4,4,4,4.25,2,2,2,3,2.25,4,4,4,4,4.0,4,5,4,4,4,4.2,4,3,3,3,3.25
+RESP-1167,32,26-35,Female,Master's,Financial Services,2.7,Large (250-999),Weekly,5,5,5,5,5.0,4,4,4,4,4.0,2,2,1,2,1.75,3,4,3,4,3.5,5,5,4,5,4,4.6,5,5,5,5,5.0
+RESP-1168,30,26-35,Male,Master's,Management Consulting,7.1,Large (250-999),Weekly,4,5,5,5,4.75,4,4,3,4,3.75,3,3,3,3,3.0,3,3,4,3,3.25,5,4,4,4,4,4.2,3,4,4,4,3.75
+RESP-1169,23,18-25,Male,Bachelor's,Financial Services,7.6,Large (250-999),Daily,4,5,4,3,4.0,5,4,5,5,4.75,3,4,4,4,3.75,4,4,2,3,3.25,4,4,4,3,4,3.8,4,5,5,4,4.5
+RESP-1170,28,26-35,Male,Bachelor's,Healthcare & Biotech,2.1,Small (<50),Weekly,3,3,3,4,3.25,3,4,3,3,3.25,2,2,3,2,2.25,3,3,3,3,3.0,3,4,4,4,3,3.6,4,2,3,2,2.75
+RESP-1171,38,36-45,Female,Bachelor's,Management Consulting,6.0,Medium (50-249),Daily,3,3,2,4,3.0,3,4,4,3,3.5,3,1,2,2,2.0,3,2,4,4,3.25,3,3,4,3,3,3.2,4,3,4,4,3.75
+RESP-1172,21,18-25,Male,Professional Certification,Information Technology,9.9,Large (250-999),Weekly,4,3,4,4,3.75,3,3,3,2,2.75,3,3,3,4,3.25,3,3,2,2,2.5,3,3,4,3,4,3.4,4,3,4,4,3.75
+RESP-1173,30,26-35,Male,Bachelor's,Information Technology,5.1,Medium (50-249),Daily,3,4,5,3,3.75,4,5,3,4,4.0,1,1,1,2,1.25,4,4,4,4,4.0,5,4,4,4,3,4.0,3,4,4,2,3.25
+RESP-1174,28,26-35,Male,Master's,Financial Services,1.1,Small (<50),Monthly,3,4,5,3,3.75,5,5,5,5,5.0,3,2,2,3,2.5,3,3,3,3,3.0,4,4,4,4,4,4.0,4,3,3,4,3.5
+RESP-1175,40,36-45,Female,Master's,Financial Services,1.1,Enterprise (1000+),Monthly,3,4,4,3,3.5,3,3,3,4,3.25,3,3,3,3,3.0,3,3,3,2,2.75,4,3,4,3,3,3.4,3,3,3,3,3.0
+RESP-1176,35,26-35,Female,Bachelor's,Financial Services,3.6,Large (250-999),Weekly,5,5,5,5,5.0,1,2,2,3,2.0,3,3,3,3,3.0,2,3,3,2,2.5,4,3,3,4,4,3.6,3,2,3,3,2.75
+RESP-1177,42,36-45,Female,Bachelor's,Management Consulting,16.6,Medium (50-249),Daily,5,3,3,4,3.75,3,3,4,3,3.25,1,1,1,2,1.25,4,4,5,4,4.25,4,4,4,5,4,4.2,5,5,5,4,4.75
+RESP-1178,29,26-35,Female,Bachelor's,Healthcare & Biotech,2.6,Small (<50),Daily,3,3,4,3,3.25,4,4,4,4,4.0,2,2,2,2,2.0,5,4,4,4,4.25,4,5,4,4,3,4.0,4,4,3,4,3.75
+RESP-1179,53,46-55,Male,Master's,Healthcare & Biotech,7.0,Large (250-999),Monthly,3,3,4,4,3.5,4,4,4,3,3.75,2,2,2,2,2.0,3,4,3,5,3.75,3,3,3,4,4,3.4,3,3,3,4,3.25
+RESP-1180,21,18-25,Female,Master's,Information Technology,2.5,Large (250-999),Daily,3,4,3,4,3.5,5,4,4,4,4.25,2,3,3,2,2.5,2,2,2,3,2.25,4,4,3,4,4,3.8,3,4,3,4,3.5
+RESP-1181,24,26-35,Non-Binary / Prefer not to say,Master's,Education & EdTech,3.3,Large (250-999),Daily,3,3,4,4,3.5,3,4,3,3,3.25,3,3,3,3,3.0,3,4,3,4,3.5,4,4,4,3,4,3.8,2,3,2,3,2.5
+RESP-1182,20,18-25,Female,Master's,Management Consulting,12.3,Large (250-999),Daily,4,4,3,4,3.75,3,3,3,3,3.0,4,5,3,3,3.75,2,3,2,3,2.5,3,3,3,4,3,3.2,2,2,2,2,2.0
+RESP-1183,45,46-55,Female,Bachelor's,Education & EdTech,8.8,Enterprise (1000+),Weekly,3,3,3,3,3.0,3,4,4,5,4.0,2,2,2,3,2.25,3,4,4,3,3.5,4,5,5,4,4,4.4,4,4,4,3,3.75
+RESP-1184,49,46-55,Male,Professional Certification,Information Technology,1.6,Medium (50-249),Weekly,3,3,3,3,3.0,3,2,3,3,2.75,2,3,2,1,2.0,4,2,3,3,3.0,3,3,4,3,4,3.4,3,4,3,4,3.5
+RESP-1185,30,26-35,Male,Master's,Healthcare & Biotech,4.4,Small (<50),Monthly,3,3,3,4,3.25,5,5,5,5,5.0,4,4,3,3,3.5,4,5,3,5,4.25,5,5,5,4,5,4.8,3,4,3,3,3.25
+RESP-1186,44,36-45,Male,Bachelor's,Information Technology,1.2,Large (250-999),Daily,3,3,4,3,3.25,4,4,4,4,4.0,3,3,2,2,2.5,3,3,4,4,3.5,4,3,4,4,3,3.6,4,3,4,4,3.75
+RESP-1187,40,36-45,Male,Professional Certification,Information Technology,4.9,Large (250-999),Daily,1,1,1,2,1.25,3,3,4,3,3.25,3,3,5,3,3.5,2,2,2,2,2.0,3,3,3,3,3,3.0,3,2,2,2,2.25
+RESP-1188,29,26-35,Male,Master's,Information Technology,7.5,Large (250-999),Monthly,5,4,5,5,4.75,4,4,3,4,3.75,3,3,3,3,3.0,3,3,3,3,3.0,3,5,5,5,5,4.6,5,5,4,4,4.5
+RESP-1189,32,26-35,Female,Master's,Healthcare & Biotech,1.8,Small (<50),Monthly,4,5,4,5,4.5,4,3,4,4,3.75,1,1,2,2,1.5,4,3,3,3,3.25,4,4,4,4,4,4.0,5,3,5,5,4.5
+RESP-1190,24,26-35,Non-Binary / Prefer not to say,Master's,Healthcare & Biotech,3.0,Small (<50),Daily,4,4,4,5,4.25,4,3,4,3,3.5,3,2,2,2,2.25,4,4,4,4,4.0,4,3,4,4,3,3.6,4,3,3,4,3.5
+RESP-1191,23,18-25,Non-Binary / Prefer not to say,Master's,Information Technology,4.0,Enterprise (1000+),Weekly,3,5,4,4,4.0,4,5,5,5,4.75,1,1,1,1,1.0,3,4,4,4,3.75,4,4,4,4,4,4.0,3,4,4,4,3.75
+RESP-1192,51,46-55,Male,Master's,Financial Services,16.1,Large (250-999),Daily,3,3,2,3,2.75,5,4,4,4,4.25,4,3,3,4,3.5,3,2,3,3,2.75,3,4,4,3,4,3.6,4,4,3,4,3.75
+RESP-1193,46,46-55,Female,Bachelor's,Financial Services,31.0,Enterprise (1000+),Rarely,5,5,5,5,5.0,3,3,3,3,3.0,3,2,4,4,3.25,2,4,3,3,3.0,3,4,3,3,4,3.4,3,3,4,4,3.5
+RESP-1194,42,36-45,Male,Bachelor's,Information Technology,1.3,Large (250-999),Daily,5,5,5,5,5.0,4,5,5,5,4.75,4,4,4,4,4.0,4,4,4,4,4.0,5,4,5,5,5,4.8,5,4,4,4,4.25
+RESP-1195,30,26-35,Female,Professional Certification,Information Technology,9.6,Large (250-999),Rarely,4,4,3,4,3.75,4,4,4,4,4.0,3,3,3,3,3.0,3,3,3,3,3.0,4,4,4,3,4,3.8,3,3,3,3,3.0
+RESP-1196,28,26-35,Female,Bachelor's,Financial Services,3.8,Large (250-999),Weekly,5,4,4,5,4.5,4,4,4,4,4.0,3,4,3,3,3.25,3,4,3,4,3.5,4,4,4,4,4,4.0,3,3,4,3,3.25
+RESP-1197,41,36-45,Female,Bachelor's,Education & EdTech,4.0,Enterprise (1000+),Weekly,3,4,5,4,4.0,4,4,3,4,3.75,2,2,4,2,2.5,3,2,3,3,2.75,4,3,3,3,2,3.0,4,4,4,4,4.0
+RESP-1198,55,46-55,Female,Bachelor's,Information Technology,9.4,Large (250-999),Daily,3,3,2,3,2.75,4,3,3,4,3.5,1,1,1,2,1.25,3,3,4,3,3.25,3,4,4,4,3,3.6,3,3,3,3,3.0
+RESP-1199,50,46-55,Male,Bachelor's,Information Technology,16.0,Large (250-999),Weekly,3,3,3,4,3.25,4,4,5,4,4.25,3,4,3,3,3.25,2,3,3,3,2.75,4,4,4,3,4,3.8,3,3,3,3,3.0
+RESP-1200,40,36-45,Male,Master's,Information Technology,19.1,Small (<50),Daily,4,4,4,4,4.0,3,2,1,2,2.0,3,3,3,4,3.25,3,3,3,3,3.0,3,5,3,4,3,3.6,4,3,4,4,3.75
+RESP-1201,38,36-45,Male,Professional Certification,Management Consulting,6.2,Medium (50-249),Daily,4,3,3,3,3.25,5,5,5,5,5.0,3,3,3,3,3.0,4,4,4,3,3.75,3,4,4,4,4,3.8,3,3,3,4,3.25
+RESP-1202,20,18-25,Female,Bachelor's,Healthcare & Biotech,3.7,Large (250-999),Weekly,3,4,4,4,3.75,4,5,5,4,4.5,3,3,3,2,2.75,4,4,4,4,4.0,4,5,4,5,4,4.4,4,4,3,4,3.75
+RESP-1203,32,26-35,Female,Bachelor's,Healthcare & Biotech,10.3,Medium (50-249),Never,4,3,4,4,3.75,3,3,4,3,3.25,3,3,3,3,3.0,4,3,4,3,3.5,5,5,5,5,5,5.0,4,4,4,4,4.0
+RESP-1204,47,46-55,Female,Bachelor's,Information Technology,2.7,Medium (50-249),Weekly,4,4,4,4,4.0,4,3,4,3,3.5,4,4,4,3,3.75,2,3,2,3,2.5,3,3,3,3,4,3.2,3,3,3,3,3.0
+RESP-1205,40,36-45,Non-Binary / Prefer not to say,Doctorate,Financial Services,6.0,Medium (50-249),Weekly,4,5,3,4,4.0,4,4,3,4,3.75,4,5,3,3,3.75,3,3,2,3,2.75,3,4,4,4,4,3.8,3,3,4,2,3.0
+RESP-1206,21,18-25,Female,Master's,Information Technology,3.7,Medium (50-249),Daily,2,4,4,3,3.25,4,4,4,4,4.0,3,3,3,3,3.0,2,2,2,2,2.0,3,3,4,4,3,3.4,1,2,3,2,2.0
+RESP-1207,24,18-25,Male,Bachelor's,Healthcare & Biotech,7.4,Medium (50-249),Daily,2,4,3,3,3.0,4,4,3,5,4.0,4,3,3,3,3.25,2,3,2,2,2.25,3,4,3,3,3,3.2,2,3,3,3,2.75
+RESP-1208,40,36-45,Male,Master's,Management Consulting,2.6,Medium (50-249),Daily,3,3,4,3,3.25,4,3,4,4,3.75,3,3,4,2,3.0,3,3,2,2,2.5,4,4,4,4,4,4.0,3,4,3,3,3.25
+RESP-1209,25,18-25,Female,Doctorate,Healthcare & Biotech,2.3,Enterprise (1000+),Weekly,5,5,3,4,4.25,4,4,4,5,4.25,2,3,3,2,2.5,4,5,4,5,4.5,5,4,4,5,5,4.6,5,4,5,5,4.75
+RESP-1210,28,26-35,Male,Master's,Management Consulting,16.0,Medium (50-249),Rarely,2,3,2,3,2.5,4,5,5,4,4.5,4,3,3,3,3.25,3,2,2,3,2.5,3,4,4,3,3,3.4,3,3,3,3,3.0
+RESP-1211,29,26-35,Male,Doctorate,Healthcare & Biotech,1.6,Small (<50),Weekly,4,5,5,5,4.75,5,4,4,4,4.25,2,2,1,2,1.75,4,4,4,4,4.0,4,4,5,4,5,4.4,4,5,5,4,4.5
+RESP-1212,37,36-45,Male,Bachelor's,Information Technology,5.2,Small (<50),Daily,5,4,5,4,4.5,2,3,3,2,2.5,4,4,3,5,4.0,1,2,2,2,1.75,4,4,3,4,4,3.8,4,3,4,4,3.75
+RESP-1213,38,36-45,Male,Master's,Management Consulting,2.5,Large (250-999),Daily,4,3,3,3,3.25,5,5,5,5,5.0,2,1,2,1,1.5,3,3,4,4,3.5,5,4,5,4,4,4.4,4,4,4,4,4.0
+RESP-1214,30,26-35,Female,Bachelor's,Information Technology,1.2,Medium (50-249),Weekly,1,3,2,2,2.0,5,5,5,5,5.0,3,3,3,3,3.0,3,3,3,3,3.0,3,4,4,4,4,3.8,4,3,4,4,3.75
+RESP-1215,41,36-45,Female,Master's,Financial Services,1.2,Enterprise (1000+),Daily,3,3,3,4,3.25,5,5,5,5,5.0,1,2,2,1,1.5,4,4,5,4,4.25,4,4,4,5,5,4.4,4,5,5,5,4.75
+RESP-1216,27,26-35,Male,Master's,Information Technology,2.2,Large (250-999),Monthly,4,3,4,5,4.0,2,3,3,3,2.75,3,3,3,3,3.0,3,3,3,3,3.0,4,5,3,3,4,3.8,3,3,3,4,3.25
+RESP-1217,32,26-35,Male,Master's,Information Technology,13.1,Large (250-999),Monthly,3,3,3,3,3.0,5,4,3,3,3.75,3,3,2,3,2.75,3,4,3,3,3.25,3,2,3,2,2,2.4,3,4,4,4,3.75
+RESP-1218,43,36-45,Female,Master's,Financial Services,3.0,Medium (50-249),Weekly,5,3,3,3,3.5,2,3,3,2,2.5,1,1,1,1,1.0,3,3,4,3,3.25,3,3,3,4,3,3.2,3,3,4,4,3.5
+RESP-1219,41,36-45,Male,Bachelor's,Information Technology,19.0,Large (250-999),Daily,5,4,5,5,4.75,4,4,4,4,4.0,3,4,2,3,3.0,4,3,4,4,3.75,4,5,4,4,4,4.2,4,4,4,3,3.75
+RESP-1220,44,36-45,Male,Master's,Financial Services,6.2,Medium (50-249),Daily,4,5,4,4,4.25,3,3,4,2,3.0,3,2,2,2,2.25,4,3,3,4,3.5,5,4,5,3,4,4.2,4,4,4,4,4.0
+RESP-1221,38,36-45,Male,Professional Certification,Financial Services,4.4,Enterprise (1000+),Daily,3,3,3,3,3.0,5,5,5,5,5.0,3,4,3,5,3.75,3,3,3,3,3.0,3,4,4,4,4,3.8,4,3,3,3,3.25
+RESP-1222,26,26-35,Female,Professional Certification,Information Technology,6.2,Large (250-999),Daily,3,3,3,3,3.0,3,3,3,3,3.0,2,3,3,3,2.75,4,4,3,3,3.5,2,3,3,3,4,3.0,2,3,3,3,2.75
+RESP-1223,18,18-25,Male,Bachelor's,Information Technology,5.4,Medium (50-249),Daily,4,4,3,4,3.75,3,3,2,3,2.75,3,3,3,3,3.0,2,2,1,1,1.5,3,3,2,2,3,2.6,4,2,3,2,2.75
+RESP-1224,33,26-35,Male,Bachelor's,Financial Services,9.5,Medium (50-249),Weekly,3,4,3,4,3.5,3,4,3,3,3.25,2,2,2,1,1.75,3,3,4,3,3.25,4,4,4,4,4,4.0,4,3,4,4,3.75
+RESP-1225,31,26-35,Female,Bachelor's,Information Technology,3.0,Small (<50),Weekly,5,5,4,5,4.75,2,2,2,2,2.0,2,2,2,2,2.0,2,3,3,3,2.75,3,3,3,3,3,3.0,2,3,3,3,2.75
+RESP-1226,29,26-35,Female,Master's,Healthcare & Biotech,3.6,Large (250-999),Daily,4,4,3,4,3.75,4,3,4,4,3.75,2,2,3,2,2.25,3,2,3,3,2.75,5,5,4,5,5,4.8,4,4,4,3,3.75
+RESP-1227,58,56+,Non-Binary / Prefer not to say,Master's,Healthcare & Biotech,14.5,Medium (50-249),Daily,4,4,4,4,4.0,2,2,2,3,2.25,3,3,4,4,3.5,2,3,2,2,2.25,4,3,3,3,3,3.2,3,3,3,3,3.0
+RESP-1228,27,26-35,Female,Bachelor's,Education & EdTech,18.6,Large (250-999),Daily,5,5,5,5,5.0,4,4,3,4,3.75,4,4,4,4,4.0,3,3,4,4,3.5,3,3,4,4,3,3.4,4,4,4,4,4.0
+RESP-1229,56,46-55,Male,Master's,Healthcare & Biotech,14.4,Medium (50-249),Daily,5,5,4,5,4.75,2,3,3,1,2.25,1,2,2,2,1.75,4,3,3,3,3.25,3,4,4,4,3,3.6,5,4,4,4,4.25
+RESP-1230,40,36-45,Male,Master's,Financial Services,4.3,Large (250-999),Monthly,4,4,5,3,4.0,4,4,4,3,3.75,4,4,3,4,3.75,4,4,5,4,4.25,5,4,4,4,4,4.2,4,4,4,3,3.75
+RESP-1231,40,36-45,Female,Master's,Healthcare & Biotech,10.1,Enterprise (1000+),Daily,4,4,2,4,3.5,4,5,5,5,4.75,1,1,1,1,1.0,4,5,4,4,4.25,4,4,5,4,4,4.2,5,4,4,5,4.5
+RESP-1232,31,26-35,Male,Master's,Information Technology,4.9,Large (250-999),Daily,3,4,3,4,3.5,4,4,5,4,4.25,2,1,1,1,1.25,3,2,3,3,2.75,5,4,4,5,5,4.6,3,3,4,3,3.25
+RESP-1233,31,26-35,Female,Master's,Information Technology,5.1,Large (250-999),Daily,5,5,5,5,5.0,4,3,3,3,3.25,2,1,2,2,1.75,4,3,3,3,3.25,4,4,4,4,4,4.0,3,4,4,4,3.75
+RESP-1234,30,26-35,Male,Master's,Education & EdTech,2.4,Small (<50),Monthly,3,3,3,3,3.0,3,4,4,4,3.75,2,2,2,1,1.75,3,3,3,3,3.0,4,4,4,4,4,4.0,3,3,3,3,3.0
+RESP-1235,28,26-35,Female,Bachelor's,Financial Services,6.4,Small (<50),Weekly,4,4,4,4,4.0,5,4,4,3,4.0,2,2,1,1,1.5,2,2,3,4,2.75,4,4,4,3,3,3.6,4,4,4,3,3.75
+RESP-1236,41,36-45,Male,Master's,Education & EdTech,2.2,Large (250-999),Daily,3,4,4,4,3.75,4,3,4,4,3.75,3,3,4,3,3.25,3,3,3,3,3.0,4,4,4,3,3,3.6,3,4,3,4,3.5
+RESP-1237,34,26-35,Female,Master's,Education & EdTech,3.4,Medium (50-249),Weekly,4,4,3,4,3.75,2,3,3,3,2.75,2,3,3,2,2.5,3,3,3,4,3.25,3,3,3,3,3,3.0,3,3,3,4,3.25
+RESP-1238,26,18-25,Female,Doctorate,Education & EdTech,12.6,Medium (50-249),Weekly,3,3,2,3,2.75,4,4,5,4,4.25,3,3,3,3,3.0,3,2,3,2,2.5,3,3,4,4,4,3.6,2,4,3,3,3.0
+RESP-1239,43,36-45,Male,Master's,Management Consulting,2.4,Small (<50),Rarely,5,5,4,4,4.5,2,1,1,2,1.5,3,3,4,3,3.25,3,2,3,3,2.75,3,3,3,3,3,3.0,3,3,2,3,2.75
+RESP-1240,28,26-35,Female,Master's,Financial Services,1.4,Medium (50-249),Daily,4,4,3,4,3.75,3,4,4,3,3.5,2,3,3,3,2.75,3,3,3,2,2.75,2,2,3,3,3,2.6,3,2,2,3,2.5
+RESP-1241,47,46-55,Male,Bachelor's,Information Technology,1.4,Small (<50),Monthly,4,5,4,4,4.25,3,3,3,3,3.0,3,3,4,3,3.25,2,3,2,2,2.25,4,3,4,3,4,3.6,3,4,4,4,3.75
+RESP-1242,49,46-55,Female,Bachelor's,Financial Services,18.0,Enterprise (1000+),Rarely,4,4,3,4,3.75,4,5,5,5,4.75,2,3,3,2,2.5,3,3,4,4,3.5,3,4,4,4,4,3.8,4,4,4,3,3.75
+RESP-1243,50,46-55,Male,Bachelor's,Information Technology,5.2,Medium (50-249),Rarely,5,5,5,5,5.0,4,4,3,4,3.75,1,2,2,1,1.5,4,5,4,4,4.25,4,4,5,5,4,4.4,4,5,5,5,4.75
+RESP-1244,32,26-35,Female,Bachelor's,Healthcare & Biotech,4.2,Large (250-999),Weekly,4,3,4,3,3.5,3,2,2,3,2.5,4,3,4,4,3.75,3,2,2,3,2.5,3,4,4,4,3,3.6,3,4,4,3,3.5
+RESP-1245,18,18-25,Male,Master's,Healthcare & Biotech,11.0,Small (<50),Weekly,5,5,5,5,5.0,3,2,3,2,2.5,2,2,2,2,2.0,3,3,3,3,3.0,4,5,4,4,4,4.2,4,5,5,4,4.5
+RESP-1246,53,46-55,Female,Professional Certification,Healthcare & Biotech,11.8,Large (250-999),Daily,2,3,2,3,2.5,4,4,4,4,4.0,1,1,1,2,1.25,3,4,3,2,3.0,3,4,3,3,4,3.4,3,4,3,3,3.25
+RESP-1247,29,26-35,Female,Bachelor's,Information Technology,3.4,Medium (50-249),Weekly,4,4,4,4,4.0,3,4,4,4,3.75,3,3,2,2,2.5,3,3,3,3,3.0,4,5,4,5,4,4.4,4,3,4,4,3.75
+RESP-1248,48,46-55,Female,Bachelor's,Information Technology,8.1,Enterprise (1000+),Weekly,4,4,4,5,4.25,3,3,3,3,3.0,2,2,2,2,2.0,3,3,2,3,2.75,3,4,4,3,3,3.4,4,3,3,4,3.5
+RESP-1249,47,46-55,Female,Master's,Financial Services,9.8,Enterprise (1000+),Weekly,4,3,4,3,3.5,3,3,4,3,3.25,2,2,2,3,2.25,2,1,2,2,1.75,4,3,3,3,3,3.2,3,4,3,4,3.5
+RESP-1250,45,46-55,Male,Bachelor's,Information Technology,7.4,Medium (50-249),Weekly,4,4,4,4,4.0,5,4,5,4,4.5,3,3,3,3,3.0,5,5,4,4,4.5,4,4,5,4,5,4.4,4,4,3,4,3.75
+RESP-1251,32,26-35,Female,Master's,Management Consulting,2.0,Enterprise (1000+),Weekly,3,5,4,5,4.25,3,3,3,3,3.0,2,2,3,3,2.5,4,3,5,3,3.75,4,3,4,4,3,3.6,4,4,4,4,4.0
+RESP-1252,30,26-35,Male,Master's,Information Technology,13.5,Enterprise (1000+),Monthly,2,2,3,3,2.5,4,4,3,4,3.75,3,2,2,2,2.25,3,3,3,3,3.0,3,3,3,3,4,3.2,3,3,3,3,3.0
+RESP-1253,46,46-55,Female,Master's,Information Technology,5.6,Enterprise (1000+),Daily,4,5,5,3,4.25,5,5,5,5,5.0,2,2,3,2,2.25,4,4,4,4,4.0,5,5,4,5,5,4.8,5,4,4,4,4.25
+RESP-1254,26,26-35,Female,Bachelor's,Information Technology,3.0,Enterprise (1000+),Monthly,2,1,1,2,1.5,3,3,3,3,3.0,4,3,2,4,3.25,1,2,1,1,1.25,2,2,2,3,3,2.4,2,2,3,3,2.5
+RESP-1255,29,26-35,Male,Bachelor's,Healthcare & Biotech,4.3,Medium (50-249),Weekly,3,3,3,2,2.75,2,2,3,3,2.5,2,3,2,3,2.5,2,2,3,2,2.25,3,4,2,4,3,3.2,4,3,3,3,3.25
+RESP-1256,34,26-35,Male,Master's,Healthcare & Biotech,1.2,Large (250-999),Monthly,5,5,5,5,5.0,4,5,5,4,4.5,4,5,4,5,4.5,3,4,3,3,3.25,4,3,3,4,4,3.6,4,4,3,3,3.5
+RESP-1257,49,46-55,Female,Master's,Information Technology,1.8,Small (<50),Weekly,4,4,3,2,3.25,2,3,3,4,3.0,4,4,3,4,3.75,3,4,3,3,3.25,4,4,3,3,3,3.4,3,2,4,3,3.0
+RESP-1258,36,36-45,Female,Bachelor's,Information Technology,9.7,Small (<50),Daily,3,3,3,3,3.0,3,4,3,4,3.5,4,4,4,4,4.0,2,2,2,3,2.25,3,2,3,2,2,2.4,3,3,3,2,2.75
+RESP-1259,29,26-35,Female,Master's,Financial Services,1.0,Enterprise (1000+),Rarely,4,4,4,3,3.75,3,3,3,3,3.0,1,1,1,1,1.0,2,3,2,3,2.5,4,4,4,4,3,3.8,4,4,4,3,3.75
+RESP-1260,22,18-25,Male,Bachelor's,Information Technology,4.2,Medium (50-249),Daily,5,5,5,5,5.0,4,4,4,3,3.75,3,3,3,4,3.25,4,3,4,3,3.5,4,4,4,4,4,4.0,3,4,3,3,3.25
+RESP-1261,33,36-45,Male,Master's,Healthcare & Biotech,5.4,Large (250-999),Monthly,3,2,2,2,2.25,5,5,5,4,4.75,3,3,3,2,2.75,4,3,4,4,3.75,5,4,4,5,4,4.4,3,3,3,2,2.75
+RESP-1262,57,56+,Female,Bachelor's,Healthcare & Biotech,1.3,Enterprise (1000+),Weekly,3,3,2,3,2.75,4,4,4,4,4.0,2,2,2,3,2.25,3,3,3,4,3.25,3,4,4,4,4,3.8,3,3,3,3,3.0
+RESP-1263,22,18-25,Male,Professional Certification,Information Technology,22.7,Enterprise (1000+),Weekly,5,4,5,5,4.75,4,4,5,5,4.5,3,2,2,3,2.5,3,4,4,4,3.75,5,4,5,5,5,4.8,4,4,4,4,4.0
+RESP-1264,31,26-35,Male,Bachelor's,Information Technology,2.5,Enterprise (1000+),Daily,5,5,5,5,5.0,2,2,3,3,2.5,3,4,4,3,3.5,3,3,4,4,3.5,4,3,4,3,4,3.6,4,4,3,4,3.75
+RESP-1265,54,46-55,Male,Bachelor's,Management Consulting,3.2,Medium (50-249),Weekly,4,4,4,4,4.0,3,3,2,3,2.75,3,2,3,3,2.75,3,3,4,3,3.25,4,4,4,4,4,4.0,4,3,4,4,3.75
+RESP-1266,42,36-45,Male,Bachelor's,Financial Services,3.2,Small (<50),Daily,3,2,3,3,2.75,2,1,1,1,1.25,2,2,1,2,1.75,3,3,3,2,2.75,3,3,2,3,3,2.8,2,3,2,2,2.25
+RESP-1267,39,36-45,Female,Bachelor's,Healthcare & Biotech,2.6,Medium (50-249),Daily,5,5,5,5,5.0,4,3,3,2,3.0,3,3,4,4,3.5,3,5,4,3,3.75,4,4,4,4,4,4.0,4,3,4,4,3.75
+RESP-1268,37,36-45,Female,Doctorate,Information Technology,1.0,Small (<50),Daily,5,5,4,5,4.75,5,5,4,4,4.5,1,2,3,2,2.0,4,5,5,5,4.75,4,5,5,5,5,4.8,5,5,5,5,5.0
+RESP-1269,36,26-35,Female,Professional Certification,Financial Services,8.8,Small (<50),Daily,4,4,4,4,4.0,4,4,4,4,4.0,3,3,3,3,3.0,5,5,4,5,4.75,4,4,5,4,4,4.2,4,5,4,4,4.25
+RESP-1270,30,26-35,Female,Bachelor's,Information Technology,21.4,Medium (50-249),Never,4,3,2,3,3.0,4,4,4,3,3.75,2,3,2,1,2.0,3,2,3,2,2.5,3,3,3,3,4,3.2,2,3,3,3,2.75
+RESP-1271,40,36-45,Male,Bachelor's,Financial Services,2.5,Large (250-999),Rarely,4,3,3,4,3.5,4,4,3,4,3.75,2,2,3,3,2.5,3,4,3,4,3.5,3,3,4,3,3,3.2,3,4,4,4,3.75
+RESP-1272,39,36-45,Male,Master's,Management Consulting,7.5,Large (250-999),Daily,3,3,4,5,3.75,3,3,3,4,3.25,4,3,4,3,3.5,3,4,3,3,3.25,3,4,4,4,3,3.6,4,3,3,3,3.25
+RESP-1273,50,46-55,Female,Doctorate,Financial Services,9.1,Medium (50-249),Weekly,4,4,4,4,4.0,4,4,4,4,4.0,1,1,1,2,1.25,3,3,2,3,2.75,5,5,4,5,5,4.8,4,5,5,4,4.5
+RESP-1274,49,46-55,Female,Master's,Information Technology,12.3,Large (250-999),Daily,4,5,5,5,4.75,4,4,4,4,4.0,4,4,5,4,4.25,2,3,3,2,2.5,5,4,3,5,5,4.4,4,4,3,4,3.75
+RESP-1275,28,26-35,Female,Bachelor's,Information Technology,4.3,Medium (50-249),Weekly,4,5,5,4,4.5,2,3,3,2,2.5,1,1,1,1,1.0,3,4,3,4,3.5,4,3,4,3,4,3.6,5,5,4,4,4.5
+RESP-1276,28,26-35,Male,Bachelor's,Financial Services,3.2,Small (<50),Monthly,3,2,4,3,3.0,4,3,4,4,3.75,1,3,2,2,2.0,3,2,3,2,2.5,4,3,3,3,3,3.2,3,3,4,2,3.0
+RESP-1277,39,36-45,Female,Master's,Information Technology,3.4,Large (250-999),Rarely,5,5,5,5,5.0,4,4,5,4,4.25,3,3,3,4,3.25,4,3,4,4,3.75,5,4,4,4,4,4.2,4,4,4,4,4.0
+RESP-1278,38,36-45,Male,Bachelor's,Information Technology,8.5,Large (250-999),Daily,4,4,4,4,4.0,4,3,3,3,3.25,3,4,4,3,3.5,3,4,4,3,3.5,3,3,3,4,4,3.4,3,3,2,4,3.0
+RESP-1279,38,36-45,Female,Master's,Education & EdTech,11.2,Large (250-999),Monthly,4,4,4,4,4.0,4,5,5,4,4.5,3,3,3,3,3.0,3,3,2,3,2.75,5,4,5,4,4,4.4,4,4,3,4,3.75
+RESP-1280,40,36-45,Female,Bachelor's,Financial Services,2.2,Small (<50),Daily,4,5,4,5,4.5,5,5,5,5,5.0,3,2,2,3,2.5,4,5,5,4,4.5,5,5,5,4,5,4.8,5,5,5,5,5.0
+RESP-1281,49,46-55,Non-Binary / Prefer not to say,Master's,Information Technology,3.8,Enterprise (1000+),Never,3,2,3,2,2.5,3,4,3,4,3.5,3,3,4,3,3.25,3,3,4,3,3.25,4,4,3,4,4,3.8,3,4,3,2,3.0
+RESP-1282,33,26-35,Male,Bachelor's,Management Consulting,14.9,Large (250-999),Daily,4,3,5,4,4.0,4,4,3,4,3.75,3,3,2,2,2.5,4,3,4,3,3.5,4,5,4,4,5,4.4,4,3,3,3,3.25
+RESP-1283,23,26-35,Female,Master's,Information Technology,10.9,Large (250-999),Weekly,3,4,4,3,3.5,3,3,3,2,2.75,4,5,4,4,4.25,3,3,3,3,3.0,3,3,2,4,4,3.2,3,3,4,4,3.5
+RESP-1284,25,18-25,Male,Bachelor's,Management Consulting,26.1,Large (250-999),Weekly,3,3,4,2,3.0,4,3,4,4,3.75,3,3,3,4,3.25,2,3,3,2,2.5,4,4,4,3,3,3.6,3,3,3,3,3.0
+RESP-1285,33,26-35,Male,Master's,Information Technology,9.4,Enterprise (1000+),Weekly,4,5,3,4,4.0,4,4,4,4,4.0,3,4,4,4,3.75,4,3,3,3,3.25,5,3,3,3,3,3.4,5,3,4,3,3.75
+RESP-1286,17,18-25,Male,Bachelor's,Management Consulting,4.0,Large (250-999),Daily,5,5,5,5,5.0,4,4,4,3,3.75,1,2,2,1,1.5,4,5,4,4,4.25,5,5,5,5,5,5.0,5,5,5,5,5.0
+RESP-1287,29,26-35,Female,Master's,Healthcare & Biotech,6.4,Large (250-999),Rarely,2,3,3,2,2.5,3,2,3,2,2.5,3,3,3,2,2.75,2,1,1,2,1.5,2,3,3,3,3,2.8,3,2,3,3,2.75
+RESP-1288,29,26-35,Male,Master's,Education & EdTech,7.5,Enterprise (1000+),Daily,3,3,4,4,3.5,4,4,5,4,4.25,2,2,3,2,2.25,2,3,3,3,2.75,3,3,3,3,3,3.0,5,4,4,4,4.25
+RESP-1289,26,26-35,Male,Master's,Management Consulting,1.5,Large (250-999),Weekly,4,4,5,4,4.25,5,5,4,5,4.75,2,1,2,1,1.5,4,4,3,5,4.0,4,5,5,5,5,4.8,5,5,4,4,4.5
+RESP-1290,28,26-35,Male,Master's,Information Technology,5.7,Medium (50-249),Daily,4,4,4,4,4.0,5,4,4,3,4.0,3,3,2,4,3.0,3,3,3,3,3.0,5,3,5,5,3,4.2,4,4,3,4,3.75
+RESP-1291,20,18-25,Female,Master's,Management Consulting,8.4,Large (250-999),Daily,4,5,3,4,4.0,4,4,4,5,4.25,2,2,2,2,2.0,3,3,4,4,3.5,4,5,3,4,4,4.0,5,5,5,5,5.0
+RESP-1292,27,18-25,Female,Master's,Financial Services,2.1,Medium (50-249),Weekly,4,3,3,2,3.0,4,4,3,3,3.5,4,4,3,3,3.5,2,3,3,2,2.5,3,3,3,3,3,3.0,3,3,3,3,3.0
+RESP-1293,42,36-45,Female,Bachelor's,Financial Services,10.1,Medium (50-249),Daily,4,5,3,4,4.0,4,4,4,4,4.0,1,1,2,1,1.25,3,4,4,4,3.75,4,5,3,4,4,4.0,4,5,4,4,4.25
+RESP-1294,33,26-35,Male,Master's,Information Technology,6.3,Large (250-999),Daily,4,4,3,3,3.5,4,4,4,4,4.0,4,4,4,4,4.0,3,4,3,3,3.25,3,4,4,4,3,3.6,4,4,3,3,3.5
+RESP-1295,24,18-25,Female,Bachelor's,Financial Services,19.2,Enterprise (1000+),Daily,2,2,3,2,2.25,3,3,3,3,3.0,2,1,1,2,1.5,2,2,1,2,1.75,3,3,3,3,2,2.8,2,3,2,2,2.25
+RESP-1296,27,26-35,Male,Bachelor's,Information Technology,1.3,Enterprise (1000+),Daily,5,5,5,5,5.0,4,4,5,5,4.5,3,3,4,3,3.25,3,4,3,3,3.25,4,4,3,3,4,3.6,4,5,5,5,4.75
+RESP-1297,38,36-45,Male,Bachelor's,Financial Services,2.8,Medium (50-249),Weekly,4,5,5,4,4.5,2,3,3,2,2.5,4,4,4,4,4.0,3,3,3,3,3.0,3,4,5,4,3,3.8,3,4,4,4,3.75
+RESP-1298,31,26-35,Female,Bachelor's,Financial Services,6.5,Medium (50-249),Monthly,4,3,3,4,3.5,3,3,3,3,3.0,1,2,2,2,1.75,3,4,3,3,3.25,4,4,4,4,4,4.0,4,4,4,3,3.75
+RESP-1299,36,36-45,Male,Master's,Education & EdTech,3.1,Medium (50-249),Daily,5,4,4,4,4.25,4,3,3,4,3.5,4,3,3,4,3.5,3,4,3,3,3.25,4,4,4,5,4,4.2,3,4,4,3,3.5
+RESP-1300,24,18-25,Female,Master's,Education & EdTech,8.5,Enterprise (1000+),Daily,4,4,4,5,4.25,4,4,4,4,4.0,2,2,1,1,1.5,4,5,4,4,4.25,5,5,5,5,5,5.0,5,5,5,4,4.75
+RESP-1301,22,18-25,Male,Master's,Financial Services,9.5,Enterprise (1000+),Daily,4,5,4,4,4.25,3,3,4,3,3.25,4,5,4,4,4.25,2,2,2,2,2.0,3,3,3,3,4,3.2,3,3,4,4,3.5
+RESP-1302,29,26-35,Female,Master's,Information Technology,1.6,Large (250-999),Daily,5,3,4,4,4.0,4,5,4,4,4.25,3,3,2,3,2.75,4,4,3,3,3.5,3,4,3,4,5,3.8,3,3,4,4,3.5
+RESP-1303,31,26-35,Male,Bachelor's,Information Technology,5.3,Enterprise (1000+),Weekly,4,4,3,4,3.75,4,5,4,4,4.25,1,2,3,2,2.0,2,3,3,3,2.75,4,3,3,3,4,3.4,4,5,4,3,4.0
+RESP-1304,41,36-45,Male,Bachelor's,Information Technology,5.3,Large (250-999),Weekly,4,4,5,5,4.5,3,3,3,3,3.0,2,2,2,3,2.25,3,4,3,3,3.25,3,4,4,3,4,3.6,3,3,3,4,3.25
+RESP-1305,39,36-45,Male,Bachelor's,Information Technology,3.8,Large (250-999),Daily,5,3,4,4,4.0,3,2,2,3,2.5,3,3,3,3,3.0,3,3,3,2,2.75,3,4,4,3,4,3.6,4,3,4,3,3.5
+RESP-1306,60,56+,Male,Bachelor's,Information Technology,17.2,Small (<50),Daily,4,4,5,4,4.25,4,4,2,4,3.5,2,2,2,1,1.75,2,3,2,3,2.5,3,4,4,4,3,3.6,3,3,3,4,3.25
+RESP-1307,27,26-35,Male,Bachelor's,Information Technology,11.5,Medium (50-249),Daily,3,3,3,2,2.75,3,4,4,4,3.75,1,2,2,1,1.5,3,3,3,4,3.25,3,3,3,3,2,2.8,4,4,3,4,3.75
+RESP-1308,31,26-35,Male,Bachelor's,Management Consulting,8.2,Large (250-999),Monthly,5,5,3,4,4.25,4,4,3,4,3.75,3,2,3,3,2.75,3,3,3,3,3.0,3,3,3,4,3,3.2,4,3,3,3,3.25
+RESP-1309,41,36-45,Male,Master's,Financial Services,8.5,Large (250-999),Never,3,4,2,3,3.0,3,3,3,3,3.0,1,1,1,2,1.25,4,3,4,3,3.5,3,2,3,4,3,3.0,3,3,3,3,3.0
+RESP-1310,29,26-35,Male,Master's,Information Technology,4.7,Medium (50-249),Daily,3,4,3,4,3.5,2,2,2,2,2.0,4,4,4,4,4.0,2,3,3,3,2.75,4,4,4,3,5,4.0,3,3,3,2,2.75
+RESP-1311,30,26-35,Female,Professional Certification,Financial Services,16.2,Enterprise (1000+),Daily,3,3,3,3,3.0,2,3,3,4,3.0,2,2,3,3,2.5,2,4,2,3,2.75,3,2,3,3,4,3.0,3,2,2,3,2.5
+RESP-1312,19,18-25,Male,Professional Certification,Information Technology,8.1,Small (<50),Monthly,2,3,2,4,2.75,4,3,3,3,3.25,3,4,3,4,3.5,3,3,3,3,3.0,3,3,3,3,5,3.4,4,4,4,4,4.0
+RESP-1313,25,18-25,Male,Master's,Financial Services,8.8,Medium (50-249),Rarely,5,5,5,5,5.0,4,4,5,5,4.5,2,3,3,3,2.75,4,4,4,3,3.75,5,5,5,5,5,5.0,5,5,5,5,5.0
+RESP-1314,49,46-55,Male,Bachelor's,Healthcare & Biotech,12.9,Large (250-999),Daily,5,5,5,5,5.0,3,4,3,3,3.25,3,2,2,2,2.25,3,3,3,4,3.25,3,4,4,4,5,4.0,4,4,3,5,4.0
+RESP-1315,38,36-45,Female,Master's,Financial Services,2.9,Large (250-999),Daily,5,5,5,5,5.0,4,5,4,5,4.5,2,3,2,2,2.25,4,4,3,4,3.75,5,5,5,5,5,5.0,5,5,5,5,5.0
+RESP-1316,42,36-45,Male,Master's,Financial Services,10.9,Large (250-999),Daily,2,3,4,3,3.0,2,2,2,3,2.25,2,3,4,3,3.0,2,1,2,1,1.5,3,3,2,3,3,2.8,3,3,3,2,2.75
+RESP-1317,28,26-35,Female,Bachelor's,Management Consulting,2.3,Medium (50-249),Weekly,5,4,4,3,4.0,5,5,5,5,5.0,2,3,3,2,2.5,4,4,4,4,4.0,4,4,4,4,4,4.0,4,4,4,5,4.25
+RESP-1318,26,26-35,Male,Bachelor's,Management Consulting,3.5,Small (<50),Daily,3,2,3,3,2.75,4,3,3,4,3.5,3,4,4,4,3.75,3,3,4,3,3.25,3,3,4,4,2,3.2,3,4,3,2,3.0
+RESP-1319,26,26-35,Female,Master's,Healthcare & Biotech,3.5,Large (250-999),Daily,4,3,3,2,3.0,5,5,5,4,4.75,4,4,3,4,3.75,4,4,3,4,3.75,4,2,3,3,3,3.0,3,3,3,4,3.25
+RESP-1320,31,26-35,Male,Bachelor's,Financial Services,24.0,Large (250-999),Weekly,3,2,4,3,3.0,3,5,4,3,3.75,4,3,3,4,3.5,3,3,3,2,2.75,2,3,3,3,2,2.6,1,2,2,2,1.75
+RESP-1321,26,26-35,Non-Binary / Prefer not to say,Master's,Healthcare & Biotech,12.7,Small (<50),Daily,4,5,5,5,4.75,4,5,4,5,4.5,2,1,2,3,2.0,3,4,4,4,3.75,5,5,5,4,5,4.8,5,4,4,4,4.25
+RESP-1322,44,36-45,Female,Master's,Information Technology,8.2,Large (250-999),Monthly,4,4,4,3,3.75,3,3,4,4,3.5,1,2,1,1,1.25,3,4,3,3,3.25,4,3,3,3,5,3.6,2,4,4,4,3.5
+RESP-1323,34,36-45,Non-Binary / Prefer not to say,Bachelor's,Financial Services,8.8,Medium (50-249),Daily,4,4,4,4,4.0,3,3,3,3,3.0,2,2,2,2,2.0,2,2,2,3,2.25,3,3,3,3,3,3.0,3,4,4,5,4.0
+RESP-1324,34,26-35,Female,Bachelor's,Information Technology,6.0,Large (250-999),Daily,4,5,4,5,4.5,4,5,5,4,4.5,3,3,2,2,2.5,4,3,4,3,3.5,4,4,4,4,5,4.2,4,4,3,3,3.5
+RESP-1325,50,46-55,Male,Bachelor's,Financial Services,18.6,Enterprise (1000+),Weekly,5,5,5,5,5.0,4,3,4,3,3.5,3,3,4,3,3.25,3,3,2,2,2.5,4,4,4,4,4,4.0,4,4,4,4,4.0
+RESP-1326,39,36-45,Male,Bachelor's,Financial Services,5.1,Small (<50),Daily,2,3,3,3,2.75,4,4,4,3,3.75,1,1,1,1,1.0,5,3,4,4,4.0,4,4,5,5,3,4.2,3,4,3,4,3.5
+RESP-1327,28,26-35,Male,Bachelor's,Information Technology,3.9,Small (<50),Never,4,5,5,5,4.75,5,5,5,5,5.0,3,2,3,3,2.75,4,4,4,4,4.0,4,5,5,5,5,4.8,4,3,4,4,3.75
+RESP-1328,40,36-45,Male,Master's,Management Consulting,2.1,Large (250-999),Weekly,5,4,4,5,4.5,3,3,3,4,3.25,3,3,3,3,3.0,3,3,3,3,3.0,2,4,4,3,3,3.2,3,3,4,4,3.5
+RESP-1329,29,26-35,Male,Bachelor's,Management Consulting,10.3,Large (250-999),Daily,3,4,2,4,3.25,4,4,4,4,4.0,3,2,2,3,2.5,3,4,4,4,3.75,4,4,4,4,4,4.0,3,3,3,3,3.0
+RESP-1330,32,26-35,Female,Master's,Healthcare & Biotech,9.0,Large (250-999),Weekly,4,4,4,5,4.25,4,3,3,3,3.25,4,4,5,3,4.0,3,2,3,3,2.75,4,4,2,5,3,3.6,3,3,3,3,3.0
+RESP-1331,30,26-35,Female,Bachelor's,Financial Services,3.9,Enterprise (1000+),Daily,3,4,4,4,3.75,3,4,4,3,3.5,3,3,3,3,3.0,3,3,3,3,3.0,3,4,4,3,4,3.6,3,3,3,3,3.0
+RESP-1332,40,36-45,Male,Professional Certification,Management Consulting,1.2,Enterprise (1000+),Rarely,4,3,4,4,3.75,4,4,4,3,3.75,4,4,4,4,4.0,3,3,3,3,3.0,4,3,3,4,3,3.4,3,3,3,2,2.75
+RESP-1333,22,18-25,Male,Bachelor's,Information Technology,12.0,Enterprise (1000+),Daily,3,3,3,2,2.75,2,2,2,3,2.25,3,3,2,2,2.5,3,3,3,2,2.75,4,4,3,3,3,3.4,3,3,3,3,3.0
+RESP-1334,22,18-25,Male,Bachelor's,Education & EdTech,1.1,Medium (50-249),Weekly,3,3,3,3,3.0,3,4,4,3,3.5,3,3,4,3,3.25,3,2,3,3,2.75,4,3,3,4,3,3.4,3,3,3,3,3.0
+RESP-1335,23,18-25,Male,Doctorate,Information Technology,8.3,Medium (50-249),Daily,5,5,5,5,5.0,5,5,5,4,4.75,4,4,4,4,4.0,4,4,5,4,4.25,4,5,5,5,4,4.6,3,3,4,3,3.25
+RESP-1336,18,18-25,Female,Master's,Education & EdTech,22.1,Medium (50-249),Weekly,4,4,3,3,3.5,5,5,4,4,4.5,3,4,4,4,3.75,3,3,4,3,3.25,4,3,5,4,4,4.0,5,4,3,4,4.0
+RESP-1337,46,46-55,Male,Bachelor's,Information Technology,4.5,Small (<50),Monthly,4,5,4,4,4.25,4,3,4,3,3.5,2,2,1,2,1.75,4,4,4,3,3.75,3,5,4,5,5,4.4,4,3,4,3,3.5
+RESP-1338,41,36-45,Female,Master's,Management Consulting,2.6,Large (250-999),Monthly,2,3,3,2,2.5,4,4,5,4,4.25,2,2,2,2,2.0,3,2,3,4,3.0,5,5,4,5,4,4.6,3,4,4,4,3.75
+RESP-1339,30,26-35,Male,Bachelor's,Management Consulting,8.3,Medium (50-249),Daily,3,2,3,3,2.75,3,4,2,4,3.25,2,3,2,2,2.25,3,2,3,3,2.75,3,3,3,3,2,2.8,4,4,3,5,4.0
+RESP-1340,22,18-25,Female,Bachelor's,Information Technology,11.2,Enterprise (1000+),Daily,5,4,4,5,4.5,5,5,5,5,5.0,3,3,3,4,3.25,4,4,4,4,4.0,4,4,5,5,5,4.6,4,4,3,3,3.5
+RESP-1341,30,26-35,Female,Bachelor's,Financial Services,5.7,Large (250-999),Monthly,3,2,3,3,2.75,2,4,3,4,3.25,4,3,3,3,3.25,1,2,2,3,2.0,3,4,3,3,3,3.2,3,2,3,4,3.0
+RESP-1342,30,26-35,Female,Bachelor's,Management Consulting,21.5,Large (250-999),Rarely,4,4,3,4,3.75,4,4,4,4,4.0,2,1,2,2,1.75,3,3,3,2,2.75,5,4,3,4,3,3.8,2,3,3,3,2.75
+RESP-1343,28,26-35,Female,Master's,Financial Services,1.3,Medium (50-249),Daily,4,3,4,3,3.5,4,5,5,4,4.5,3,2,3,3,2.75,3,4,3,3,3.25,5,5,4,4,5,4.6,4,4,4,4,4.0
+RESP-1344,28,26-35,Male,Bachelor's,Management Consulting,5.2,Small (<50),Weekly,4,4,2,3,3.25,3,3,3,4,3.25,1,1,2,1,1.25,5,5,4,4,4.5,5,5,5,5,4,4.8,3,4,4,3,3.5
+RESP-1345,30,26-35,Female,Bachelor's,Financial Services,8.6,Small (<50),Daily,3,4,3,3,3.25,5,5,5,5,5.0,5,4,4,4,4.25,3,4,3,3,3.25,5,4,5,5,4,4.6,3,4,4,4,3.75
+RESP-1346,37,36-45,Female,Master's,Information Technology,12.9,Medium (50-249),Monthly,5,4,4,4,4.25,2,2,2,3,2.25,2,2,2,2,2.0,3,2,2,2,2.25,3,3,3,3,3,3.0,3,4,4,4,3.75
+RESP-1347,41,36-45,Female,Master's,Information Technology,2.2,Small (<50),Daily,5,5,5,4,4.75,5,5,5,5,5.0,3,3,2,3,2.75,4,5,5,3,4.25,4,4,4,5,5,4.4,4,4,4,4,4.0
+RESP-1348,18,18-25,Female,Bachelor's,Information Technology,10.7,Large (250-999),Daily,4,4,4,4,4.0,3,4,4,3,3.5,2,3,2,3,2.5,4,3,4,4,3.75,4,3,3,4,2,3.2,3,3,4,3,3.25
+RESP-1349,32,26-35,Female,Master's,Education & EdTech,5.8,Enterprise (1000+),Weekly,4,4,3,3,3.5,3,4,4,4,3.75,4,4,3,4,3.75,4,4,3,3,3.5,3,3,3,4,4,3.4,3,4,3,4,3.5
+RESP-1350,41,36-45,Female,Bachelor's,Financial Services,4.0,Enterprise (1000+),Daily,5,3,4,4,4.0,3,3,2,2,2.5,1,1,1,1,1.0,3,3,2,4,3.0,3,2,3,2,3,2.6,3,4,3,3,3.25
+RESP-1351,30,26-35,Male,Master's,Financial Services,1.8,Large (250-999),Weekly,4,4,4,5,4.25,4,3,4,3,3.5,3,3,3,2,2.75,3,2,2,2,2.25,4,4,5,4,4,4.2,4,4,5,3,4.0
+RESP-1352,52,46-55,Male,Master's,Financial Services,13.0,Medium (50-249),Weekly,4,5,5,4,4.5,4,3,3,2,3.0,2,3,3,2,2.5,4,4,3,3,3.5,4,5,4,3,3,3.8,4,5,2,4,3.75
+RESP-1353,44,36-45,Male,Professional Certification,Financial Services,2.0,Enterprise (1000+),Daily,2,3,2,3,2.5,3,2,3,4,3.0,2,2,2,3,2.25,2,2,3,1,2.0,4,2,3,3,3,3.0,3,2,3,3,2.75
+RESP-1354,32,26-35,Female,Bachelor's,Management Consulting,3.2,Enterprise (1000+),Daily,4,4,4,4,4.0,4,3,3,3,3.25,4,4,5,4,4.25,3,2,3,3,2.75,4,3,3,2,3,3.0,3,3,3,3,3.0
+RESP-1355,18,18-25,Female,Bachelor's,Management Consulting,3.1,Small (<50),Weekly,3,2,2,3,2.5,4,5,5,5,4.75,2,2,2,2,2.0,3,3,3,3,3.0,3,4,3,4,4,3.6,3,4,2,2,2.75
+RESP-1356,36,36-45,Male,Bachelor's,Financial Services,13.3,Large (250-999),Daily,4,4,4,4,4.0,4,4,4,3,3.75,4,3,3,3,3.25,3,3,3,3,3.0,4,4,4,3,4,3.8,4,4,4,4,4.0
+RESP-1357,21,18-25,Male,Bachelor's,Education & EdTech,7.7,Medium (50-249),Weekly,5,5,5,5,5.0,4,4,3,4,3.75,3,3,4,3,3.25,3,4,4,5,4.0,4,5,5,5,5,4.8,4,4,5,5,4.5
+RESP-1358,30,26-35,Female,Bachelor's,Education & EdTech,10.6,Enterprise (1000+),Monthly,2,2,4,4,3.0,3,3,3,3,3.0,4,4,3,3,3.5,2,1,3,2,2.0,4,3,4,3,2,3.2,3,2,3,2,2.5
+RESP-1359,51,46-55,Female,Doctorate,Financial Services,2.7,Enterprise (1000+),Monthly,3,3,4,4,3.5,3,3,3,3,3.0,3,2,2,2,2.25,3,3,2,3,2.75,3,3,3,4,3,3.2,4,4,3,3,3.5
+RESP-1360,28,26-35,Female,Bachelor's,Management Consulting,6.9,Small (<50),Daily,5,5,5,4,4.75,5,5,5,4,4.75,2,1,2,2,1.75,4,4,5,3,4.0,5,5,5,5,5,5.0,5,5,4,5,4.75
+RESP-1361,30,26-35,Female,Bachelor's,Information Technology,6.1,Enterprise (1000+),Daily,2,3,2,3,2.5,3,3,3,3,3.0,4,3,5,4,4.0,2,2,3,2,2.25,2,3,2,3,3,2.6,2,3,2,2,2.25
+RESP-1362,38,36-45,Female,Master's,Information Technology,11.7,Large (250-999),Daily,4,4,4,3,3.75,5,5,5,5,5.0,4,3,4,3,3.5,3,4,3,3,3.25,5,3,4,5,4,4.2,2,3,3,3,2.75
+RESP-1363,28,26-35,Male,Bachelor's,Education & EdTech,15.2,Enterprise (1000+),Daily,4,4,5,4,4.25,3,4,4,4,3.75,2,1,2,2,1.75,5,4,3,4,4.0,3,4,4,4,4,3.8,4,4,4,4,4.0
+RESP-1364,26,26-35,Male,Master's,Financial Services,1.1,Medium (50-249),Daily,4,3,3,4,3.5,4,5,4,3,4.0,2,2,2,2,2.0,3,4,3,4,3.5,4,4,4,4,4,4.0,4,4,3,3,3.5
+RESP-1365,47,46-55,Male,Bachelor's,Education & EdTech,7.7,Enterprise (1000+),Weekly,3,4,4,4,3.75,5,5,4,4,4.5,3,3,4,2,3.0,3,4,4,4,3.75,4,4,3,4,5,4.0,4,5,5,4,4.5
+RESP-1366,26,26-35,Male,Bachelor's,Management Consulting,1.3,Small (<50),Daily,4,4,5,5,4.5,5,5,4,5,4.75,3,4,4,4,3.75,3,4,4,3,3.5,4,4,4,3,4,3.8,4,3,4,4,3.75
+RESP-1367,47,46-55,Male,Bachelor's,Information Technology,5.8,Medium (50-249),Daily,4,4,5,3,4.0,3,3,4,3,3.25,2,2,2,2,2.0,3,3,2,3,2.75,4,4,3,3,4,3.6,3,3,4,3,3.25
+RESP-1368,52,46-55,Male,Bachelor's,Management Consulting,3.0,Small (<50),Daily,4,4,4,4,4.0,3,3,3,3,3.0,1,1,1,1,1.0,4,4,4,4,4.0,4,5,4,4,4,4.2,4,4,3,4,3.75
+RESP-1369,27,26-35,Male,Doctorate,Financial Services,3.2,Enterprise (1000+),Weekly,4,3,3,3,3.25,4,4,4,3,3.75,3,3,3,3,3.0,4,3,3,3,3.25,5,4,5,4,5,4.6,4,4,4,4,4.0
+RESP-1370,29,18-25,Female,Bachelor's,Financial Services,3.6,Enterprise (1000+),Daily,3,4,4,4,3.75,3,4,5,3,3.75,1,1,1,2,1.25,4,4,3,4,3.75,4,4,4,4,4,4.0,4,3,4,4,3.75
+RESP-1371,24,18-25,Female,Master's,Healthcare & Biotech,6.8,Enterprise (1000+),Weekly,4,3,4,3,3.5,5,4,4,5,4.5,1,1,1,1,1.0,4,4,4,2,3.5,4,4,4,4,4,4.0,4,4,4,4,4.0
+RESP-1372,23,18-25,Female,Bachelor's,Management Consulting,3.4,Enterprise (1000+),Daily,4,5,3,4,4.0,3,4,4,3,3.5,1,1,1,1,1.0,3,4,4,4,3.75,4,5,4,4,4,4.2,5,4,5,5,4.75
+RESP-1373,20,18-25,Male,Bachelor's,Information Technology,8.9,Small (<50),Monthly,3,2,3,3,2.75,5,4,3,4,4.0,3,3,3,3,3.0,2,3,3,3,2.75,5,4,4,3,4,4.0,3,4,4,3,3.5
+RESP-1374,41,36-45,Male,Doctorate,Financial Services,4.1,Medium (50-249),Monthly,4,4,4,3,3.75,5,5,5,5,5.0,2,3,3,2,2.5,4,4,4,4,4.0,4,4,4,4,4,4.0,5,4,3,4,4.0
+RESP-1375,21,18-25,Female,Bachelor's,Healthcare & Biotech,1.4,Small (<50),Daily,3,3,3,2,2.75,5,4,4,4,4.25,3,2,3,3,2.75,3,3,3,4,3.25,2,2,3,2,3,2.4,3,3,4,3,3.25
+RESP-1376,30,26-35,Male,Master's,Healthcare & Biotech,10.2,Medium (50-249),Daily,3,3,4,4,3.5,4,4,4,4,4.0,4,4,3,5,4.0,3,3,2,3,2.75,4,4,4,4,4,4.0,4,4,4,4,4.0
+RESP-1377,46,36-45,Female,Professional Certification,Healthcare & Biotech,3.0,Medium (50-249),Daily,3,3,4,4,3.5,3,2,2,3,2.5,3,4,3,3,3.25,3,2,3,2,2.5,4,3,4,4,4,3.8,3,3,4,3,3.25
+RESP-1378,22,18-25,Male,Master's,Information Technology,4.4,Medium (50-249),Daily,4,3,3,3,3.25,1,1,1,2,1.25,4,4,4,4,4.0,3,2,2,1,2.0,3,2,2,2,3,2.4,2,2,2,3,2.25
+RESP-1379,42,36-45,Female,Professional Certification,Information Technology,7.9,Medium (50-249),Weekly,4,4,3,4,3.75,3,4,4,3,3.5,2,1,2,2,1.75,4,4,4,3,3.75,4,3,3,5,5,4.0,4,4,4,4,4.0
+RESP-1380,28,26-35,Female,Bachelor's,Information Technology,3.4,Small (<50),Monthly,4,3,5,5,4.25,4,3,4,4,3.75,3,3,3,3,3.0,3,4,2,4,3.25,4,4,4,5,4,4.2,3,4,4,4,3.75
+RESP-1381,22,18-25,Male,Bachelor's,Education & EdTech,1.3,Small (<50),Weekly,5,5,4,4,4.5,3,3,3,3,3.0,1,1,1,1,1.0,3,4,3,4,3.5,5,5,3,4,5,4.4,4,4,4,4,4.0
+RESP-1382,44,36-45,Female,Bachelor's,Information Technology,3.8,Small (<50),Monthly,4,3,3,3,3.25,3,4,4,4,3.75,2,3,3,2,2.5,4,3,4,3,3.5,4,4,4,4,4,4.0,4,4,4,4,4.0
+RESP-1383,38,36-45,Female,Master's,Information Technology,18.3,Enterprise (1000+),Daily,4,4,5,4,4.25,3,4,4,4,3.75,2,2,3,1,2.0,5,5,4,4,4.5,5,4,4,4,5,4.4,4,4,5,5,4.5
+RESP-1384,54,46-55,Female,Professional Certification,Management Consulting,7.2,Large (250-999),Daily,4,5,4,4,4.25,5,5,5,4,4.75,3,3,3,3,3.0,3,3,4,3,3.25,4,4,4,5,5,4.4,4,4,4,3,3.75
+RESP-1385,41,36-45,Male,Bachelor's,Information Technology,7.7,Enterprise (1000+),Weekly,4,4,4,4,4.0,4,4,4,4,4.0,2,2,3,3,2.5,4,3,4,4,3.75,3,3,4,4,4,3.6,3,4,3,3,3.25
+RESP-1386,38,36-45,Male,Master's,Management Consulting,7.0,Medium (50-249),Daily,3,4,3,3,3.25,3,3,4,2,3.0,2,2,4,3,2.75,3,3,2,2,2.5,3,4,4,4,3,3.6,4,2,3,3,3.0
+RESP-1387,31,26-35,Female,Bachelor's,Healthcare & Biotech,2.3,Medium (50-249),Weekly,4,4,4,4,4.0,5,4,5,5,4.75,3,3,2,4,3.0,3,2,3,3,2.75,2,3,3,4,4,3.2,4,4,3,3,3.5
+RESP-1388,32,26-35,Male,Master's,Education & EdTech,4.3,Large (250-999),Daily,5,3,4,4,4.0,3,3,4,4,3.5,5,5,4,4,4.5,3,3,3,3,3.0,4,3,3,3,4,3.4,3,3,2,3,2.75
+RESP-1389,41,36-45,Male,Bachelor's,Information Technology,9.3,Medium (50-249),Daily,3,4,4,4,3.75,4,4,4,4,4.0,3,2,3,2,2.5,4,3,4,4,3.75,4,4,4,4,4,4.0,4,4,4,3,3.75
+RESP-1390,36,36-45,Female,Professional Certification,Information Technology,1.6,Medium (50-249),Never,3,2,1,2,2.0,4,4,2,3,3.25,1,2,2,2,1.75,4,5,4,4,4.25,3,4,3,4,4,3.6,3,3,4,3,3.25
+RESP-1391,56,56+,Female,Master's,Healthcare & Biotech,3.0,Medium (50-249),Daily,4,4,4,4,4.0,3,4,4,3,3.5,3,3,3,3,3.0,3,2,3,3,2.75,4,4,4,4,3,3.8,3,3,4,4,3.5
+RESP-1392,29,26-35,Female,Bachelor's,Education & EdTech,2.9,Small (<50),Never,5,5,5,5,5.0,4,4,4,4,4.0,1,3,2,2,2.0,4,4,4,3,3.75,4,4,4,4,5,4.2,4,4,4,4,4.0
+RESP-1393,29,26-35,Female,Bachelor's,Education & EdTech,4.4,Medium (50-249),Never,4,4,4,3,3.75,5,3,4,3,3.75,5,5,4,4,4.5,3,3,4,3,3.25,4,3,4,3,3,3.4,4,3,4,3,3.5
+RESP-1394,41,36-45,Male,Bachelor's,Information Technology,24.6,Medium (50-249),Monthly,3,3,3,4,3.25,3,4,4,4,3.75,2,2,2,3,2.25,2,2,3,2,2.25,4,3,3,3,3,3.2,4,3,3,2,3.0
+RESP-1395,30,26-35,Female,Bachelor's,Education & EdTech,1.4,Large (250-999),Weekly,4,4,4,4,4.0,4,4,3,4,3.75,3,1,3,2,2.25,3,3,4,3,3.25,4,2,4,3,4,3.4,3,3,2,3,2.75
+RESP-1396,46,46-55,Male,Bachelor's,Education & EdTech,5.4,Small (<50),Weekly,3,3,4,4,3.5,3,3,2,2,2.5,1,3,2,2,2.0,3,3,2,4,3.0,2,4,3,3,3,3.0,2,3,2,3,2.5
+RESP-1397,50,46-55,Male,Doctorate,Healthcare & Biotech,2.2,Medium (50-249),Monthly,4,4,5,4,4.25,3,4,3,2,3.0,4,4,3,4,3.75,3,3,4,3,3.25,4,4,4,4,4,4.0,4,4,4,4,4.0
+RESP-1398,31,26-35,Female,Master's,Education & EdTech,22.2,Enterprise (1000+),Daily,3,3,3,4,3.25,5,4,5,5,4.75,2,3,2,3,2.5,3,3,3,4,3.25,4,3,4,2,4,3.4,3,4,3,2,3.0
+RESP-1399,41,36-45,Male,Master's,Education & EdTech,1.7,Small (<50),Weekly,4,5,4,5,4.5,3,3,3,4,3.25,2,1,2,2,1.75,3,4,4,3,3.5,4,4,4,4,4,4.0,4,5,4,4,4.25
+RESP-1400,42,36-45,Female,Bachelor's,Healthcare & Biotech,4.1,Medium (50-249),Weekly,4,4,4,5,4.25,3,3,3,4,3.25,5,5,4,4,4.5,3,2,4,3,3.0,5,4,3,4,4,4.0,3,4,4,4,3.75
+RESP-1401,25,18-25,Male,Doctorate,Information Technology,9.0,Enterprise (1000+),Daily,4,4,4,3,3.75,5,5,4,4,4.5,2,2,2,2,2.0,3,3,3,3,3.0,3,4,4,4,4,3.8,4,4,4,4,4.0
+RESP-1402,51,46-55,Male,Master's,Financial Services,8.3,Small (<50),Weekly,4,4,4,4,4.0,3,3,3,3,3.0,2,3,2,3,2.5,2,4,3,4,3.25,3,3,5,4,4,3.8,4,4,3,3,3.5
+RESP-1403,29,26-35,Male,Bachelor's,Information Technology,4.3,Small (<50),Daily,5,4,5,4,4.5,3,2,3,3,2.75,4,4,2,4,3.5,3,3,4,2,3.0,5,4,4,4,4,4.2,3,3,4,4,3.5
+RESP-1404,35,36-45,Male,Master's,Financial Services,3.6,Medium (50-249),Weekly,4,4,4,5,4.25,4,4,4,4,4.0,1,1,1,1,1.0,3,4,3,4,3.5,4,5,4,4,4,4.2,4,4,4,4,4.0
+RESP-1405,31,26-35,Female,Master's,Financial Services,4.0,Medium (50-249),Monthly,3,3,3,3,3.0,3,4,3,4,3.5,3,2,2,2,2.25,2,2,4,3,2.75,3,2,3,3,3,2.8,2,3,2,3,2.5
+RESP-1406,50,46-55,Male,Bachelor's,Information Technology,2.8,Large (250-999),Daily,4,5,4,4,4.25,3,2,2,3,2.5,1,2,3,1,1.75,3,3,3,4,3.25,4,5,4,4,4,4.2,3,4,4,3,3.5
+RESP-1407,30,26-35,Male,Bachelor's,Information Technology,2.4,Enterprise (1000+),Rarely,4,4,3,4,3.75,3,4,4,3,3.5,3,4,2,2,2.75,2,3,3,2,2.5,3,4,3,3,3,3.2,3,4,3,3,3.25
+RESP-1408,19,18-25,Male,Bachelor's,Information Technology,5.0,Small (<50),Weekly,4,4,4,4,4.0,4,4,5,4,4.25,2,2,1,2,1.75,4,5,5,4,4.5,5,5,4,4,4,4.4,5,4,4,4,4.25
+RESP-1409,47,46-55,Male,Bachelor's,Education & EdTech,2.9,Large (250-999),Monthly,4,4,4,5,4.25,4,4,3,4,3.75,4,3,3,2,3.0,3,2,2,3,2.5,3,4,3,3,3,3.2,3,3,4,3,3.25
+RESP-1410,25,18-25,Male,Professional Certification,Management Consulting,3.0,Medium (50-249),Weekly,3,3,2,4,3.0,4,4,5,4,4.25,4,4,3,3,3.5,2,3,2,1,2.0,4,4,3,5,4,4.0,2,3,3,2,2.5
+RESP-1411,29,26-35,Female,Master's,Information Technology,7.4,Small (<50),Monthly,4,4,4,5,4.25,5,5,5,5,5.0,3,3,3,3,3.0,4,4,4,3,3.75,5,4,4,5,4,4.4,5,4,5,4,4.5
+RESP-1412,51,46-55,Female,Master's,Management Consulting,21.8,Large (250-999),Daily,3,3,3,4,3.25,3,3,3,4,3.25,3,3,2,3,2.75,3,3,3,3,3.0,3,4,3,3,3,3.2,4,4,4,3,3.75
+RESP-1413,50,46-55,Male,Bachelor's,Financial Services,6.6,Medium (50-249),Monthly,3,3,3,2,2.75,3,4,4,3,3.5,2,1,2,2,1.75,3,3,2,3,2.75,3,3,3,3,3,3.0,3,4,3,4,3.5
+RESP-1414,30,26-35,Female,Bachelor's,Information Technology,1.5,Medium (50-249),Daily,4,3,3,4,3.5,3,3,3,3,3.0,2,2,2,2,2.0,3,2,3,4,3.0,4,2,4,4,3,3.4,3,3,4,4,3.5
+RESP-1415,42,36-45,Male,Master's,Information Technology,1.5,Small (<50),Monthly,4,4,4,4,4.0,2,3,3,3,2.75,4,4,5,4,4.25,3,2,2,3,2.5,4,3,3,4,3,3.4,3,3,2,2,2.5
+RESP-1416,28,26-35,Male,Master's,Financial Services,19.1,Medium (50-249),Never,5,4,5,5,4.75,4,3,3,4,3.5,2,2,2,1,1.75,3,4,4,3,3.5,5,4,5,4,3,4.2,5,4,4,5,4.5
+RESP-1417,30,26-35,Female,Bachelor's,Education & EdTech,3.1,Medium (50-249),Daily,4,4,5,4,4.25,4,3,3,3,3.25,1,1,2,2,1.5,3,4,4,4,3.75,3,4,4,4,5,4.0,5,4,4,4,4.25
+RESP-1418,28,26-35,Female,Master's,Healthcare & Biotech,1.6,Enterprise (1000+),Daily,3,4,4,3,3.5,4,4,4,5,4.25,3,3,3,4,3.25,3,3,3,2,2.75,3,3,3,2,2,2.6,2,3,2,3,2.5
+RESP-1419,38,36-45,Male,Master's,Information Technology,6.5,Small (<50),Monthly,5,5,5,5,5.0,5,5,5,5,5.0,1,2,2,2,1.75,3,4,5,5,4.25,5,5,5,5,5,5.0,5,5,5,5,5.0
+RESP-1420,39,36-45,Female,Bachelor's,Information Technology,6.9,Medium (50-249),Daily,4,5,4,4,4.25,4,3,2,3,3.0,2,2,1,2,1.75,3,4,4,3,3.5,3,4,4,4,4,3.8,4,4,4,4,4.0
+RESP-1421,40,36-45,Male,Bachelor's,Financial Services,7.3,Medium (50-249),Monthly,4,5,5,5,4.75,4,3,3,3,3.25,2,2,1,1,1.5,4,4,3,2,3.25,4,4,4,3,4,3.8,3,3,4,4,3.5
+RESP-1422,38,36-45,Female,Master's,Information Technology,2.9,Large (250-999),Daily,3,3,4,4,3.5,4,4,4,5,4.25,2,1,3,2,2.0,4,4,4,3,3.75,4,4,4,4,4,4.0,5,4,5,4,4.5
+RESP-1423,26,18-25,Male,Bachelor's,Information Technology,1.1,Large (250-999),Daily,4,4,4,4,4.0,4,4,4,4,4.0,2,2,2,3,2.25,3,3,4,4,3.5,4,3,4,4,4,3.8,4,5,4,4,4.25
+RESP-1424,27,26-35,Female,Bachelor's,Information Technology,21.1,Large (250-999),Never,4,4,4,4,4.0,4,3,4,4,3.75,3,3,4,3,3.25,3,3,3,3,3.0,3,2,3,3,4,3.0,3,3,3,3,3.0
+RESP-1425,22,18-25,Male,Bachelor's,Education & EdTech,2.7,Large (250-999),Weekly,5,5,5,5,5.0,5,5,5,5,5.0,4,3,4,4,3.75,4,4,5,4,4.25,4,5,4,4,5,4.4,4,4,4,4,4.0
+RESP-1426,28,26-35,Female,Bachelor's,Management Consulting,7.8,Enterprise (1000+),Monthly,5,5,4,5,4.75,2,2,2,2,2.0,3,3,3,3,3.0,2,2,2,3,2.25,3,3,3,3,3,3.0,3,3,4,3,3.25
+RESP-1427,33,26-35,Male,Master's,Financial Services,8.4,Medium (50-249),Daily,5,5,5,4,4.75,2,1,2,2,1.75,3,2,2,3,2.5,2,2,2,2,2.0,4,3,3,4,4,3.6,2,3,3,2,2.5
+RESP-1428,50,46-55,Female,Master's,Management Consulting,6.6,Medium (50-249),Weekly,3,4,4,4,3.75,4,3,3,4,3.5,2,3,2,3,2.5,3,2,3,3,2.75,3,3,4,3,4,3.4,3,3,3,4,3.25
+RESP-1429,32,26-35,Male,Bachelor's,Information Technology,3.3,Enterprise (1000+),Weekly,4,4,4,4,4.0,5,5,5,5,5.0,4,2,3,3,3.0,4,4,4,4,4.0,4,4,4,4,4,4.0,4,3,3,3,3.25
+RESP-1430,19,18-25,Male,Doctorate,Financial Services,2.9,Enterprise (1000+),Weekly,5,4,3,5,4.25,2,3,3,3,2.75,5,5,3,4,4.25,2,3,3,2,2.5,3,3,3,3,3,3.0,4,3,3,3,3.25
+RESP-1431,23,18-25,Female,Doctorate,Information Technology,6.5,Enterprise (1000+),Weekly,4,5,5,5,4.75,1,1,2,2,1.5,3,3,3,2,2.75,2,3,2,2,2.25,3,4,3,3,3,3.2,3,3,3,3,3.0
+RESP-1432,42,36-45,Female,Doctorate,Healthcare & Biotech,13.1,Medium (50-249),Weekly,3,3,4,4,3.5,4,4,3,4,3.75,1,2,2,2,1.75,3,4,4,4,3.75,4,5,4,4,5,4.4,4,3,3,3,3.25
+RESP-1433,40,36-45,Female,Bachelor's,Management Consulting,18.6,Small (<50),Weekly,5,5,5,3,4.5,5,5,4,4,4.5,1,2,2,2,1.75,4,4,3,3,3.5,4,5,4,5,5,4.6,4,4,4,3,3.75
+RESP-1434,25,18-25,Male,Bachelor's,Healthcare & Biotech,1.7,Medium (50-249),Daily,5,5,4,5,4.75,3,3,3,3,3.0,2,1,2,2,1.75,4,4,3,3,3.5,4,4,4,4,3,3.8,4,4,4,4,4.0
+RESP-1435,21,18-25,Male,Professional Certification,Information Technology,2.0,Large (250-999),Monthly,2,4,3,3,3.0,2,3,3,3,2.75,3,3,2,3,2.75,2,2,2,2,2.0,3,3,3,3,4,3.2,3,4,4,3,3.5
+RESP-1436,43,36-45,Male,Master's,Healthcare & Biotech,18.4,Medium (50-249),Daily,3,3,4,3,3.25,3,3,3,3,3.0,4,3,4,3,3.5,2,3,2,3,2.5,3,3,3,4,3,3.2,4,4,4,4,4.0
+RESP-1437,28,18-25,Female,Bachelor's,Information Technology,9.0,Medium (50-249),Weekly,4,3,3,4,3.5,5,3,4,4,4.0,3,4,3,4,3.5,4,4,4,5,4.25,3,4,4,4,4,3.8,3,4,3,3,3.25
+RESP-1438,39,36-45,Female,Bachelor's,Management Consulting,13.9,Enterprise (1000+),Daily,3,4,4,4,3.75,3,2,3,4,3.0,2,2,3,3,2.5,4,3,4,3,3.5,4,3,4,3,3,3.4,4,4,3,5,4.0
+RESP-1439,38,36-45,Male,Bachelor's,Financial Services,2.4,Medium (50-249),Weekly,3,4,4,4,3.75,4,5,5,5,4.75,4,4,4,4,4.0,3,5,3,3,3.5,4,4,4,5,5,4.4,4,3,3,4,3.5
+RESP-1440,26,18-25,Male,Doctorate,Financial Services,6.3,Enterprise (1000+),Weekly,5,5,5,4,4.75,2,1,2,1,1.5,2,2,2,2,2.0,2,3,3,3,2.75,4,3,3,3,3,3.2,4,3,4,3,3.5
+RESP-1441,26,18-25,Non-Binary / Prefer not to say,Master's,Financial Services,8.2,Medium (50-249),Daily,5,4,4,4,4.25,4,3,2,3,3.0,3,4,4,4,3.75,4,2,2,2,2.5,4,4,3,4,3,3.6,3,3,3,3,3.0
+RESP-1442,56,56+,Female,Bachelor's,Healthcare & Biotech,7.8,Medium (50-249),Daily,4,4,3,4,3.75,2,3,2,2,2.25,2,3,3,2,2.5,3,3,3,3,3.0,4,4,3,4,4,3.8,3,4,4,4,3.75
+RESP-1443,28,26-35,Male,Bachelor's,Information Technology,4.1,Medium (50-249),Daily,3,4,3,3,3.25,3,3,3,3,3.0,3,3,3,1,2.5,3,3,3,3,3.0,3,4,4,4,3,3.6,3,4,2,4,3.25
+RESP-1444,29,26-35,Female,Master's,Healthcare & Biotech,1.1,Large (250-999),Weekly,4,3,2,3,3.0,3,3,4,3,3.25,4,3,3,3,3.25,2,2,2,3,2.25,2,2,3,3,3,2.6,3,3,3,3,3.0
+RESP-1445,36,36-45,Female,Master's,Information Technology,6.2,Small (<50),Monthly,5,3,4,4,4.0,4,5,4,5,4.5,2,3,3,2,2.5,3,3,4,4,3.5,5,5,4,5,4,4.6,4,4,4,3,3.75
+RESP-1446,47,46-55,Male,Bachelor's,Healthcare & Biotech,2.8,Small (<50),Daily,2,2,2,2,2.0,2,2,2,2,2.0,2,3,3,3,2.75,2,1,2,2,1.75,3,3,2,4,2,2.8,2,2,2,3,2.25
+RESP-1447,55,56+,Male,Master's,Education & EdTech,4.6,Enterprise (1000+),Weekly,4,5,5,4,4.5,4,3,4,3,3.5,3,3,3,3,3.0,4,3,3,4,3.5,4,4,5,4,4,4.2,5,3,2,4,3.5
+RESP-1448,38,36-45,Non-Binary / Prefer not to say,Professional Certification,Education & EdTech,20.0,Small (<50),Daily,4,4,4,4,4.0,4,5,4,4,4.25,2,3,2,2,2.25,4,4,2,3,3.25,3,5,3,4,4,3.8,4,3,4,2,3.25
+RESP-1449,29,26-35,Female,Bachelor's,Financial Services,4.1,Large (250-999),Weekly,5,5,5,5,5.0,5,5,5,5,5.0,5,5,5,5,5.0,4,4,5,4,4.25,5,4,5,4,5,4.6,5,5,4,4,4.5
+RESP-1450,23,18-25,Female,Master's,Financial Services,12.0,Large (250-999),Rarely,5,5,5,4,4.75,3,3,3,2,2.75,4,4,3,4,3.75,3,4,4,3,3.5,4,4,4,4,4,4.0,4,3,3,3,3.25
+RESP-1451,43,36-45,Male,Bachelor's,Information Technology,2.3,Medium (50-249),Daily,4,3,4,4,3.75,4,4,4,4,4.0,4,4,3,3,3.5,4,3,3,3,3.25,4,4,4,3,3,3.6,3,3,3,4,3.25
+RESP-1452,27,26-35,Male,Master's,Education & EdTech,7.7,Large (250-999),Weekly,4,3,3,3,3.25,2,2,2,2,2.0,3,3,3,3,3.0,2,1,1,3,1.75,3,3,3,3,3,3.0,3,4,3,3,3.25
+RESP-1453,32,26-35,Female,Master's,Information Technology,23.6,Medium (50-249),Daily,5,5,4,4,4.5,2,2,2,2,2.0,3,3,3,4,3.25,3,4,4,4,3.75,4,4,4,4,3,3.8,5,3,4,4,4.0
+RESP-1454,49,46-55,Female,Master's,Financial Services,1.6,Large (250-999),Daily,5,4,5,5,4.75,4,4,4,4,4.0,2,3,3,3,2.75,4,4,4,4,4.0,5,5,5,5,4,4.8,5,5,5,4,4.75
+RESP-1455,22,18-25,Female,Master's,Information Technology,1.1,Medium (50-249),Daily,3,3,3,3,3.0,4,4,4,3,3.75,3,3,2,3,2.75,2,3,2,3,2.5,3,3,3,3,3,3.0,3,2,3,3,2.75
+RESP-1456,31,26-35,Male,Bachelor's,Information Technology,4.4,Large (250-999),Daily,1,4,3,3,2.75,5,4,5,5,4.75,2,2,2,3,2.25,3,3,4,3,3.25,3,3,3,4,4,3.4,4,3,4,3,3.5
+RESP-1457,20,18-25,Female,Doctorate,Healthcare & Biotech,1.6,Small (<50),Weekly,3,3,4,4,3.5,3,2,2,3,2.5,3,3,3,2,2.75,4,4,3,3,3.5,3,4,3,4,4,3.6,4,4,4,4,4.0
+RESP-1458,30,26-35,Female,Master's,Information Technology,9.3,Large (250-999),Weekly,5,4,4,4,4.25,4,4,4,5,4.25,1,1,1,1,1.0,4,5,4,4,4.25,5,4,4,4,4,4.2,5,5,4,5,4.75
+RESP-1459,23,18-25,Female,Bachelor's,Education & EdTech,15.8,Small (<50),Weekly,4,4,4,4,4.0,5,5,5,5,5.0,3,4,3,2,3.0,4,4,4,4,4.0,4,4,4,4,3,3.8,3,3,3,3,3.0
+RESP-1460,24,18-25,Female,Master's,Information Technology,4.4,Medium (50-249),Daily,4,5,4,5,4.5,4,4,3,4,3.75,1,3,3,2,2.25,4,3,4,4,3.75,4,4,3,4,4,3.8,4,5,5,4,4.5
+RESP-1461,23,18-25,Female,Master's,Information Technology,2.8,Medium (50-249),Daily,2,3,3,3,2.75,4,3,4,4,3.75,3,4,4,4,3.75,3,3,3,3,3.0,4,3,3,3,4,3.4,3,3,4,4,3.5
+RESP-1462,46,36-45,Male,Bachelor's,Financial Services,4.4,Small (<50),Weekly,3,2,2,3,2.5,4,4,4,3,3.75,2,3,3,2,2.5,3,3,3,3,3.0,3,3,3,4,3,3.2,3,3,3,2,2.75
+RESP-1463,38,36-45,Female,Doctorate,Information Technology,8.7,Enterprise (1000+),Rarely,5,4,5,4,4.5,2,2,2,3,2.25,1,2,1,2,1.5,3,3,4,4,3.5,3,4,2,3,3,3.0,5,3,4,5,4.25
+RESP-1464,28,26-35,Male,Doctorate,Information Technology,1.1,Medium (50-249),Daily,3,4,3,2,3.0,5,5,5,4,4.75,3,2,4,3,3.0,4,4,3,3,3.5,4,4,3,4,4,3.8,4,2,4,3,3.25
+RESP-1465,48,46-55,Female,Bachelor's,Healthcare & Biotech,6.3,Enterprise (1000+),Monthly,2,2,2,1,1.75,3,3,4,3,3.25,1,2,2,1,1.5,2,2,3,2,2.25,3,3,3,4,3,3.2,2,3,2,2,2.25
+RESP-1466,28,26-35,Male,Professional Certification,Information Technology,6.7,Enterprise (1000+),Weekly,4,4,4,4,4.0,3,4,4,4,3.75,3,3,3,3,3.0,4,4,3,3,3.5,4,4,4,4,3,3.8,2,3,3,3,2.75
+RESP-1467,28,26-35,Male,Bachelor's,Education & EdTech,7.1,Large (250-999),Weekly,5,4,4,5,4.5,2,3,3,2,2.5,2,3,3,3,2.75,3,4,3,3,3.25,3,4,4,3,4,3.6,4,4,3,3,3.5
+RESP-1468,52,46-55,Male,Bachelor's,Information Technology,2.7,Small (<50),Weekly,4,4,3,4,3.75,2,2,3,3,2.5,2,4,3,3,3.0,3,4,4,4,3.75,3,4,4,3,4,3.6,3,4,5,3,3.75
+RESP-1469,33,26-35,Male,Bachelor's,Information Technology,8.5,Medium (50-249),Daily,4,3,5,4,4.0,5,5,5,5,5.0,3,1,2,3,2.25,3,2,3,3,2.75,4,5,4,4,4,4.2,3,4,3,4,3.5
+RESP-1470,48,46-55,Female,Doctorate,Education & EdTech,1.6,Large (250-999),Daily,4,4,4,3,3.75,3,3,3,3,3.0,2,3,4,2,2.75,3,4,4,3,3.5,4,4,4,5,4,4.2,4,4,5,3,4.0
+RESP-1471,20,18-25,Female,Master's,Information Technology,2.3,Medium (50-249),Weekly,5,3,4,4,4.0,5,4,5,4,4.5,1,1,1,2,1.25,5,4,4,4,4.25,4,4,4,5,5,4.4,3,4,4,4,3.75
+RESP-1472,51,46-55,Male,Bachelor's,Information Technology,13.6,Small (<50),Daily,2,2,3,2,2.25,3,3,4,4,3.5,3,3,3,3,3.0,3,3,2,3,2.75,3,5,2,4,3,3.4,4,3,3,3,3.25
+RESP-1473,21,18-25,Non-Binary / Prefer not to say,Bachelor's,Information Technology,9.1,Large (250-999),Rarely,3,4,4,3,3.5,2,3,2,3,2.5,4,3,3,3,3.25,2,1,2,2,1.75,3,3,2,4,3,3.0,3,4,3,2,3.0
+RESP-1474,51,46-55,Male,Master's,Information Technology,1.1,Enterprise (1000+),Daily,4,4,4,4,4.0,5,4,4,4,4.25,3,4,3,3,3.25,4,3,3,3,3.25,4,4,4,4,3,3.8,3,3,3,3,3.0
+RESP-1475,30,26-35,Male,Bachelor's,Education & EdTech,2.7,Large (250-999),Daily,3,4,4,4,3.75,3,3,3,3,3.0,2,2,3,3,2.5,4,3,3,3,3.25,4,4,4,4,4,4.0,4,4,4,5,4.25
+RESP-1476,54,56+,Male,Doctorate,Information Technology,2.4,Small (<50),Weekly,3,4,4,5,4.0,5,4,4,4,4.25,3,3,3,3,3.0,3,3,3,4,3.25,4,4,4,2,4,3.6,5,3,4,4,4.0
+RESP-1477,26,18-25,Female,Master's,Education & EdTech,2.9,Large (250-999),Daily,3,3,3,3,3.0,5,4,4,4,4.25,5,5,4,5,4.75,3,3,3,3,3.0,3,3,2,3,2,2.6,3,3,2,3,2.75
+RESP-1478,34,26-35,Female,Master's,Management Consulting,2.7,Medium (50-249),Weekly,3,3,3,3,3.0,2,2,3,2,2.25,2,2,3,4,2.75,3,2,2,3,2.5,3,3,4,4,3,3.4,3,3,4,3,3.25
+RESP-1479,48,46-55,Male,Professional Certification,Financial Services,1.4,Medium (50-249),Weekly,2,2,3,2,2.25,4,4,4,3,3.75,3,3,3,3,3.0,3,3,1,3,2.5,3,3,4,4,3,3.4,2,4,2,3,2.75
+RESP-1480,29,26-35,Male,Bachelor's,Management Consulting,4.7,Enterprise (1000+),Rarely,4,4,4,4,4.0,5,5,5,5,5.0,1,2,1,1,1.25,3,3,4,3,3.25,4,4,5,4,5,4.4,4,3,4,4,3.75
+RESP-1481,40,36-45,Female,Professional Certification,Information Technology,8.9,Medium (50-249),Monthly,5,4,5,5,4.75,3,5,4,4,4.0,1,2,2,2,1.75,4,5,5,4,4.5,5,4,5,5,4,4.6,3,4,3,4,3.5
+RESP-1482,40,36-45,Male,Master's,Management Consulting,6.6,Medium (50-249),Weekly,3,2,3,3,2.75,4,3,4,4,3.75,3,3,2,3,2.75,3,2,3,3,2.75,3,3,3,4,3,3.2,4,4,3,4,3.75
+RESP-1483,31,26-35,Female,Master's,Information Technology,7.7,Small (<50),Weekly,4,4,3,3,3.5,5,4,4,4,4.25,4,4,4,4,4.0,2,2,3,4,2.75,4,4,4,4,5,4.2,2,3,3,3,2.75
+RESP-1484,45,36-45,Male,Bachelor's,Healthcare & Biotech,1.5,Enterprise (1000+),Rarely,4,4,4,4,4.0,4,5,4,4,4.25,3,2,3,2,2.5,4,3,3,3,3.25,3,4,3,2,4,3.2,3,3,3,3,3.0
+RESP-1485,29,26-35,Female,Doctorate,Financial Services,19.2,Large (250-999),Daily,5,5,5,4,4.75,4,4,3,4,3.75,1,2,2,3,2.0,3,3,3,3,3.0,5,5,5,5,4,4.8,5,5,5,5,5.0
+RESP-1486,48,46-55,Female,Bachelor's,Financial Services,11.9,Large (250-999),Daily,4,4,3,3,3.5,3,2,3,2,2.5,2,3,2,3,2.5,2,2,2,3,2.25,2,3,3,3,2,2.6,3,3,3,3,3.0
+RESP-1487,19,18-25,Male,Bachelor's,Healthcare & Biotech,10.8,Large (250-999),Daily,2,4,3,3,3.0,4,4,4,4,4.0,2,2,2,1,1.75,2,3,3,4,3.0,4,3,3,3,4,3.4,3,3,3,3,3.0
+RESP-1488,28,26-35,Female,Bachelor's,Healthcare & Biotech,11.4,Small (<50),Daily,1,3,2,3,2.25,5,4,5,4,4.5,3,3,3,3,3.0,2,2,2,2,2.0,3,3,3,3,2,2.8,2,1,3,1,1.75
+RESP-1489,49,46-55,Male,Master's,Information Technology,17.2,Medium (50-249),Weekly,4,4,3,4,3.75,3,3,3,3,3.0,1,1,1,2,1.25,3,4,4,3,3.5,4,4,4,3,4,3.8,4,4,4,5,4.25
+RESP-1490,54,46-55,Male,Master's,Information Technology,5.7,Medium (50-249),Weekly,5,5,5,5,5.0,5,4,5,5,4.75,4,4,5,4,4.25,3,4,3,4,3.5,4,5,5,3,4,4.2,4,4,4,3,3.75
+RESP-1491,28,26-35,Male,Master's,Healthcare & Biotech,2.3,Small (<50),Weekly,5,4,3,4,4.0,4,5,4,3,4.0,2,2,2,1,1.75,3,3,3,3,3.0,3,3,3,4,4,3.4,3,2,4,3,3.0
+RESP-1492,40,36-45,Female,Doctorate,Healthcare & Biotech,6.8,Medium (50-249),Daily,4,5,3,4,4.0,4,3,3,3,3.25,3,3,3,4,3.25,3,4,4,4,3.75,4,3,4,4,4,3.8,4,3,4,4,3.75
+RESP-1493,29,26-35,Female,Bachelor's,Management Consulting,9.1,Enterprise (1000+),Weekly,4,5,5,4,4.5,5,4,4,5,4.5,2,1,1,1,1.25,5,5,5,4,4.75,4,4,5,5,4,4.4,4,5,5,5,4.75
+RESP-1494,32,26-35,Female,Master's,Education & EdTech,9.0,Small (<50),Daily,4,4,4,5,4.25,3,4,3,4,3.5,3,3,4,3,3.25,3,3,3,3,3.0,4,4,4,4,4,4.0,4,4,3,4,3.75
+RESP-1495,36,26-35,Non-Binary / Prefer not to say,Bachelor's,Management Consulting,5.4,Medium (50-249),Weekly,3,3,3,3,3.0,4,5,4,5,4.5,3,3,2,4,3.0,3,3,3,3,3.0,2,4,4,3,3,3.2,3,3,4,3,3.25
+RESP-1496,28,26-35,Male,Doctorate,Healthcare & Biotech,1.4,Medium (50-249),Weekly,5,5,5,4,4.75,4,3,4,3,3.5,4,2,3,3,3.0,3,3,3,4,3.25,3,3,3,3,3,3.0,4,4,4,3,3.75
+RESP-1497,28,26-35,Male,Master's,Information Technology,3.8,Medium (50-249),Daily,3,4,5,3,3.75,4,3,4,4,3.75,2,2,2,1,1.75,4,4,4,4,4.0,5,4,5,4,4,4.4,4,4,4,4,4.0
+RESP-1498,25,18-25,Male,Master's,Information Technology,16.2,Enterprise (1000+),Daily,4,4,4,4,4.0,4,4,4,4,4.0,3,3,3,3,3.0,3,3,2,3,2.75,4,4,4,4,4,4.0,4,3,3,3,3.25
+RESP-1499,59,56+,Male,Master's,Education & EdTech,6.3,Medium (50-249),Daily,4,4,4,3,3.75,4,4,4,4,4.0,1,2,1,1,1.25,4,4,3,4,3.75,4,4,4,4,4,4.0,4,4,3,4,3.75
+RESP-1500,62,56+,Male,Bachelor's,Healthcare & Biotech,5.6,Medium (50-249),Monthly,5,5,4,4,4.5,2,1,2,2,1.75,3,3,2,3,2.75,3,3,2,3,2.75,4,4,3,4,3,3.6,4,4,4,4,4.0

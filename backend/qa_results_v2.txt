@@ -1,0 +1,205 @@
+﻿.\venv\Scripts\python.exe : C:\Users\HP\Documents\ResearchForm_Codebase\researchform\backend\venv\Lib\site-packages\sta
+tsmodels\regression\quantile_regression.py:191: IterationLimitWarning: Maximum number of iterations (1000) reached.
+At line:1 char:1
++ .\venv\Scripts\python.exe -X utf8 qa_analysis_engine.py 2>&1 | Out-Fi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\HP\Doc...(1000) reached.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn("Maximum number of iterations (" + str(max_iter) +
+C:\Users\HP\Documents\ResearchForm_Codebase\researchform\backend\venv\Lib\site-packages\statsmodels\regression\quantile
+_regression.py:191: IterationLimitWarning: Maximum number of iterations (1000) reached.
+  warnings.warn("Maximum number of iterations (" + str(max_iter) +
+C:\Users\HP\Documents\ResearchForm_Codebase\researchform\backend\venv\Lib\site-packages\statsmodels\base\model.py:595: 
+HessianInversionWarning: Inverting hessian failed, no bse or cov_params available
+  warnings.warn('Inverting hessian failed, no bse or cov_params '
+C:\Users\HP\Documents\ResearchForm_Codebase\researchform\backend\venv\Lib\site-packages\statsmodels\base\model.py:607: 
+ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  warnings.warn("Maximum Likelihood optimization failed to "
+C:\Users\HP\Documents\ResearchForm_Codebase\researchform\backend\analysis\engine\tests\timeseries.py:67: 
+InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is smaller than the p-value returned.
+
+  stat, p_val, n_lags, critical_vals = kpss(s, regression="c", nlags="auto")
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  RESEARCHFORM STATISTICAL ENGINE ΓÇö FULL QA TEST SUITE
+  2026-07-16 14:13:31 | 145 tests registered
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  [  1/145] Γ£ô  descriptive_stats                             PASS
+  [  2/145] Γ£ô  frequency_analysis                            PASS
+  [  3/145] Γ£ô  mean_median_mode                              PASS
+  [  4/145] Γ£ô  dispersion_extended                           PASS
+  [  5/145] Γ£ô  percentiles_extended                          PASS
+  [  6/145] Γ£ô  z_scores                                      PASS
+  [  7/145] Γ£ô  skewness_analysis                             PASS
+  [  8/145] Γ£ô  kurtosis_analysis                             PASS
+  [  9/145] Γ£ô  variable_transformation                       PASS
+  [ 10/145] Γ£ô  normality_check                               PASS
+  [ 11/145] Γ£ô  shapiro_wilk_all                              PASS
+  [ 12/145] Γ£ô  kolmogorov_smirnov                            PASS
+  [ 13/145] Γ£ô  anderson_darling                              PASS
+  [ 14/145] Γ£ô  jarque_bera                                   PASS
+  [ 15/145] Γ£ô  dagostino_pearson                             PASS
+  [ 16/145] Γ£ô  omnibus_normality                             PASS
+  [ 17/145] Γ£ô  cronbach_alpha                                PASS
+  [ 18/145] Γ£ô  mcdonald_omega                                PASS
+  [ 19/145] Γ£ô  split_half_reliability                        PASS
+  [ 20/145] Γ£ô  item_analysis                                 PASS
+  [ 21/145] Γ£ô  icc_reliability                               PASS
+  [ 22/145] ΓÜí  kr20                                          SOFT_FAIL  ΓåÆ Columns ['likert1', 'likert2'] are not binary (0/1). KR-20 requires binary items.
+  [ 23/145] Γ£ô  levene_test                                   PASS
+  [ 24/145] Γ£ô  bartlett_test                                 PASS
+  [ 25/145] Γ£ô  mauchly_test                                  PASS
+  [ 26/145] Γ£ô  durbin_watson                                 PASS
+  [ 27/145] Γ£ô  vif_check                                     PASS
+  [ 28/145] Γ£ô  outliers_iqr                                  PASS
+  [ 29/145] Γ£ô  outliers_zscore                               PASS
+  [ 30/145] Γ£ô  outliers_grubbs                               PASS
+  [ 31/145] Γ£ô  mahalanobis_distance                          PASS
+  [ 32/145] Γ£ô  cooks_distance                                PASS
+  [ 33/145] Γ£ô  one_sample_t_test                             PASS
+  [ 34/145] Γ£ô  one_sample_t_cohend                           PASS
+  [ 35/145] Γ£ô  independent_t_test                            PASS
+  [ 36/145] Γ£ô  independent_t_cohend                          PASS
+  [ 37/145] Γ£ô  welch_t_test                                  PASS
+  [ 38/145] Γ£ô  paired_t_test                                 PASS
+  [ 39/145] Γ£ô  paired_t_cohend                               PASS
+  [ 40/145] Γ£ô  one_way_anova                                 PASS
+  [ 41/145] Γ£ô  anova_eta_squared                             PASS
+  [ 42/145] Γ£ô  anova_descriptives                            PASS
+  [ 43/145] Γ£ô  welch_anova                                   PASS
+  [ 44/145] Γ£ô  two_way_anova                                 PASS
+  [ 45/145] Γ£ô  two_way_eta_squared                           PASS
+  [ 46/145] Γ£ô  two_way_pairwise                              PASS
+  [ 47/145] Γ£ô  repeated_anova                                PASS
+  [ 48/145] Γ£ô  ancova                                        PASS
+  [ 49/145] Γ£ô  manova                                        PASS
+  [ 50/145] Γ£ô  manova_followup                               PASS
+  [ 51/145] Γ£ô  mann_whitney                                  PASS
+  [ 52/145] Γ£ô  mann_whitney_r                                PASS
+  [ 53/145] Γ£ô  mann_whitney_ci                               PASS
+  [ 54/145] Γ£ô  wilcoxon                                      PASS
+  [ 55/145] Γ£ô  wilcoxon_r                                    PASS
+  [ 56/145] Γ£ô  kruskal_wallis                                PASS
+  [ 57/145] Γ£ô  kruskal_wallis_eta2                           PASS
+  [ 58/145] Γ£ô  friedman_test                                 PASS
+  [ 59/145] Γ£ô  kendall_w                                     PASS
+  [ 60/145] Γ£ô  mcnemar                                       PASS
+  [ 61/145] Γ£ô  chi_square                                    PASS
+  [ 62/145] Γ£ô  chi_square_extended                           PASS
+  [ 63/145] Γ£ô  fisher_exact                                  PASS
+  [ 64/145] Γ£ô  sign_test                                     PASS
+  [ 65/145] Γ£ô  runs_test                                     PASS
+  [ 66/145] Γ£ô  tukey_hsd                                     PASS
+  [ 67/145] Γ£ô  bonferroni_test                               PASS
+  [ 68/145] Γ£ô  dunn_test                                     PASS
+  [ 69/145] Γ£ô  scheffe_test                                  PASS
+  [ 70/145] Γ£ô  newman_keuls                                  PASS
+  [ 71/145] Γ£ô  fisher_lsd                                    PASS
+  [ 72/145] Γ£ô  dunnett_test                                  PASS
+  [ 73/145] Γ£ô  pearson_correlation                           PASS
+  [ 74/145] Γ£ô  pearson_ci                                    PASS
+  [ 75/145] Γ£ô  spearman_correlation                          PASS
+  [ 76/145] Γ£ô  kendall_tau                                   PASS
+  [ 77/145] Γ£ô  point_biserial                                PASS
+  [ 78/145] Γ£ô  phi_coefficient                               PASS
+  [ 79/145] Γ£ô  cramers_v                                     PASS
+  [ 80/145] Γ£ô  partial_correlation                           PASS
+  [ 81/145] Γ£ô  canonical_correlation                         PASS
+  [ 82/145] Γ£ô  correlation_matrix                            PASS
+  [ 83/145] Γ£ô  correlation_heatmap                           PASS
+  [ 84/145] Γ£ô  correlation_significance                      PASS
+  [ 85/145] Γ£ô  correlation_effect_sizes                      PASS
+  [ 86/145] Γ£ô  correlation_splom                             PASS
+  [ 87/145] Γ£ô  simple_linear_regression                      PASS
+  [ 88/145] Γ£ô  linear_regression                             PASS
+  [ 89/145] Γ£ô  multiple_regression                           PASS
+  [ 90/145] Γ£ô  logistic_regression                           PASS
+  [ 91/145] Γ£ô  ordinal_regression                            PASS
+  [ 92/145] Γ£ô  multinomial_logistic                          PASS
+  [ 93/145] Γ£ô  hierarchical_regression                       PASS
+  [ 94/145] Γ£ô  stepwise_regression                           PASS
+  [ 95/145] Γ£ô  mediation_analysis                            PASS
+  [ 96/145] Γ£ô  moderation_analysis                           PASS
+  [ 97/145] Γ£ô  quantile_regression                           PASS
+  [ 98/145] ΓÜí  poisson_regression                            SOFT_FAIL  ΓåÆ 'PoissonResults' object has no attribute 'deviance'
+  [ 99/145] ΓÜí  negative_binomial                             SOFT_FAIL  ΓåÆ Singular matrix
+  [100/145] Γ£ô  pca                                           PASS
+  [101/145] Γ£ô  factor_analysis                               PASS
+  [102/145] ΓÜí  confirmatory_fa                               SOFT_FAIL  ΓåÆ semopy not installed. CFA requires the semopy library.
+  [103/145] Γ£ô  discriminant_analysis                         PASS
+  [104/145] Γ£ô  cluster_analysis                              PASS
+  [105/145] ΓÜí  sem                                           SOFT_FAIL  ΓåÆ semopy not installed.
+  [106/145] Γ£ô  path_analysis                                 PASS
+  [107/145] Γ£ô  kaplan_meier                                  PASS
+  [108/145] Γ£ô  survival_analysis                             PASS
+  [109/145] Γ£ô  log_rank_test                                 PASS
+  [110/145] Γ£ô  cox_ph_regression                             PASS
+  [111/145] Γ£ô  cox_regression                                PASS
+  [112/145] Γ£ô  weibull_aft                                   PASS
+  [113/145] Γ£ô  nelson_aalen                                  PASS
+  [114/145] Γ£ô  life_table                                    PASS
+  [115/145] Γ£ô  ph_assumption_test                            PASS
+  [116/145] Γ£ô  competing_risks                               PASS
+  [117/145] Γ£ô  difference_in_differences                     PASS
+  [118/145] Γ£ô  instrumental_variables                        PASS
+  [119/145] Γ£ô  propensity_score_matching                     PASS
+  [120/145] Γ£ô  regression_discontinuity                      PASS
+  [121/145] Γ£ô  bayesian_ab_test                              PASS
+  [122/145] ΓÜí  synthetic_control                             SOFT_FAIL  ΓåÆ Need outcome_col, time_col, unit_col, treatment_unit identifier.
+  [123/145] Γ£ô  sensitivity_analysis                          PASS
+  [124/145] Γ£ô  adf_test                                      PASS
+  [125/145] Γ£ô  kpss_test                                     PASS
+  [126/145] Γ£ô  autocorrelation                               PASS
+  [127/145] Γ£ô  partial_autocorrelation                       PASS
+  [128/145] Γ£ô  ljung_box                                     PASS
+  [129/145] Γ£ô  seasonal_decompose                            PASS
+  [130/145] Γ£ô  arima_model                                   PASS
+  [131/145] Γ£ô  time_series                                   PASS
+  [132/145] Γ£ô  sarima_model                                  PASS
+  [133/145] Γ£ô  exponential_smoothing                         PASS
+  [134/145] Γ£ô  granger_causality                             PASS
+  [135/145] Γ£ô  var_model                                     PASS
+  [136/145] Γ£ô  mann_kendall                                  PASS
+  [137/145] ΓÜí  linear_mixed_model                            SOFT_FAIL  ΓåÆ Outcome column 'county' must be numeric.
+  [138/145] ΓÜí  linear_mixed_effects                          SOFT_FAIL  ΓåÆ Outcome column 'county' must be numeric.
+  [139/145] ΓÜí  glmm                                          SOFT_FAIL  ΓåÆ endog has evaluated to an array with multiple columns that has shape (120, 5). This occurs when the variable converted to endog is non-numeric (e.g., bool or str).
+  [140/145] ΓÜí  icc                                           SOFT_FAIL  ΓåÆ Need >= 2 numeric rater columns.
+  [141/145] Γ£ô  random_effects_anova                          PASS
+  [142/145] ΓÜí  cross_classified_mlm                          SOFT_FAIL  ΓåÆ could not convert string to float: 'C1'
+  [143/145] ΓÜí  growth_curve_model                            SOFT_FAIL  ΓåÆ could not convert string to float: 'C1'
+  [144/145] ΓÜí  multilevel_mediation                          SOFT_FAIL  ΓåÆ could not convert string to float: 'C1'
+  [145/145] ΓÜí  gee                                           SOFT_FAIL  ΓåÆ endog has evaluated to an array with multiple columns that has shape (120, 5). This occurs when the variable converted to endog is non-numeric (e.g., bool or str).
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  QA SUMMARY
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  Γ£ô PASS           : 131
+  ΓÜí SOFT_FAIL      : 14  (ran but returned error dict)
+  Γ£ù ERROR          : 0  (exception thrown)
+  Γùï NULL_RESULT    : 0  (returned None)
+  ΓÜá MISSING_FIELD  : 0  (incomplete schema)
+  ΓÇö NOT_CONFIGURED : 0  (in registry, not in QA config)
+  ΓÇö NOT_REGISTERED : 0  (in QA config, not in registry)
+
+  SOFT_FAIL tests (data mismatch ΓÇö expected, check variables):
+    ΓÇó kr20
+    ΓÇó poisson_regression
+    ΓÇó negative_binomial
+    ΓÇó confirmatory_fa
+    ΓÇó sem
+    ΓÇó synthetic_control
+    ΓÇó linear_mixed_model
+    ΓÇó linear_mixed_effects
+    ΓÇó glmm
+    ΓÇó icc
+    ΓÇó cross_classified_mlm
+    ΓÇó growth_curve_model
+    ΓÇó multilevel_mediation
+    ΓÇó gee
+
+  Overall pass rate: 90.3%  (131/145)
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+

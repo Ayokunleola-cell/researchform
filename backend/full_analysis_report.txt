@@ -1,0 +1,591 @@
+RESEARCHFORM — FULL ANALYSIS TEST REPORT
+Dataset: Employee Wellbeing & Performance Survey (n=350)
+Timestamp: 2026-07-16 23:26:35
+Pass Rate: 100.0%  (131/131)
+==============================================================================
+
+[PASS          ] descriptive_stats                             57ms
+  Variables: age|salary|performance_score|stress_score|wellbeing_index|burnout_total
+  
+
+[PASS          ] frequency_analysis                            17ms
+  Variables: department|gender|education|employment_type|stress_category
+  
+
+[PASS          ] mean_median_mode                               6ms
+  Variables: age|performance_score|wellbeing_index
+  
+
+[PASS          ] dispersion_extended                           15ms
+  Variables: salary|stress_score|productivity_pct
+  
+
+[PASS          ] percentiles_extended                          76ms
+  Variables: salary|performance_score|stress_score
+  
+
+[PASS          ] z_scores                                       9ms
+  Variables: salary|stress_score|performance_score
+  
+
+[PASS          ] skewness_analysis                              1ms
+  Variables: salary|absences_count|incidents_count
+  
+
+[PASS          ] kurtosis_analysis                              1ms
+  Variables: salary|absences_count|incidents_count
+  
+
+[PASS          ] variable_transformation                       73ms
+  Variables: salary|absences_count|incidents_count
+  
+
+[PASS          ] normality_check                               14ms
+  Variables: performance_score|wellbeing_index|stress_score|salary
+  
+
+[PASS          ] shapiro_wilk_all                               7ms
+  Variables: stress_pre|stress_post|burnout_total
+  
+
+[PASS          ] kolmogorov_smirnov                            18ms
+  Variables: salary|tenure_years
+  
+
+[PASS          ] anderson_darling                               6ms
+  Variables: performance_score|stress_score
+  
+
+[PASS          ] jarque_bera                                   10ms
+  Variables: salary|wellbeing_index|productivity_pct
+  
+
+[PASS          ] dagostino_pearson                              5ms
+  Variables: performance_score|wellbeing_index
+  
+
+[PASS          ] omnibus_normality                             18ms
+  Variables: burnout_total|satisfaction_total
+  
+
+[PASS          ] cronbach_alpha                                46ms
+  Variables: burnout_1|burnout_2|burnout_3|burnout_4|burnout_5
+  
+
+[PASS          ] mcdonald_omega                               100ms
+  Variables: satisfaction_1|satisfaction_2|satisfaction_3|satisfaction_4|satisfaction_5
+  
+
+[PASS          ] split_half_reliability                         6ms
+  Variables: burnout_1|burnout_2|burnout_3|burnout_4|burnout_5|burnout_total
+  
+
+[PASS          ] item_analysis                                 29ms
+  Variables: burnout_1|burnout_2|burnout_3|burnout_4|burnout_5
+  
+
+[PASS          ] icc_reliability                             1248ms
+  Variables: burnout_1|burnout_2|burnout_3|burnout_4|burnout_5
+  p = 0.0
+  ICC = 0.6972 (moderate reliability).
+
+[PASS          ] kr20                                           7ms
+  Variables: comp_item1|comp_item2|comp_item3|comp_item4|comp_item5|comp_item6
+  
+
+[PASS          ] levene_test                                    4ms
+  Variables: department|performance_score
+  p = 0.4179
+  Equal variances can be assumed (homoscedastic)
+
+[PASS          ] bartlett_test                                  9ms
+  Variables: department|salary
+  p = 0.4641
+  Variances are homogeneous.
+
+[PASS          ] mauchly_test                                   6ms
+  Variables: stress_pre|stress_post|stress_3m_followup
+  p = 39.0975
+  Sphericity assumed.
+
+[PASS          ] durbin_watson                                 10ms
+  Variables: performance_score|workload_score|autonomy_score
+  
+
+[PASS          ] vif_check                                      7ms
+  Variables: salary|age|tenure_years|workload_score
+  
+
+[PASS          ] outliers_iqr                                  11ms
+  Variables: salary|absences_count|stress_score
+  
+
+[PASS          ] outliers_zscore                                4ms
+  Variables: salary|performance_score|stress_score
+  
+
+[PASS          ] outliers_grubbs                                1ms
+  Variables: salary|performance_score
+  No significant outlier: 91400.0000
+
+[PASS          ] mahalanobis_distance                           9ms
+  Variables: salary|age|stress_score|performance_score
+  
+
+[PASS          ] cooks_distance                                 6ms
+  Variables: performance_score|workload_score|burnout_total
+  
+
+[PASS          ] one_sample_t_test                              3ms
+  Variables: performance_score
+  p = 0.0
+  Mean (3.375) significantly differs from test value 3.0.
+
+[PASS          ] one_sample_t_cohend                            1ms
+  Variables: wellbeing_index
+  
+
+[PASS          ] independent_t_test                             9ms
+  Variables: is_manager|performance_score
+  p = 0.7387
+  0 (M=3.380) does not differ from 1 (M=3.355).
+
+[PASS          ] independent_t_cohend                           2ms
+  Variables: is_manager|wellbeing_index
+  
+
+[PASS          ] welch_t_test                                   5ms
+  Variables: is_manager|salary
+  p = 0.6084
+  Welch's correction applied. 0 vs 1: not significant.
+
+[PASS          ] paired_t_test                                  8ms
+  Variables: stress_pre|stress_post
+  p = 0.0
+  Mean difference = -7.7620; Significant change from stress_pre to stress_post.
+
+[PASS          ] paired_t_cohend                                3ms
+  Variables: stress_pre|stress_post
+  
+
+[PASS          ] one_way_anova                                 10ms
+  Variables: department|performance_score
+  p = 0.3455
+  F(4,345) = 1.123, p = 0.3455. Not significant group differences.
+
+[PASS          ] anova_eta_squared                              6ms
+  Variables: department|salary
+  p = 0.9378
+  The Effect Size (Eta-Squared) yielded η² = 0.002, p = 0.938, which is greater than α = 0.05. Therefore, the null hypothesis is not rejected.
+
+[PASS          ] anova_descriptives                             9ms
+  Variables: department|wellbeing_index
+  p = 0.1534
+  F(4,345) = 1.683, p = 0.1534. Not significant group differences.
+
+[PASS          ] welch_anova                                   24ms
+  Variables: department|stress_score
+  p = 0.4176
+  F(4.0,345.0) = 0.981, p = 0.4176.
+
+[PASS          ] two_way_anova                                 37ms
+  Variables: department|gender|performance_score
+  Two-Way ANOVA: department × gender on performance_score.
+
+[PASS          ] two_way_eta_squared                           34ms
+  Variables: department|gender|wellbeing_index
+  Two-Way ANOVA: department × gender on wellbeing_index.
+
+[PASS          ] two_way_pairwise                              41ms
+  Variables: department|gender|stress_score
+  Two-Way ANOVA: department × gender on stress_score.
+
+[PASS          ] repeated_anova                                49ms
+  Variables: stress_pre|stress_post|stress_3m_followup
+  p = 0.0
+  Repeated measures: significant time effect.
+
+[PASS          ] ancova                                        26ms
+  Variables: department|performance_score|age
+  p = 0.349
+  Group effect: F = 1.115, p = 0.3490. Covariate effect: F = 0.626
+
+[PASS          ] manova                                        55ms
+  Variables: department|performance_score|wellbeing_index|stress_score
+  p = 0.2592
+  MANOVA: not significant multivariate group effect.
+
+[PASS          ] manova_followup                               41ms
+  Variables: department|performance_score|wellbeing_index|stress_score
+  p = 0.2592
+  MANOVA: not significant multivariate group effect.
+
+[PASS          ] mann_whitney                                  10ms
+  Variables: is_manager|performance_score
+  p = 0.9664
+  0 (Mdn=3.380) vs 1 (Mdn=3.400): not significant.
+
+[PASS          ] mann_whitney_r                                 5ms
+  Variables: is_manager|salary
+  
+
+[PASS          ] mann_whitney_ci                                8ms
+  Variables: is_manager|wellbeing_index
+  p = 0.6149
+  0 (Mdn=36.000) vs 1 (Mdn=35.800): not significant.
+
+[PASS          ] wilcoxon                                       5ms
+  Variables: stress_pre|stress_post
+  p = 0.0
+  Significant difference between stress_pre and stress_post.
+
+[PASS          ] wilcoxon_r                                     4ms
+  Variables: stress_pre|stress_post
+  
+
+[PASS          ] kruskal_wallis                                26ms
+  Variables: department|performance_score
+  p = 0.4067
+  H(4) = 3.995, p = 0.4067. No significant group differences.
+
+[PASS          ] kruskal_wallis_eta2                           37ms
+  Variables: department|stress_score
+  
+
+[PASS          ] friedman_test                                  7ms
+  Variables: stress_pre|stress_post|stress_3m_followup
+  p = 0.0
+  χ²(2) = 423.401, p = 0.0000. Significant within-subject differences.
+
+[PASS          ] sign_test                                     10ms
+  Variables: stress_pre|stress_post
+  p = 0.0
+  n+ = 12, n- = 337: Significant direction.
+
+[PASS          ] chi_square                                    26ms
+  Variables: department|gender
+  p = 0.1062
+  χ²(8) = 13.168, p = 0.1062. No significant association.
+
+[NOT_IN_REGISTRY] chi_square_goodness                            0ms
+  Variables: department
+  Error: 'chi_square_goodness' not in registry
+
+[PASS          ] fisher_exact                                  29ms
+  Variables: received_training|promoted
+  p = 0.2003
+  OR = 1.971, p = 0.2003. No significant association.
+
+[NOT_IN_REGISTRY] mcnemar_test                                   0ms
+  Variables: turnover_intent|promoted
+  Error: 'mcnemar_test' not in registry
+
+[NOT_IN_REGISTRY] binomial_test                                  0ms
+  Variables: turnover_intent
+  Error: 'binomial_test' not in registry
+
+[PASS          ] runs_test                                      2ms
+  Variables: turnover_intent
+  p = 0.5628
+  Random sequence detected (Z = 0.579).
+
+[PASS          ] pearson_correlation                            9ms
+  Variables: satisfaction_total|performance_score
+  p = 0.0
+  r(348) = 0.494, p = 0.0000. Significant positive correlation.
+
+[PASS          ] spearman_correlation                           7ms
+  Variables: burnout_total|absences_count
+  p = 0.0
+  ρ = 0.220, p = 0.0000. Significant rank correlation.
+
+[PASS          ] kendall_tau                                   11ms
+  Variables: tenure_years|salary
+  p = 0.126
+  τ = 0.055, p = 0.1260.
+
+[PASS          ] point_biserial                                 6ms
+  Variables: is_manager|salary
+  p = 0.6163
+  r_pb = 0.027, p = 0.6163.
+
+[PASS          ] phi_coefficient                               29ms
+  Variables: turnover_intent|promoted
+  p = 0.0335
+  The Phi Coefficient yielded φ = -0.127, p = 0.034, which is less than α = 0.05. Therefore, the null hypothesis is rejected.
+
+[PASS          ] cramers_v                                     39ms
+  Variables: department|gender
+  p = 0.1062
+  V = 0.137, χ²(8) = 13.168, p = 0.1062.
+
+[PASS          ] partial_correlation                           35ms
+  Variables: workload_score|stress_score|autonomy_score
+  p = 0.0
+  Partial r = 0.822, p = 0.0000 (controlling for autonomy_score).
+
+[PASS          ] canonical_correlation                         12ms
+  Variables: burnout_total|satisfaction_total|engagement_1|performance_score|wellbeing_index
+  
+
+[PASS          ] correlation_matrix                            70ms
+  Variables: burnout_total|satisfaction_total|stress_score|performance_score|wellbeing_index
+  
+
+[PASS          ] correlation_heatmap                           48ms
+  Variables: burnout_total|satisfaction_total|stress_score|performance_score
+  
+
+[PASS          ] correlation_significance                      38ms
+  Variables: burnout_total|satisfaction_total|stress_score|performance_score
+  
+
+[PASS          ] correlation_effect_sizes                      42ms
+  Variables: burnout_total|stress_score|performance_score|wellbeing_index
+  
+
+[PASS          ] correlation_splom                             38ms
+  Variables: burnout_total|satisfaction_total|stress_score|performance_score
+  
+
+[PASS          ] simple_linear_regression                      13ms
+  Variables: burnout_total|stress_score
+  p = 0.0
+  The Simple Linear Regression yielded F = 2169.872, p < .001, which is less than α = 0.05. Therefore, the null hypothesis is rejected.
+
+[PASS          ] linear_regression                             11ms
+  Variables: burnout_total|stress_score
+  p = 0.0
+  The Simple Linear Regression yielded F = 2169.872, p < .001, which is less than α = 0.05. Therefore, the null hypothesis is rejected.
+
+[PASS          ] multiple_regression                           39ms
+  Variables: performance_score|workload_score|autonomy_score|satisfaction_total
+  p = 0.0
+  The Multiple Linear Regression yielded F = 50.418, p < .001, which is less than α = 0.05. Therefore, the null hypothesis is rejected.
+
+[PASS          ] logistic_regression                           28ms
+  Variables: turnover_intent|burnout_total|satisfaction_total|tenure_years
+  p = 0.0
+  The Logistic Regression yielded χ² = 259.345, p < .001, which is less than α = 0.05. Therefore, the null hypothesis is rejected.
+
+[PASS          ] ordinal_regression                           460ms
+  Variables: perf_rating_1to4|satisfaction_total|workload_score
+  
+
+[PASS          ] multinomial_logistic                          51ms
+  Variables: department|age|salary|satisfaction_total
+  
+
+[PASS          ] hierarchical_regression                       25ms
+  Variables: performance_score|age|tenure_years|workload_score|burnout_total
+  
+
+[PASS          ] stepwise_regression                           88ms
+  Variables: wellbeing_index|burnout_total|satisfaction_total|workload_score|autonomy_score
+  p = 0.0
+  The Stepwise Regression yielded F = 390.625, p < .001, which is less than α = 0.05. Therefore, the null hypothesis is rejected.
+
+[PASS          ] mediation_analysis                         10184ms
+  Variables: workload_score|burnout_total|performance_score
+  
+
+[PASS          ] moderation_analysis                           15ms
+  Variables: workload_score|autonomy_score|performance_score
+  
+
+[PASS          ] quantile_regression                           99ms
+  Variables: salary|age|tenure_years
+  
+
+[PASS          ] poisson_regression                            18ms
+  Variables: absences_count|burnout_total|workload_score|age
+  
+
+[PASS          ] negative_binomial                             65ms
+  Variables: absences_count|burnout_total|workload_score
+  
+
+[PASS          ] pca                                           12ms
+  Variables: burnout_total|satisfaction_total|stress_score|wellbeing_index|performance_score|workload_score|autonomy_score
+  
+
+[PASS          ] factor_analysis                               35ms
+  Variables: burnout_1|burnout_2|burnout_3|satisfaction_1|satisfaction_2|satisfaction_3|engagement_1|engagement_2
+  
+
+[PASS          ] confirmatory_fa                             1227ms
+  Variables: burnout_1|burnout_2|burnout_3|satisfaction_1|satisfaction_2|satisfaction_3
+  CFA: CFI=0.444, RMSEA=0.456. poor fit — consider model revision.
+
+[PASS          ] discriminant_analysis                         15ms
+  Variables: department|age|salary|burnout_total|satisfaction_total
+  
+
+[PASS          ] cluster_analysis                            3105ms
+  Variables: burnout_total|satisfaction_total|stress_score|performance_score
+  
+
+[PASS          ] sem                                           81ms
+  Variables: burnout_1|burnout_2|burnout_3|satisfaction_1|satisfaction_2|satisfaction_3
+  SEM: CFI=0.693, RMSEA=0.384.
+
+[PASS          ] path_analysis                                  8ms
+  Variables: workload_score|burnout_total|satisfaction_total|performance_score
+  
+
+[PASS          ] kaplan_meier                                  39ms
+  Variables: time_to_promotion|promotion_event
+  Median survival time = 31.0000 (time_to_promotion units).
+
+[PASS          ] survival_analysis                             28ms
+  Variables: time_to_promotion|promotion_event
+  Median survival time = 31.0000 (time_to_promotion units).
+
+[PASS          ] log_rank_test                                120ms
+  Variables: time_to_promotion|promotion_event|gender
+  p = 0.2558
+  χ²(2) = 2.727, p = 0.2558. No significant difference in survival curves.
+
+[PASS          ] cox_ph_regression                            181ms
+  Variables: time_to_promotion|promotion_event|performance_score|age|burnout_total
+  
+
+[PASS          ] cox_regression                               156ms
+  Variables: time_to_promotion|promotion_event|performance_score|tenure_years
+  
+
+[PASS          ] weibull_aft                                  513ms
+  Variables: time_to_promotion|promotion_event|performance_score
+  
+
+[PASS          ] nelson_aalen                                  23ms
+  Variables: time_to_promotion|promotion_event
+  
+
+[PASS          ] life_table                                    12ms
+  Variables: time_to_promotion|promotion_event
+  
+
+[PASS          ] ph_assumption_test                           157ms
+  Variables: time_to_promotion|promotion_event|performance_score
+  PH assumption holds for all covariates.
+
+[PASS          ] competing_risks                               22ms
+  Variables: time_to_promotion|promotion_event|gender
+  
+
+[PASS          ] difference_in_differences                     15ms
+  Variables: received_training|observation_month|performance_score
+  p = 0.9778
+  DiD = 0.0002 (SE=0.0065, p=0.9778). Non-significant treatment effect.
+
+[PASS          ] instrumental_variables                        17ms
+  Variables: autonomy_score|workload_score|performance_score
+  p = 0.0
+  2SLS estimate = -1.6476 (p = 0.0000). First stage F > 10 (strong instrument).
+
+[PASS          ] propensity_score_matching                     31ms
+  Variables: received_training|age|tenure_years|burnout_total|performance_score
+  p = 0.7516
+  ATT = -0.2545, p = 0.7516 (220 matched pairs). Non-significant treatment effect.
+
+[PASS          ] regression_discontinuity                      11ms
+  Variables: tenure_years|performance_score|promoted
+  p = 0.6659
+  RD = -0.2431 (SE=0.5630, p=0.6659) at threshold=3.38. No significant discontinuity.
+
+[PASS          ] bayesian_ab_test                              24ms
+  Variables: is_manager|performance_score
+  P(B > A) = 0.3748. Lift = -0.74%. Winner: inconclusive.
+
+[NOT_IN_REGISTRY] interrupted_time_series                        0ms
+  Variables: received_training|observation_month|performance_score
+  Error: 'interrupted_time_series' not in registry
+
+[PASS          ] synthetic_control                             17ms
+  Variables: performance_score|observation_month|department
+  ATT (post-treatment) = 0.0420. RMSPE pre = 0.4044.
+
+[PASS          ] autocorrelation                               26ms
+  Variables: kpi_score
+  
+
+[PASS          ] partial_autocorrelation                        8ms
+  Variables: kpi_score
+  
+
+[PASS          ] ljung_box                                      2ms
+  Variables: kpi_score
+  p = 0.0
+  Q(20) = 1399.384, p = 0.0000. Significant autocorrelation detected.
+
+[PASS          ] seasonal_decompose                             8ms
+  Variables: kpi_score
+  
+
+[PASS          ] arima_model                                  143ms
+  Variables: kpi_score
+  
+
+[PASS          ] time_series                                  116ms
+  Variables: kpi_score
+  
+
+[PASS          ] sarima_model                                4220ms
+  Variables: kpi_score
+  
+
+[PASS          ] exponential_smoothing                        432ms
+  Variables: kpi_score
+  
+
+[PASS          ] granger_causality                             19ms
+  Variables: kpi_score|stress_score
+  stress_score does not Granger-cause kpi_score.
+
+[PASS          ] var_model                                     29ms
+  Variables: kpi_score|performance_score|stress_score
+  
+
+[PASS          ] mann_kendall                                 150ms
+  Variables: kpi_score
+  p = 0.0
+  Significant upward trend. Z = 12.274, p = 0.0000. Sen's slope = 0.0498.
+
+[PASS          ] linear_mixed_model                           134ms
+  Variables: performance_score|team|satisfaction_total|workload_score
+  
+
+[PASS          ] linear_mixed_effects                          92ms
+  Variables: wellbeing_index|department|burnout_total|age
+  
+
+[PASS          ] glmm                                          27ms
+  Variables: turnover_intent|department|burnout_total|satisfaction_total
+  
+
+[PASS          ] icc                                         1016ms
+  Variables: burnout_1|burnout_2|burnout_3|burnout_4|burnout_5
+  p = 0.0
+  ICC = 0.6972 (moderate reliability).
+
+[PASS          ] random_effects_anova                           4ms
+  Variables: department|performance_score
+  p = 0.3455
+  F(4,345) = 1.123, p = 0.3455. Non-significant group effect. ICC = 0.0018.
+
+[PASS          ] cross_classified_mlm                         172ms
+  Variables: performance_score|team|department|workload_score
+  
+
+[PASS          ] growth_curve_model                          1299ms
+  Variables: performance_score|team|observation_month
+  Average trajectory: intercept = 3.4254, slope = -0.0041 per time unit.
+
+[PASS          ] multilevel_mediation                         577ms
+  Variables: workload_score|burnout_total|performance_score|team
+  
+
+[PASS          ] gee                                           22ms
+  Variables: turnover_intent|department|burnout_total|age
+  

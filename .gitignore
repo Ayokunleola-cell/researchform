@@ -12,16 +12,51 @@ __pycache__/
 .env
 .venv/
 venv/
+venv_312/
 env/
 ENV/
 *.log
+*.egg-info/
+.pytest_cache/
+htmlcov/
+.coverage
 
 # OS
 .DS_Store
 Thumbs.db
 
-backend/python_312/
-backend/venv_312/
+# Databases & runtime artifacts
 *.db
-
+*.db-shm
+*.db-wal
 *.exe
+backend/python_312/
+
+# Storage (user uploads, generated charts/reports — never commit)
+backend/storage/
+storage/
+
+# Scratch / one-off dev scripts
+frontend/scratch/
+backend/check_*.py
+backend/fix_*.py
+backend/add_*.py
+backend/merge*.py
+backend/migrate_*.py
+backend/dev_db.py
+backend/diag.py
+backend/gen_otp.py
+backend/get_otp.py
+backend/inspect_db.py
+backend/make_admin.py
+backend/seed_*.py
+backend/set_*.py
+backend/test_*.py
+backend/create_tables.py
+backend/auto_install.py
+backend/run_readiness_tests.py
+backend/full_qa_test.py
+backend/qa_results.txt
+
+# TypeScript build info
+*.tsbuildinfo

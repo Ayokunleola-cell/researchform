@@ -1,0 +1,133 @@
+SURVEY DATASET CODEBOOK
+"Employee Wellbeing, Stress & Organizational Performance Study"
+N = 350 participants | Variables = 56
+================================================================
+
+STUDY DESIGN
+------------
+Cross-sectional + longitudinal hybrid survey conducted across 5 departments
+and 3 geographic regions. Includes pre/post stress intervention measures,
+panel observations over 24 months, and linked HR records.
+
+GROUPING VARIABLES (Categorical / Nominal)
+-------------------------------------------
+employee_id         : Unique participant ID (1–350)
+department          : Work unit [Engineering, Marketing, HR, Finance, Operations]
+region              : Geographic area [North, South, East]
+team                : Team assignment [T1–T10]
+manager_id          : Direct manager [MGR1–MGR20]
+gender              : Gender identity [Male, Female, Non-binary]
+education           : Highest qualification [High School, Bachelor, Master, PhD]
+employment_type     : Contract type [Full-time, Part-time, Contract]
+stress_category     : Stress level [Low, Moderate, High] — derived from stress_score
+
+TIME / PANEL VARIABLES
+-----------------------
+observation_month   : Survey wave (1–24 months)
+quarter             : Fiscal quarter (1–8)
+fiscal_year         : Year of observation (2023 or 2024)
+kpi_score           : Monthly KPI metric (continuous, seasonal trend + noise)
+
+DEMOGRAPHIC CONTINUOUS
+-----------------------
+age                 : Age in years (22–65)
+tenure_years        : Years at current organization (0.5–35)
+years_experience    : Total work experience in years (0.5–40)
+is_manager          : Manager status [0=No, 1=Yes]
+
+BURNOUT SCALE (5-item, Likert 1–5; higher = more burned out)
+-------------------------------------------------------------
+burnout_1–burnout_5 : Individual item responses (1–5)
+burnout_total       : Mean score across 5 items (1.0–5.0)
+Expected Cronbach α ≈ 0.85
+
+SATISFACTION SCALE (5-item, Likert 1–5; higher = more satisfied)
+-----------------------------------------------------------------
+satisfaction_1–satisfaction_5 : Individual responses (1–5)
+satisfaction_total  : Mean score (1.0–5.0)
+Expected Cronbach α ≈ 0.87
+
+ENGAGEMENT SCALE (3-item, Likert 1–5)
+---------------------------------------
+engagement_1–engagement_3 : Item responses (1–5)
+
+CONTINUOUS OUTCOMES
+--------------------
+salary              : Annual salary in GBP (£28,000–£180,000; log-normal)
+performance_score   : Supervisor-rated performance (1.0–5.0)
+productivity_pct    : Self-reported productivity % (0–100)
+stress_score        : Derived stress index (0–100; higher = more stressed)
+wellbeing_index     : Composite wellbeing score (0–100; higher = better)
+workload_score      : Perceived workload (10–70; higher = more workload)
+autonomy_score      : Job autonomy perception (10–60; higher = more autonomy)
+social_support      : Perceived social support (1–5; higher = more support)
+
+PRE/POST INTERVENTION (Repeated Measures)
+------------------------------------------
+stress_pre          : Stress score before intervention (0–100)
+stress_post         : Stress score after 12-week program (0–100)
+stress_3m_followup  : Stress score at 3-month follow-up (0–100)
+Note: intervention reduces stress by ~18–21% on average
+
+BINARY OUTCOMES [0 = No, 1 = Yes]
+-----------------------------------
+turnover_intent     : Intention to leave the organization
+promoted            : Was promoted during observation period
+received_training   : Participated in formal training program
+
+COMPETENCY TEST ITEMS [0=Fail, 1=Pass] — for KR-20 Reliability
+----------------------------------------------------------------
+comp_item1–comp_item6 : Binary knowledge assessment items
+Expected KR-20 ≈ 0.70–0.80
+
+COUNT VARIABLES (non-negative integers)
+-----------------------------------------
+absences_count      : Days absent in last 12 months (0–30; Poisson λ≈5)
+training_sessions   : # training sessions attended (0–20; Poisson λ=4)
+incidents_count     : # workplace incidents reported (0–15; Poisson λ=1.5)
+accomplishments     : # achievements logged (0–25; Poisson λ=6)
+
+SURVIVAL ANALYSIS VARIABLES
+-----------------------------
+time_to_promotion   : Months from hire to promotion or end of study (6–120)
+promotion_event     : Event indicator [1=promoted, 0=censored]
+
+ORDINAL VARIABLES
+------------------
+perf_rating_1to4    : Ordinal performance band [1=Poor, 2=Fair, 3=Good, 4=Excellent]
+
+SUGGESTED VARIABLE MAPPINGS FOR STATISTICAL TESTS
+===================================================
+Independent t-test    : gender × performance_score / salary / wellbeing_index
+Paired t-test         : stress_pre × stress_post
+One-way ANOVA         : department × performance_score / salary / productivity_pct
+Two-way ANOVA         : department × gender × performance_score
+ANCOVA                : department × wellbeing_index (covariate: age)
+MANOVA                : department × [performance_score, wellbeing_index, stress_score]
+Repeated ANOVA        : [stress_pre, stress_post, stress_3m_followup]
+Pearson Correlation   : satisfaction_total × performance_score
+Spearman Correlation  : burnout_total × absences_count
+Chi-Square            : department × gender
+Logistic Regression   : turnover_intent ← burnout_total + satisfaction_total + tenure_years
+Poisson Regression    : absences_count ← burnout_total + workload_score + age
+Neg. Binomial         : absences_count ← burnout_total + workload_score
+Ordinal Regression    : perf_rating_1to4 ← engagement_1 + satisfaction_total
+Multinomial Logistic  : department ← age + salary + satisfaction_total
+Multiple Regression   : performance_score ← satisfaction_total + workload_score + autonomy_score
+Mediation             : workload → burnout_total → performance_score
+Moderation            : workload × autonomy_score → performance_score
+Cox PH                : time_to_promotion + promotion_event ← performance_score + tenure_years
+Kaplan-Meier          : time_to_promotion + promotion_event
+Log-rank Test         : time_to_promotion + promotion_event + gender
+LMM/LME               : performance_score ← satisfaction_total | team (random)
+GLMM                  : turnover_intent ← burnout_total + age | department (random)
+GEE                   : turnover_intent ← burnout_total + satisfaction_total | team
+ICC                   : [burnout_1, burnout_2, burnout_3, burnout_4, burnout_5]
+Cronbach α            : [burnout_1, burnout_2, burnout_3, burnout_4, burnout_5]
+KR-20                 : [comp_item1, comp_item2, comp_item3, comp_item4, comp_item5, comp_item6]
+Time Series           : kpi_score (observation_month as index)
+Mann-Kendall          : kpi_score
+ARIMA                 : kpi_score
+Kaplan-Meier          : time_to_promotion + promotion_event
+Factor Analysis       : [burnout_1..5, satisfaction_1..5, engagement_1..3]
+PCA                   : [burnout_total, satisfaction_total, stress_score, wellbeing_index, performance_score, workload_score, autonomy_score]

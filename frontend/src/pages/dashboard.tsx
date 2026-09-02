@@ -1,13 +1,10 @@
 // src/pages/dashboard.tsx
 import React, { useEffect, useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
+import PageHeader from '../components/ui/PageHeader';
+import ResearchWorkflow from '../components/ui/ResearchWorkflow';
 import Link from 'next/link';
-import Head from 'next/head';
-import {
-  FileText, BarChart3, Users, TrendingUp, ArrowRight,
-  Plus, Clock, CheckCircle, AlertCircle, Zap, BookOpen,
-  Upload, FlaskConical
-} from 'lucide-react';
+import { RiBookOpenFill, RiAddFill, RiGroupFill, RiArrowRightFill, RiFlashlightFill, RiFlaskFill, RiUpload2Fill, RiBarChart2Fill, RiErrorWarningFill, RiFileTextFill, RiShoppingBag3Fill, RiTimeFill, RiCheckboxCircleFill, RiRobotFill, RiLineChartFill } from 'react-icons/ri';
 import { surveysApi, analysisApi } from '../lib/api';
 
 // ─── Mock data used when backend is offline ───────────────────────
@@ -22,15 +19,15 @@ const MOCK_JOBS = [
 ];
 
 const STATUS_MAP: Record<string, { label: string; cls: string; icon: any }> = {
-  draft:         { label: 'Draft',         cls: 'badge-neutral',  icon: Clock },
-  active:        { label: 'Active',        cls: 'badge-success',  icon: CheckCircle },
-  closed:        { label: 'Closed',        cls: 'badge-warning',  icon: AlertCircle },
-  analysed:      { label: 'Analysed',      cls: 'badge-brand',    icon: BarChart3 },
-  pending:       { label: 'Pending',       cls: 'badge-neutral',  icon: Clock },
-  decode_review: { label: 'Decode Review', cls: 'badge-warning',  icon: AlertCircle },
-  analysing:     { label: 'Analysing',     cls: 'badge-brand',    icon: TrendingUp },
-  complete:      { label: 'Complete',      cls: 'badge-success',  icon: CheckCircle },
-  failed:        { label: 'Failed',        cls: 'badge-danger',   icon: AlertCircle },
+  draft:         { label: 'Draft',         cls: 'badge-neutral',  icon: RiTimeFill},
+  active:        { label: 'Active',        cls: 'badge-success',  icon: RiCheckboxCircleFill},
+  closed:        { label: 'Closed',        cls: 'badge-warning',  icon: RiErrorWarningFill},
+  analysed:      { label: 'Analysed',      cls: 'badge-brand',    icon: RiBarChart2Fill},
+  pending:       { label: 'Pending',       cls: 'badge-neutral',  icon: RiTimeFill},
+  decode_review: { label: 'Decode Review', cls: 'badge-warning',  icon: RiErrorWarningFill},
+  analysing:     { label: 'Analysing',     cls: 'badge-brand',    icon: RiLineChartFill},
+  complete:      { label: 'Complete',      cls: 'badge-success',  icon: RiCheckboxCircleFill},
+  failed:        { label: 'Failed',        cls: 'badge-danger',   icon: RiErrorWarningFill},
 };
 
 function StatCard({ icon: Icon, label, value, delta, color, delay = 0 }: any) {
@@ -52,23 +49,30 @@ function StatCard({ icon: Icon, label, value, delta, color, delay = 0 }: any) {
 }
 
 const PIPELINE_STAGES = [
-  { n: 1, label: 'Data Assembly',  desc: 'Survey / file' },
-  { n: 2, label: 'Data Decode',    desc: 'Clean & classify', star: true },
-  { n: 3, label: 'Brief Parsing',  desc: 'Objectives' },
-  { n: 4, label: 'Test Selection', desc: 'AI selects tests' },
-  { n: 5, label: 'Code Gen',       desc: 'Python code' },
-  { n: 6, label: 'Code Exec',      desc: 'Run safely' },
-  { n: 7, label: 'Visualisation',  desc: 'Charts' },
-  { n: 8, label: 'Report Writing', desc: 'AI narrative' },
-  { n: 9, label: 'Doc Build',      desc: 'Chapter 4 .docx' },
+  { n: 1, label: 'Inspection',     desc: 'Clean & inspect' },
+  { n: 2, label: 'Data Decode',    desc: 'Classify vars' },
+  { n: 3, label: 'Context',        desc: 'AI maps DV/IV' },
+  { n: 4, label: 'Descriptive',    desc: 'Stats + norms' },
+  { n: 5, label: 'Inferential',    desc: 'Run all tests' },
+  { n: 6, label: 'Visualisation',  desc: 'Charts & plots' },
+  { n: 7, label: 'Report',         desc: 'Chapter 4 .docx' },
 ];
 
 const QUICK_ACTIONS = [
-  { icon: FileText,   label: 'Build a new survey',        desc: 'Create questions & share with respondents', href: '/surveys/new',   color: 'var(--brand)' },
-  { icon: Upload,     label: 'Upload existing data',      desc: 'SPSS .sav, Excel, CSV files',               href: '/analysis',      color: 'var(--info)' },
-  { icon: FlaskConical, label: 'Run statistical analysis', desc: 'AI-powered test selection & execution',    href: '/analysis',      color: 'var(--warning)' },
-  { icon: BookOpen,   label: 'Generate Chapter 4 report', desc: 'Formatted Word document output',            href: '/reports',       color: 'var(--success)' },
+  { icon: RiFileTextFill,   label: 'Build a new survey',        desc: 'Create questions & share with respondents', href: '/surveys/new',   color: 'var(--brand)' },
+  { icon: RiUpload2Fill,     label: 'Upload existing data',      desc: 'SPSS .sav, Excel, CSV files',               href: '/analysis',      color: 'var(--info)' },
+  { icon: RiFlaskFill, label: 'Run statistical analysis', desc: 'AI-powered test selection & execution',    href: '/analysis',      color: 'var(--warning)' },
+  { icon: RiBookOpenFill,   label: 'Generate report', desc: 'Formatted Word document output',            href: '/reports',       color: 'var(--success)' },
+  { icon: RiRobotFill,          label: 'Chat with AI analysis result', desc: 'Ask questions about your data',          href: '/chat',      color: 'var(--info)' },
 ];
+
+const MARKETPLACE_ACTION = {
+  icon: RiShoppingBag3Fill,
+  label: 'Browse data marketplace',
+  desc: 'Find or sell research datasets',
+  href: '/marketplace',
+  color: 'var(--brand)',
+};
 
 export default function DashboardPage() {
   const [surveys, setSurveys] = useState<any[]>([]);
@@ -78,14 +82,16 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem('rf_user');
-    if (stored) setUser(JSON.parse(stored));
+    if (stored && stored !== 'undefined') {
+      try { setUser(JSON.parse(stored)); } catch (e) { localStorage.removeItem('rf_user'); }
+    }
 
     Promise.all([
-      surveysApi.list().catch(() => ({ data: MOCK_SURVEYS })),
-      analysisApi.listJobs().catch(() => ({ data: MOCK_JOBS })),
+      surveysApi.list().catch(() => ({ data: [] })),
+      analysisApi.listJobs().catch(() => ({ data: [] })),
     ]).then(([sv, jb]) => {
-      setSurveys((sv.data?.length ? sv.data : MOCK_SURVEYS).slice(0, 5));
-      setJobs((jb.data?.length ? jb.data : MOCK_JOBS).slice(0, 5));
+      setSurveys((Array.isArray(sv.data) ? sv.data : []).slice(0, 5));
+      setJobs((Array.isArray(jb.data) ? jb.data : []).slice(0, 5));
     }).finally(() => setLoading(false));
   }, []);
 
@@ -101,52 +107,49 @@ export default function DashboardPage() {
   };
 
   return (
-    <AppLayout>
-      <Head>
-        <title>Dashboard — ResearchForm</title>
-      </Head>
-      <div className="max-w-6xl mx-auto space-y-8">
-
-        {/* Header */}
-        <div className="flex items-start justify-between flex-wrap gap-4 animate-fade-in">
-          <div>
-            <p style={{ color: 'var(--text-3)', fontSize: 13, marginBottom: 4 }}>{greeting()},</p>
-            <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 28, color: 'var(--text)', marginBottom: 4 }}>
-              {user?.full_name || 'Researcher'} 👋
-            </h1>
-            <p style={{ color: 'var(--text-2)', fontSize: 14 }}>
-              {user?.institution || 'ResearchForm'} · Here's your research overview
-            </p>
-          </div>
-          <Link href="/surveys/new">
-            <button className="btn btn-primary">
-              <Plus size={16} />
-              New Survey
-            </button>
-          </Link>
-        </div>
+    <AppLayout
+      title="Dashboard"
+      description={user?.institution ? `${user.institution}` : 'Your research overview'}
+      headerActions={
+        <Link href="/surveys/new">
+          <button type="button" className="btn btn-primary btn-sm">
+            <RiAddFill size={16} />
+            New Survey
+          </button>
+        </Link>
+      }
+    >
+      <div className="page-container page-stack">
+        <PageHeader
+          title={`${greeting()}, ${user?.full_name?.split(' ')[0] || 'Researcher'}`}
+          description="Collect data with surveys, run AI analysis, and export Chapter 4 reports — all in one place."
+          actions={
+            <Link href="/analysis">
+              <button type="button" className="btn btn-secondary btn-sm">
+                <RiUpload2Fill size={15} />
+                Upload data
+              </button>
+            </Link>
+          }
+        />
+        <ResearchWorkflow className="-mt-8 mb-2" />
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger">
-          <StatCard icon={FileText}    label="Total Surveys"       value={loading ? '—' : surveys.length}     color="var(--brand)"   delay={0} />
-          <StatCard icon={Users}       label="Total Responses"     value={loading ? '—' : totalResponses}     color="var(--success)" delay={60}  delta={totalResponses > 0 ? 12 : undefined} />
-          <StatCard icon={CheckCircle} label="Active Surveys"      value={loading ? '—' : activeCount}        color="var(--info)"    delay={120} />
-          <StatCard icon={BarChart3}   label="Completed Analyses"  value={loading ? '—' : completeJobs}       color="var(--warning)" delay={180} />
+          <StatCard icon={RiFileTextFill}    label="Total Surveys"       value={loading ? '—' : surveys.length}     color="var(--brand)"   delay={0} />
+          <StatCard icon={RiGroupFill}       label="Total Responses"     value={loading ? '—' : totalResponses}     color="var(--success)" delay={60}  delta={totalResponses > 0 ? 12 : undefined} />
+          <StatCard icon={RiCheckboxCircleFill} label="Active Surveys"      value={loading ? '—' : activeCount}        color="var(--info)"    delay={120} />
+          <StatCard icon={RiBarChart2Fill}   label="Completed Analyses"  value={loading ? '—' : completeJobs}       color="var(--warning)" delay={180} />
         </div>
 
         {/* Two-col content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* Recent Surveys */}
-          <div className="card p-6 animate-slide-up" style={{ animationDelay: '100ms' }}>
-            <div className="flex items-center justify-between mb-5">
-              <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>
-                Recent Surveys
-              </h2>
-              <Link href="/surveys">
-                <span className="text-sm flex items-center gap-1" style={{ color: 'var(--brand)', cursor: 'pointer' }}>
-                  View all <ArrowRight size={14} />
-                </span>
+          <div className="card section-card animate-slide-up" style={{ animationDelay: '100ms' }}>
+            <div className="section-card-header">
+              <h2 className="section-title">Recent Surveys</h2>
+              <Link href="/surveys" className="section-link">
+                View all <RiArrowRightFill size={14} />
               </Link>
             </div>
 
@@ -156,33 +159,28 @@ export default function DashboardPage() {
               </div>
             ) : surveys.length === 0 ? (
               <div className="text-center py-10">
-                <FileText size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
+                <RiFileTextFill size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
                 <p style={{ color: 'var(--text-2)', fontSize: 14 }}>No surveys yet</p>
                 <Link href="/surveys/new">
-                  <button className="btn btn-primary btn-sm mt-3"><Plus size={14} /> Create your first</button>
+                  <button className="btn btn-primary btn-sm mt-3"><RiAddFill size={14} /> Create your first</button>
                 </Link>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col">
                 {surveys.map((s: any) => {
                   const status = STATUS_MAP[s.status] || STATUS_MAP.draft;
                   return (
-                    <Link key={s.id} href={`/surveys/${s.id}`}>
-                      <div
-                        className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
-                        style={{ background: 'var(--surface-2)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface-2)')}
-                      >
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(99,102,241,0.12)' }}>
-                          <FileText size={16} style={{ color: 'var(--brand)' }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{s.title}</p>
-                          <p style={{ color: 'var(--text-3)', fontSize: 12 }}>{s.response_count || 0} responses · {s.question_count || 0} questions</p>
-                        </div>
-                        <span className={`badge ${status.cls} flex-shrink-0`} style={{ fontSize: 11 }}>{status.label}</span>
+                    <Link key={s.id} href={`/surveys/${s.id}`} className="list-row">
+                      <div className="list-row-icon" style={{ background: 'rgba(99,102,241,0.12)' }}>
+                        <RiFileTextFill size={16} style={{ color: 'var(--brand)' }} />
                       </div>
+                      <div className="list-row-body">
+                        <p className="list-row-title">
+                          {s.title && !/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(s.title) ? s.title : 'Untitled Survey'}
+                        </p>
+                        <p className="list-row-meta">{s.response_count || 0} responses · {s.question_count || 0} questions</p>
+                      </div>
+                      <span className={`badge ${status.cls} flex-shrink-0`} style={{ fontSize: 11 }}>{status.label}</span>
                     </Link>
                   );
                 })}
@@ -190,16 +188,11 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Analysis Jobs */}
-          <div className="card p-6 animate-slide-up" style={{ animationDelay: '160ms' }}>
-            <div className="flex items-center justify-between mb-5">
-              <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>
-                Analysis Jobs
-              </h2>
-              <Link href="/analysis">
-                <span className="text-sm flex items-center gap-1" style={{ color: 'var(--brand)', cursor: 'pointer' }}>
-                  View all <ArrowRight size={14} />
-                </span>
+          <div className="card section-card animate-slide-up" style={{ animationDelay: '160ms' }}>
+            <div className="section-card-header">
+              <h2 className="section-title">Analysis Jobs</h2>
+              <Link href="/analysis" className="section-link">
+                View all <RiArrowRightFill size={14} />
               </Link>
             </div>
 
@@ -209,36 +202,35 @@ export default function DashboardPage() {
               </div>
             ) : jobs.length === 0 ? (
               <div className="text-center py-10">
-                <BarChart3 size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
+                <RiBarChart2Fill size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
                 <p style={{ color: 'var(--text-2)', fontSize: 14 }}>No analyses yet</p>
                 <Link href="/analysis">
-                  <button className="btn btn-primary btn-sm mt-3"><Zap size={14} /> Start analysis</button>
+                  <button className="btn btn-primary btn-sm mt-3"><RiFlashlightFill size={14} /> Start analysis</button>
                 </Link>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col">
                 {jobs.map((j: any) => {
                   const status = STATUS_MAP[j.status] || STATUS_MAP.pending;
                   const Icon = status.icon;
                   return (
-                    <Link key={j.id} href={`/analysis/${j.id}`}>
-                      <div
-                        className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
-                        style={{ background: 'var(--surface-2)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface-2)')}
-                      >
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(99,102,241,0.08)' }}>
-                          <Icon size={16} style={{ color: 'var(--brand)' }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{j.survey_title || 'File Upload'}</p>
-                          <p style={{ color: 'var(--text-3)', fontSize: 12 }}>
-                            {j.n_rows ? `${j.n_rows} rows · ${j.n_columns} variables` : 'Pending'}
-                          </p>
-                        </div>
-                        <span className={`badge ${status.cls} flex-shrink-0`} style={{ fontSize: 11 }}>{status.label}</span>
+                    <Link key={j.id} href={`/analysis/${j.id}`} className="list-row">
+                      <div className="list-row-icon" style={{ background: 'rgba(99,102,241,0.08)' }}>
+                        <Icon size={16} style={{ color: 'var(--brand)' }} />
                       </div>
+                      <div className="list-row-body">
+                        <p className="list-row-title">
+                          {(() => {
+                            const t = j.project_brief?.topic || j.survey_title;
+                            if (t && !/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(t)) return t;
+                            return 'File Upload';
+                          })()}
+                        </p>
+                        <p className="list-row-meta">
+                          {j.n_rows ? `${j.n_rows} rows · ${j.n_columns} variables` : 'Pending'}
+                        </p>
+                      </div>
+                      <span className={`badge ${status.cls} flex-shrink-0`} style={{ fontSize: 11 }}>{status.label}</span>
                     </Link>
                   );
                 })}
@@ -247,13 +239,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick actions */}
         <div className="animate-slide-up" style={{ animationDelay: '200ms' }}>
-          <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--text)', marginBottom: 16 }}>
-            Quick Actions
-          </h2>
+          <p className="section-label">Quick actions</p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {QUICK_ACTIONS.map(({ icon: Icon, label, desc, href, color }) => (
+            {[...QUICK_ACTIONS, MARKETPLACE_ACTION].map(({ icon: Icon, label, desc, href, color }) => (
               <Link key={label} href={href}>
                 <div
                   className="card card-hover p-4 cursor-pointer flex items-center gap-4"
@@ -265,50 +254,14 @@ export default function DashboardPage() {
                     <p className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{label}</p>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{desc}</p>
                   </div>
-                  <ArrowRight size={16} style={{ color: 'var(--text-3)', flexShrink: 0 }} />
+                  <RiArrowRightFill size={16} style={{ color: 'var(--text-3)', flexShrink: 0 }} />
                 </div>
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Pipeline overview */}
-        <div className="card p-6 animate-slide-up" style={{ animationDelay: '240ms' }}>
-          <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--text)', marginBottom: 20 }}>
-            9-Stage Analysis Pipeline
-          </h2>
-          <div className="flex items-center overflow-x-auto pb-2" style={{ gap: 0 }}>
-            {PIPELINE_STAGES.map((stage, i) => (
-              <React.Fragment key={stage.n}>
-                <div className="flex flex-col items-center text-center flex-shrink-0" style={{ minWidth: 72 }}>
-                  <div
-                    style={{
-                      width: 34, height: 34, borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, fontWeight: 700, marginBottom: 6,
-                      background: stage.star ? 'var(--warning)' : 'var(--surface-2)',
-                      color: stage.star ? '#fff' : 'var(--text-3)',
-                      border: `2px solid ${stage.star ? 'var(--warning)' : 'var(--border)'}`,
-                      boxShadow: stage.star ? '0 0 12px rgba(245,158,11,0.3)' : 'none',
-                    }}
-                  >
-                    {stage.n}
-                  </div>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>{stage.label}</p>
-                  <p style={{ fontSize: 9, color: 'var(--text-3)', marginTop: 2 }}>{stage.desc}</p>
-                </div>
-                {i < PIPELINE_STAGES.length - 1 && (
-                  <div style={{ flex: 1, height: 2, background: 'var(--border)', minWidth: 10, marginBottom: 22, flexShrink: 0 }} />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-          <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 12 }}>
-            ★ Stage 2 (Data Decode) pauses for your review — confirm variable types and roles before analysis proceeds.
-          </p>
         </div>
-
-      </div>
-    </AppLayout>
-  );
+      </AppLayout>
+    );
 }

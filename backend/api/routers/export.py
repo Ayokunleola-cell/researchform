@@ -30,7 +30,9 @@ async def export_csv(survey_id: str, db: AsyncSession = Depends(get_db), user: U
 
     output = io.StringIO()
     qs_non_header = [q for q in questions if q.type != "section_header"]
-    headers = ["response_id", "submitted_at"] + [q.variable_name or f"q{i+1}" for i, q in enumerate(qs_non_header)]
+    def col_header(q, i):
+        return q.text or q.variable_name or f"q{i+1}"
+    headers = ["participant_id", "submitted_at"] + [col_header(q, i) for i, q in enumerate(qs_non_header)]
     writer = csv.writer(output)
     writer.writerow(headers)
 
@@ -65,8 +67,10 @@ async def export_xlsx(survey_id: str, db: AsyncSession = Depends(get_db), user: 
     ws = wb.active
     ws.title = "Responses"
 
-    # Header row
-    headers = ["Response ID", "Submitted At"] + [q.variable_name or f"q{i+1}" for i, q in enumerate(qs_non_header)]
+    # Header row — use real question text, fallback to variable_name, then q{n}
+    def col_header(q, i):
+        return q.text or q.variable_name or f"q{i+1}"
+    headers = ["Participant ID", "Submitted At"] + [col_header(q, i) for i, q in enumerate(qs_non_header)]
     for col, h in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col, value=h)
         cell.font = Font(bold=True, color="FFFFFF")
@@ -128,7 +132,7 @@ async def export_sav(survey_id: str, db: AsyncSession = Depends(get_db), user: U
     for q in qs_non_header:
         vname = q.variable_name or f"q{q.position+1}"
         column_labels[vname] = q.text[:60] if q.text else vname
-        if q.type in ("likert", "single_choice", "rating") and q.options:
+        if q.type in ("likert", "single_choice", "dropdown", "rating", "nps", "rank_order") and q.options:
             labels = {}
             for i, opt in enumerate(q.options):
                 labels[i + 1] = str(opt)

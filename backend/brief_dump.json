@@ -1,0 +1,14 @@
+{
+  "Title": "2026 Comprehensive Health, Sleep Quality & Lifestyle Study",
+  "Brief": {
+    "research_goal": "Investigate correlations between sleep duration, exercise frequency, stress, and systolic blood pressure.",
+    "target_audience": "Adult demographic participants across varying physical activity levels.",
+    "dependent_variable": "systolic_bp",
+    "independent_variable": "sleep_hours",
+    "hypotheses": [
+      "Increased daily sleep hours correlates with lower systolic blood pressure.",
+      "Higher stress levels correlate with reduced physical energy.",
+      "Exercise frequency significantly impacts overall mental well-being."
+    ]
+  }
+}

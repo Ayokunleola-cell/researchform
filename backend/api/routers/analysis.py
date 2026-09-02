@@ -1847,7 +1847,7 @@ Return ONLY valid JSON. No markdown, no explanation outside JSON.
     if iv_name.lower() in ("male", "female", "men", "women", "boys", "girls", "gender", "sex"):
         iv_name = "Gender"
 
-    implied_test = "To be determined — add your variables above to get a test suggestion."
+    implied_test = ""
     implied_reason = ""
     
     if dv_name and iv_name:
@@ -1894,11 +1894,7 @@ Return ONLY valid JSON. No markdown, no explanation outside JSON.
         "implied_test": implied_test,
         "implied_test_reason": implied_reason,
         "confidence": "low" if not (dv_name and iv_name) else "medium",
-        "advice": (
-            "Fill in your research questions and hypotheses in Step 3 for better suggestions."
-            if not rqs else
-            "Review these suggestions and adjust if needed — you know your study best!"
-        ),
+        "advice": "",
         "source": "heuristic",
     }
 

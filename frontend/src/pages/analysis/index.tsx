@@ -5901,10 +5901,7 @@ export default function AnalysisIndexPage() {
                           )}
 
                           {/* Action Footer */}
-                          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-0.5">
-                            <p className="text-[11px] italic" style={{ color: 'var(--text-3)' }}>
-                              💡 {advisorResult.advice || 'Click Apply to populate the variable boxes below automatically.'}
-                            </p>
+                          <div className="flex items-center justify-end pt-0.5">
                             <button
                               type="button"
                               onClick={handleApplyAdvisorVariables}

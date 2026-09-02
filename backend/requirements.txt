@@ -1,9 +1,9 @@
-fastapi==0.95.1
+fastapi==0.115.5
 uvicorn[standard]
 sqlalchemy
 # asyncpg==0.29.0
 alembic
-pydantic<2.0.0
+pydantic>=1.10,<2.0
 # pydantic-settings<2.0.0
 python-jose[cryptography]
 passlib
@@ -12,6 +12,8 @@ python-multipart
 httpx
 aiosqlite
 email-validator
+authlib
+
 
 # Analysis pipeline
 anthropic
@@ -25,10 +27,14 @@ seaborn
 openpyxl
 pyreadstat
 chardet
+lifelines
+scikit-posthocs
 
 # Document generation
 python-docx
+python-pptx
 reportlab
+pdfplumber
 
 # Background tasks
 # celery==5.4.0
@@ -41,3 +47,4 @@ aiofiles
 # Testing
 pytest
 pytest-asyncio
+stripe
