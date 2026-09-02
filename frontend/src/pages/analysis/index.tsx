@@ -5764,15 +5764,10 @@ export default function AnalysisIndexPage() {
                 {/* ── Step 4: Variable Mapping (DV / IV driven by RQs above) ── */}
                 {currentStep === 4 && (
                   <div className="space-y-5 wizard-step-content">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-1">
                         <RiMicroscopeFill size={15} style={{ color: 'var(--brand)' }} />
                         <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>Variable Mapping</span>
                       </div>
-                      <span className="text-xs px-2.5 py-0.5 rounded-full font-medium" style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>
-                        Golden Rule: RQ → Variables → Test
-                      </span>
-                    </div>
 
                     {/* ── AI Variable Advisor Interactive Guide ── */}
                     <div className="rounded-xl p-3.5 transition-all shadow-sm"

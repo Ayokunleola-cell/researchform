@@ -363,7 +363,8 @@ def run_stages_3_to_9(job, db):
         doc_path = _build_document(
             report_text, chart_paths, brief, job.id,
             thematic_results=thematic_results,
-            formatting_options=job.formatting_options or {}
+            formatting_options=job.formatting_options or {},
+            results=results,
         )
         job.report_path = doc_path
         job.report_text = to_json_serializable(report_text)
@@ -2398,10 +2399,11 @@ def _write_report(brief: dict, results: dict, tests: list, data_dict: dict,
     report_type   = report_type or "chapter4"
     chart_paths   = chart_paths or []
 
+    summary     = results.get("summary", [])
+    reliability = results.get("reliability", {})
+    normality   = results.get("normality", {})
+
     if not _has_llm():
-        summary     = results.get("summary", [])
-        reliability = results.get("reliability", {})
-        normality   = results.get("normality", {})
         return _mock_report_text(brief, summary, reliability, normality, report_type)
 
     # ── Package results based on user_class (token-budget aware) ──────────
@@ -2431,79 +2433,8 @@ def _write_report(brief: dict, results: dict, tests: list, data_dict: dict,
     health_json      = pkg["health_json"]
     not_applicable_block = pkg["not_applicable_block"]
 
-
-    if not_applicable:
-        lines = []
-        for item in not_applicable:
-            lines.append(
-                f"  - {item.get('test_name', 'Unknown test')}: {item.get('reason', 'Could not be executed.')} "
-                f"Suggestion: {item.get('suggestion', '')}"
-            )
-        not_applicable_block = (
-            "\nTESTS SELECTED BUT NOT APPLICABLE TO THIS DATASET:\n"
-            + "\n".join(lines)
-            + "\n(For each of these, write a brief methodological note in the report explaining "
-            "why the test could not be executed and what data structure would be required. "
-            "Do NOT fabricate statistics for these tests.)"
-        )
-
-    # ── Shared data block ────────────────────────────────────────────────
-    # Unwrap descriptive: bucket has { "descriptive_stats": { additional_stats: { columns: {col: {...}} } } }
-    _desc_raw = descriptive.get("descriptive_stats", {})
-    _desc_cols = (_desc_raw.get("additional_stats", {}) or {}).get("columns") or _desc_raw
-    # Flatten if still nested under additional_stats
-    if isinstance(_desc_cols, dict) and not any("mean" in str(v) for v in _desc_cols.values()):
-        _desc_cols = _desc_raw
-    desc_clean = {k: v for k, v in _desc_cols.items() if isinstance(v, dict) and "mean" in v} if isinstance(_desc_cols, dict) else {}
-    # If nothing found via descriptive_stats, try all keys
-    if not desc_clean:
-        for _k, _v in descriptive.items():
-            if isinstance(_v, dict):
-                _as = (_v.get("additional_stats") or {}).get("columns") or {}
-                desc_clean.update({ck: cv for ck, cv in _as.items() if isinstance(cv, dict) and "mean" in cv})
-
-    # Unwrap frequencies: bucket has { "frequency_analysis": { additional_stats: { frequencies: {col: {counts:{}, percent:{}, n_valid:N} } } } }
-    _freq_raw = frequencies.get("frequency_analysis", {})
-    _freq_data = (_freq_raw.get("additional_stats") or {}).get("frequencies") or {}
-    freq_clean = {}
-    for _col, _fdata in _freq_data.items():
-        _counts = _fdata.get("counts") if isinstance(_fdata, dict) else _fdata
-        if isinstance(_counts, dict):
-            freq_clean[_col] = dict(list(_counts.items())[:8])  # top 8 categories
-
-    desc_json = json.dumps(desc_clean, indent=2)[:3000]
-    freq_json = json.dumps(freq_clean, indent=2)[:1500]
-    norm_json = json.dumps(normality, indent=2)[:1000]
-    rel_json  = json.dumps(reliability, indent=2)
-
-    # ── Advanced / inferential results for richer narrative ──────────────
-    comparison_json  = json.dumps(results.get("comparison", {}),  indent=2)[:1500]
-    regression_json  = json.dumps(results.get("regression", {}),  indent=2)[:1500]
-    correlation_json = json.dumps(results.get("correlation", {}), indent=2)[:1000]
-    posthoc_json     = json.dumps(results.get("posthoc", {}),     indent=2)[:600]
-    multivariate_json= json.dumps(results.get("multivariate", {}),indent=2)[:600]
-    causal_json      = json.dumps(results.get("causal", {}),      indent=2)[:600]
-    multilevel_json  = json.dumps(results.get("multilevel", {}),  indent=2)[:600]
-
-    summ_json = json.dumps(summary, indent=2)
-
-    sk_json = json.dumps({
-        k: {kk: round(vv, 4) if isinstance(vv, float) else vv
-            for kk, vv in v.items() if kk in ("skewness", "kurtosis", "skew_interp", "kurt_interp", "z_skewness", "z_kurtosis")}
-        for k, v in results.get("skewness_kurtosis", {}).items()
-    }, indent=2)[:800]
-    outlier_json = json.dumps({
-        k: {kk: vv for kk, vv in v.items() if kk in ("iqr_method", "zscore_method")}
-        for k, v in results.get("outliers", {}).items()
-        if isinstance(v, dict) and "iqr_method" in v
-    }, indent=2)[:600]
-    norm_ext_json = json.dumps({
-        k: {tk: {"normal": vv.get("normal"), "p_value": round(vv.get("p_value", 0), 4)}
-            for tk, vv in v.items() if isinstance(vv, dict) and "normal" in vv}
-        for k, v in results.get("normality_extended", {}).items()
-    }, indent=2)[:600]
-
     brief_block = (
+
         f"Topic: {brief.get('topic')}\n"
         + (f"Study Aim: {brief.get('study_aim')}\n" if brief.get('study_aim') else "")
         + (f"Problem Statement: {brief.get('problem_statement')}\n" if brief.get('problem_statement') else "")
@@ -2890,22 +2821,60 @@ def _mock_report_text(brief: dict, summary: list, reliability: dict = None, norm
     if alpha:
         reliability_text = f" The internal consistency of the research instrument was assessed using Cronbach's Alpha, which yielded α = {alpha:.3f}. This indicates {alpha_interp} reliability of the scale items used in the study."
 
+    # Build rich inferential findings for hypothesis testing section
+    hyp_findings = []
+    if summary:
+        for idx_s, s in enumerate(summary):
+            if s.get("error"):
+                continue
+            h_text = s.get("hypothesis") or f"Hypothesis {idx_s+1}"
+            t_name = s.get("test_name", "Statistical Test")
+            p_val  = s.get("p_value")
+            is_sig = s.get("significant")
+            stat   = s.get("statistic_value")
+            if stat is None:
+                st_obj = s.get("statistic") or {}
+                stat = st_obj.get("value") if isinstance(st_obj, dict) else st_obj
+            stat_name = s.get("statistic_name") or "Statistic"
+            df_val    = s.get("df")
+            eff       = s.get("effect_size_value")
+            if eff is None:
+                eff_obj = s.get("effect_size") or {}
+                eff = eff_obj.get("value") if isinstance(eff_obj, dict) else eff_obj
+            eff_name  = s.get("effect_size_name") or "Effect Size"
+
+            stat_str = f"{stat_name} = {stat:.3f}" if isinstance(stat, (int, float)) else f"{stat_name} = {stat or '—'}"
+            if df_val is not None:
+                stat_str = f"{stat_name}({df_val}) = {stat:.3f}" if isinstance(stat, (int, float)) else f"{stat_name}({df_val})"
+
+            p_str = "p < .001" if isinstance(p_val, (int, float)) and p_val < 0.001 else (f"p = {p_val:.3f}" if isinstance(p_val, (int, float)) else f"p = {p_val or '—'}")
+            eff_str = f", {eff_name} = {eff:.3f}" if isinstance(eff, (int, float)) else ""
+
+            dec = "rejected at the 0.05 level of significance, indicating that the research hypothesis is supported" if is_sig else "retained at the 0.05 level of significance, indicating that the research hypothesis is not supported"
+
+            hyp_findings.append(
+                f"4.4.{idx_s+1} Test of Hypothesis {idx_s+1}: {h_text}\n"
+                f"An inferential {t_name} was conducted to test this hypothesis. "
+                f"The empirical analysis yielded {stat_str}, {p_str}{eff_str}. "
+                f"Therefore, the null hypothesis is {dec}. "
+                f"{s.get('conclusion', '')}"
+            )
+
+    hyp_section_text = "\n\n".join(hyp_findings) if hyp_findings else f"Inferential statistical tests were evaluated to test the stated hypotheses linking {iv} and {dv}."
+
     sections = [
-        {"heading": "1. Overview",
-         "text": f"This report presents the analysis of data for the project titled \"{topic}\". The dataset represents {pop}. Both descriptive and inferential statistical techniques were applied to address the stated objectives and key questions. All tests were conducted at the {brief.get('significance_level', 0.05)} significance level."},
-        {"heading": "2. Data Profile",
-         "text": f"This section summarises the characteristics of the dataset used in the analysis, including variable distributions, frequency counts, and preliminary data quality checks. Findings from this section provide context for interpreting the inferential results that follow.{reliability_text}"},
-        {"heading": "3. Analysis Results",
-         "text": f"Statistical analyses were conducted to examine the relationship between {iv} and {dv}. Both descriptive and inferential methods were applied. Results were interpreted based on the pre-defined significance threshold."},
-        {"heading": "4. Findings",
-         "text": "\n\n".join([
-             f"Finding {i+1}: {s.get('conclusion', s.get('test_name',''))}" 
-             for i, s in enumerate(summary)
-         ]) or f"The analysis identified patterns in the relationship between {iv} and {dv}."},
-        {"heading": "5. Discussion",
-         "text": f"The findings reveal patterns relevant to the topic of {topic}. Results are interpreted in light of the stated objectives. Statistically significant findings are highlighted while non-significant results are equally noted."},
-        {"heading": "6. Recommendations & Conclusion",
-         "text": "Based on the analysis, actionable recommendations are presented. Future analysis should explore additional variables and extend the dataset to improve generalisability."},
+        {"heading": "4.1 Introduction",
+         "text": f"This chapter presents the empirical analysis of data collected for the project titled \"{topic}\". The study population encompasses {pop}. In accordance with the research objectives and hypotheses, both descriptive statistics and inferential statistical techniques were systematically applied. All inferential evaluations were conducted at the {brief.get('significance_level', 0.05)} level of significance."},
+        {"heading": "4.2 Demographic Profile and Descriptive Statistics",
+         "text": f"This section presents the preliminary descriptive statistics and sample characteristics of the respondents, including frequencies, central tendencies (Mean), dispersions (Standard Deviation), and distributional characteristics.{reliability_text}"},
+        {"heading": "4.3 Analysis of Research Questions",
+         "text": f"The analysis addressed the core research questions formulated to examine the relationship between {iv} and {dv}. Descriptive summaries, frequency distributions, and preliminary checks were evaluated to contextualise the inferential tests that follow."},
+        {"heading": "4.4 Test of Hypotheses (Inferential Statistics)",
+         "text": hyp_section_text},
+        {"heading": "4.5 Discussion of Findings",
+         "text": f"The empirical findings provide meaningful insight into the dynamics between {iv} and {dv}. Results are discussed in direct relation to the conceptual framework of the study, highlighting statistically significant effects while observing implications of non-significant outcomes."},
+        {"heading": "4.6 Summary of Chapter",
+         "text": f"In summary, this chapter presented the descriptive and inferential findings of the study on {topic}. The empirical results provide a quantitative basis for the conclusions and recommendations that follow."},
     ]
 
     # ── Mock output per report type ──────────────────────────────────────
@@ -2990,7 +2959,8 @@ def _mock_report_text(brief: dict, summary: list, reliability: dict = None, norm
 
 # ─── Stage 7b: Document Build ─────────────────────────────────────────
 def _build_document(report_text: dict, chart_paths: list, brief: dict, job_id: str,
-                    thematic_results: dict = None, formatting_options: dict = None) -> str:
+                    thematic_results: dict = None, formatting_options: dict = None,
+                    results: dict = None) -> str:
     """Build Word document based on formatting preferences."""
     thematic_results = thematic_results or {}
     formatting_options = formatting_options or {}
@@ -3053,14 +3023,122 @@ def _build_document(report_text: dict, chart_paths: list, brief: dict, job_id: s
     add_heading(report_text.get("chapter_title", "CHAPTER FOUR"), level=1, size=14)
     doc.add_paragraph()
 
+    # Helper to create styled APA table in Word doc
+    def add_apa_table(caption: str, headers: list[str], rows: list[list[str]]):
+        if not rows:
+            return
+        cap_p = doc.add_paragraph()
+        cap_p.paragraph_format.space_before = Pt(8)
+        cap_p.paragraph_format.space_after  = Pt(3)
+        r_cap = cap_p.add_run(caption)
+        set_run_font(r_cap, bold=True, size=11)
+
+        table = doc.add_table(rows=len(rows) + 1, cols=len(headers))
+        table.autofit = True
+        # Style header
+        hdr_cells = table.rows[0].cells
+        for idx_h, title_h in enumerate(headers):
+            hdr_cells[idx_h].text = title_h
+            if hdr_cells[idx_h].paragraphs and hdr_cells[idx_h].paragraphs[0].runs:
+                set_run_font(hdr_cells[idx_h].paragraphs[0].runs[0], bold=True, size=10)
+        # Populate rows
+        for idx_r, row_data in enumerate(rows):
+            row_cells = table.rows[idx_r + 1].cells
+            for idx_c, val_c in enumerate(row_data):
+                if idx_c < len(row_cells):
+                    row_cells[idx_c].text = str(val_c)
+                    if row_cells[idx_c].paragraphs and row_cells[idx_c].paragraphs[0].runs:
+                        set_run_font(row_cells[idx_c].paragraphs[0].runs[0], bold=False, size=10)
+        doc.add_paragraph()
+
+    # ── Insert Table 4.1: Research Goal Mapping Table ────────────────────────
+    rqs = [q for q in brief.get("research_questions", []) if q and q.strip()]
+    hyps = [h for h in brief.get("hypotheses", []) if h and h.strip()]
+    dv = brief.get("dependent_variable", "Outcome")
+    iv = brief.get("independent_variable", "Predictor")
+    
+    mapping_rows = []
+    max_items = max(len(rqs), len(hyps), 1)
+    for mi in range(max_items):
+        rq_str = rqs[mi] if mi < len(rqs) else f"RQ{mi+1}: What is the effect of {iv} on {dv}?"
+        hyp_str = hyps[mi] if mi < len(hyps) else f"H{mi+1}: {iv} has a significant effect on {dv}"
+        mapping_rows.append([
+            f"RQ{mi+1}",
+            rq_str[:80] + ("..." if len(rq_str) > 80 else ""),
+            hyp_str[:80] + ("..." if len(hyp_str) > 80 else ""),
+            str(dv)[:25],
+            str(iv)[:25],
+        ])
+
     # Sections
-    for sec in report_text.get("sections", []):
-        add_heading(sec.get("heading", ""), level=2, size=12)
+    sections_list = report_text.get("sections", [])
+    for sec_idx, sec in enumerate(sections_list):
+        heading = sec.get("heading", "")
+        add_heading(heading, level=2, size=12)
+
+        # After introduction / section 1, add Research Goal Mapping Table
+        if sec_idx == 0 and mapping_rows:
+            for para in sec.get("text", "").split("\n\n"):
+                para = para.strip()
+                if para:
+                    add_body(para, indent=True)
+            doc.add_paragraph()
+            add_apa_table(
+                "Table 4.1: Research Questions, Hypotheses and Variable Mapping",
+                ["Code", "Research Question", "Stated Hypothesis", "DV", "IV"],
+                mapping_rows
+            )
+            continue
+
         for para in sec.get("text", "").split("\n\n"):
             para = para.strip()
             if para:
                 add_body(para, indent=True)
         doc.add_paragraph()
+
+        # If hypothesis testing section, embed Table 4.4 Inferential Summary Table
+        is_hyp_section = any(k in heading.lower() for k in ["hypothesis", "hypotheses", "inferential", "4.4"])
+        if is_hyp_section and results:
+            sum_list = results.get("summary", [])
+            inferential_rows = []
+            for idx_st, st in enumerate(sum_list):
+                if st.get("error"):
+                    continue
+                h_code = st.get("hypothesis") or f"H{idx_st+1}"
+                if len(h_code) > 25:
+                    h_code = f"H{idx_st+1}"
+                t_name = st.get("test_name", "Test").title()
+                stat_val = st.get("statistic_value")
+                if stat_val is None:
+                    st_obj = st.get("statistic") or {}
+                    stat_val = st_obj.get("value") if isinstance(st_obj, dict) else st_obj
+                stat_f = f"{float(stat_val):.3f}" if isinstance(stat_val, (int, float)) else str(stat_val or "—")
+                df_f   = str(st.get("df", "—"))
+                p_raw  = st.get("p_value")
+                p_f    = f"< .001" if isinstance(p_raw, (int, float)) and p_raw < 0.001 else (f"{float(p_raw):.3f}" if isinstance(p_raw, (int, float)) else str(p_raw or "—"))
+                eff_raw = st.get("effect_size_value")
+                if eff_raw is None:
+                    eff_obj = st.get("effect_size") or {}
+                    eff_raw = eff_obj.get("value") if isinstance(eff_obj, dict) else eff_obj
+                eff_f = f"{float(eff_raw):.3f}" if isinstance(eff_raw, (int, float)) else str(eff_raw or "—")
+                dec   = "Supported" if st.get("significant") else ("Not Supported" if p_raw is not None else "Inconclusive")
+
+                inferential_rows.append([
+                    h_code,
+                    t_name[:30],
+                    stat_f,
+                    df_f,
+                    p_f,
+                    eff_f,
+                    dec,
+                ])
+
+            if inferential_rows:
+                add_apa_table(
+                    "Table 4.4: Summary of Hypotheses Testing and Inferential Statistical Results",
+                    ["Hypothesis", "Statistical Test", "Statistic", "df", "p-value", "Effect Size", "Decision"],
+                    inferential_rows
+                )
 
     # Charts — landscape section for maximum clarity
     if chart_paths:

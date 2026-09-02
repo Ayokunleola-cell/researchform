@@ -1248,30 +1248,47 @@ def generate_html_tables(results: dict, df, brief: dict, label_map: dict = None)
     except Exception:
         pass
 
-    # ── Test Results (parametric / non-parametric) ────────────────────────────
+    # ── Test Results (Inferential Statistical Tests & Hypotheses Decisions) ──
     try:
         test_rows = []
-        for val in _flat.get("summary", []):
+        for idx_t, val in enumerate(_flat.get("summary", [])):
             if val.get("error"):
                 continue  # Errors go in Key Findings, not APA tables
             
-            stat_obj = val.get("statistic") or {}
-            stat_val = stat_obj.get("value") if isinstance(stat_obj, dict) else None
+            stat_val = val.get("statistic_value")
+            if stat_val is None:
+                stat_obj = val.get("statistic") or {}
+                stat_val = stat_obj.get("value") if isinstance(stat_obj, dict) else stat_obj
+
             p_val = val.get("p_value")
+            eff_val = val.get("effect_size_value")
+            if eff_val is None:
+                eff_obj = val.get("effect_size") or {}
+                eff_val = eff_obj.get("value") if isinstance(eff_obj, dict) else eff_obj
+
             sig = _sig(p_val)
+            is_sig = val.get("significant")
+            decision = "Supported" if is_sig else "Not Supported" if p_val is not None else "Inconclusive"
+
+            h_label = val.get("hypothesis")
+            if not h_label or len(h_label) > 30:
+                h_label = f"H{idx_t + 1}"
+
             test_rows.append([
+                h_label,
                 val.get("test_name", "Test").title(),
                 _fmt(stat_val),
-                _fmt(p_val, 4),
-                sig,
-                val.get("conclusion", "")[:60],
+                str(val.get("df", "—")),
+                _fmt(p_val, 4) + (f" ({sig})" if sig else ""),
+                _fmt(eff_val),
+                decision,
             ])
         if test_rows:
             tables["test_results"] = _table(
-                "Statistical Test Results",
-                ["Test", "Statistic", "p", "Sig.", "Conclusion"],
+                "Summary of Inferential Statistical Tests and Hypotheses Decisions",
+                ["Hypothesis", "Statistical Test", "Statistic", "df", "p-value", "Effect Size", "Decision"],
                 test_rows,
-                note="* p < .05. ** p < .01. *** p < .001."
+                note="* p < .05. ** p < .01. *** p < .001. Significance evaluated at α = 0.05."
             )
     except Exception:
         pass
