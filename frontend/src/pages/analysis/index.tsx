@@ -1159,7 +1159,7 @@ function AvailableColumnsPanel({
 
                       cursor: 'pointer', whiteSpace: 'nowrap',
 
-                      background: 'rgba(99,102,241,0.15)', color: 'var(--brand)',
+                      background: 'var(--border)', color: 'var(--brand)',
 
                       border: '1.5px solid rgba(99,102,241,0.35)',
 
@@ -1167,9 +1167,9 @@ function AvailableColumnsPanel({
 
                     }}
 
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(99,102,241,0.28)')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--border-2)')}
 
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(99,102,241,0.15)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--border)')}
 
                   >Dependent</button>
 
@@ -1207,7 +1207,7 @@ function AvailableColumnsPanel({
 
                       cursor: 'pointer', whiteSpace: 'nowrap',
 
-                      background: 'rgba(245,158,11,0.15)', color: '#f59e0b',
+                      background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: '#f59e0b',
 
                       border: '1.5px solid rgba(245,158,11,0.35)',
 
@@ -1217,7 +1217,7 @@ function AvailableColumnsPanel({
 
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(245,158,11,0.28)')}
 
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(245,158,11,0.15)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--warning) 15%, transparent)')}
 
                   >Control</button>
 
@@ -1455,11 +1455,11 @@ function MultiVarInput({ value, onChange, id, placeholder, accentColor = 'var(--
 
               display: 'inline-flex', alignItems: 'center', gap: 4,
 
-              background: accentColor === 'var(--brand)' ? 'rgba(99,102,241,0.15)'
+              background: accentColor === 'var(--brand)' ? 'var(--border)'
 
                         : accentColor === 'var(--success)' ? 'rgba(16,185,129,0.15)'
 
-                        : 'rgba(245,158,11,0.15)',
+                        : 'color-mix(in srgb, var(--warning) 15%, transparent)',
 
               color: accentColor, borderRadius: 6, padding: '2px 8px',
 
@@ -1647,7 +1647,7 @@ function StepBar({ current, onGoto }: { current: number; onGoto: (n: number) => 
 
                 boxShadow: active
 
-                  ? '0 0 0 5px rgba(99,102,241,0.12),0 4px 12px rgba(99,102,241,0.25)'
+                  ? '0 0 0 5px color-mix(in srgb, var(--brand) 10%, transparent),0 4px 12px rgba(99,102,241,0.25)'
 
                   : done ? '0 2px 8px rgba(16,185,129,0.2)' : 'none',
 
@@ -1899,9 +1899,9 @@ function FileDropZone({ onUpload }: { onUpload: (f: File) => void }) {
 
             style={{
 
-              background: isDragActive ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+              background: isDragActive ? 'var(--border)' : 'rgba(99,102,241,0.08)',
 
-              border: `1.5px solid ${isDragActive ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.15)'}`,
+              border: `1.5px solid ${isDragActive ? 'rgba(99,102,241,0.4)' : 'var(--border)'}`,
 
             }}
 
@@ -2687,7 +2687,7 @@ function AutoSelectReasoningPanel({ brief, dataDictionary, studyTypes }: {
 
       {!hasAnyContext && (
 
-        <div className="rounded-xl p-4 text-center" style={{ background: 'rgba(245,158,11,0.06)', border: '1px dashed rgba(245,158,11,0.3)' }}>
+        <div className="rounded-xl p-4 text-center" style={{ background: 'var(--surface-2)', border: '1px dashed rgba(245,158,11,0.3)' }}>
 
           <RiAlertFill size={18} style={{ color: 'var(--warning)', margin: '0 auto 6px' }} />
 
@@ -2735,7 +2735,7 @@ function AutoSelectReasoningPanel({ brief, dataDictionary, studyTypes }: {
 
       {/* 5-Tier Framework Summary */}
 
-      <div className="rounded-xl p-4 space-y-2.5" style={{ background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.12)' }}>
+      <div className="rounded-xl p-4 space-y-2.5" style={{ background: 'rgba(99,102,241,0.04)', border: '1px solid color-mix(in srgb, var(--brand) 10%, transparent)' }}>
 
         <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>5-Tier AI Selection Framework</p>
 
@@ -3159,7 +3159,7 @@ function TechniqueSelector({
 
             style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.4)' }}>
 
-            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(245,158,11,0.2)' }}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--border)' }}>
 
               <RiErrorWarningFill size={16} style={{ color: '#d97706' }} />
 
@@ -3601,7 +3601,7 @@ function DataQualityPanel({ report }: { report: any }) {
 
           <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
 
-            background: a.action === 'duplicates_removed' ? 'rgba(239,68,68,0.12)' : a.action === 'data_types_fixed' ? 'rgba(99,102,241,0.12)' : 'rgba(245,158,11,0.12)',
+            background: a.action === 'duplicates_removed' ? 'rgba(239,68,68,0.12)' : a.action === 'data_types_fixed' ? 'color-mix(in srgb, var(--brand) 10%, transparent)' : 'rgba(245,158,11,0.12)',
 
             color: a.action === 'duplicates_removed' ? '#ef4444' : a.action === 'data_types_fixed' ? '#6366f1' : '#f59e0b' }}>
 
@@ -3613,7 +3613,7 @@ function DataQualityPanel({ report }: { report: any }) {
 
         {actions.length === 0 && (
 
-          <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: '#10b981' }}>
 
             ✓ No critical issues detected
 
@@ -3669,7 +3669,7 @@ function DataQualityPanel({ report }: { report: any }) {
 
                 minWidth: 110, maxWidth: 110, borderRadius: 8, padding: '8px 10px',
 
-                background: hasIssues ? 'rgba(245,158,11,0.06)' : 'var(--surface-2)',
+                background: hasIssues ? 'var(--surface-2)' : 'var(--surface-2)',
 
                 border: `1px solid ${hasIssues ? 'rgba(245,158,11,0.25)' : 'var(--border)'}`,
 
@@ -4274,6 +4274,18 @@ export default function AnalysisIndexPage() {
 
   // Load survey metadata & questions into dataDictionary when launching analysis from a survey
 
+  // Layer 1: Auto-trigger AI Variable Advisor when student reaches Step 4
+  useEffect(() => {
+    if (currentStep === 4) {
+      const hasRQs = brief.research_questions?.some((q: string) => q && q.trim().length > 0);
+      if (hasRQs && !advisorResult && !advisorLoading) {
+        const timer = setTimeout(() => handleVariableAdvisor(), 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentStep]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
   useEffect(() => {
 
     if (!router.isReady || !router.query.surveyId) return;
@@ -4775,7 +4787,7 @@ export default function AnalysisIndexPage() {
 
                   background:
 
-                    'linear-gradient(135deg, rgba(99,102,241,0.09) 0%, rgba(79,70,229,0.04) 60%, transparent 100%)',
+                    'linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, transparent) 0%, rgba(79,70,229,0.04) 60%, transparent 100%)',
 
                   borderBottom: '1px solid var(--border)',
 
@@ -4793,7 +4805,7 @@ export default function AnalysisIndexPage() {
 
                   position: 'absolute', top: -40, right: -40, width: 140, height: 140,
 
-                  borderRadius: '50%', background: 'rgba(99,102,241,0.08)',
+                  borderRadius: '50%', background: 'color-mix(in srgb, var(--brand) 10%, transparent)',
 
                   filter: 'blur(30px)', pointerEvents: 'none',
 
@@ -4803,7 +4815,7 @@ export default function AnalysisIndexPage() {
 
                   position: 'absolute', bottom: -20, left: '40%', width: 80, height: 80,
 
-                  borderRadius: '50%', background: 'rgba(16,185,129,0.06)',
+                  borderRadius: '50%', background: 'color-mix(in srgb, var(--success) 12%, transparent)',
 
                   filter: 'blur(20px)', pointerEvents: 'none',
 
@@ -4963,7 +4975,7 @@ export default function AnalysisIndexPage() {
 
                         {hasSurveyId && !dataFile && (
 
-                          <div className="mt-4 flex items-center justify-between gap-2 px-4 py-3 rounded-xl" style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)' }}>
+                          <div className="mt-4 flex items-center justify-between gap-2 px-4 py-3 rounded-xl" style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--brand) 10%, transparent)' }}>
 
                             <div className="flex items-center gap-3">
 
@@ -4999,11 +5011,11 @@ export default function AnalysisIndexPage() {
 
                           <div className="mt-4">
 
-                            <div className="flex items-center justify-between gap-2 px-4 py-3 rounded-xl" style={{ background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.25)' }}>
+                            <div className="flex items-center justify-between gap-2 px-4 py-3 rounded-xl" style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--success) 12%, transparent)' }}>
 
                               <div className="flex items-center gap-3">
 
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.15)' }}>
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)' }}>
 
                                   <RiFileExcelFill size={20} style={{ color: 'var(--success)' }} />
 
@@ -5049,11 +5061,11 @@ export default function AnalysisIndexPage() {
 
                                       style={{
 
-                                        background: info.level === 'continuous' ? 'rgba(99,102,241,0.1)' : info.level === 'ordinal' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
+                                        background: info.level === 'continuous' ? 'color-mix(in srgb, var(--brand) 10%, transparent)' : info.level === 'ordinal' ? 'color-mix(in srgb, var(--success) 12%, transparent)' : 'color-mix(in srgb, var(--warning) 12%, transparent)',
 
                                         color: info.level === 'continuous' ? 'var(--brand)' : info.level === 'ordinal' ? 'var(--success)' : 'var(--warning)',
 
-                                        border: `1px solid ${info.level === 'continuous' ? 'rgba(99,102,241,0.2)' : info.level === 'ordinal' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`,
+                                        border: `1px solid ${info.level === 'continuous' ? 'color-mix(in srgb, var(--brand) 10%, transparent)' : info.level === 'ordinal' ? 'color-mix(in srgb, var(--success) 12%, transparent)' : 'var(--border)'}`,
 
                                       }}>{col}</span>
 
@@ -5441,7 +5453,7 @@ export default function AnalysisIndexPage() {
 
                       <div className="rounded-2xl p-6 space-y-5 animate-slide-up relative overflow-hidden"
 
-                        style={{ background: 'var(--surface)', border: '1px solid rgba(245,158,11,0.3)', boxShadow: '0 4px 12px rgba(245,158,11,0.05)' }}>
+                        style={{ background: 'var(--surface)', border: '1px solid color-mix(in srgb, var(--warning) 12%, transparent)', boxShadow: '0 4px 12px color-mix(in srgb, var(--warning) 12%, transparent)' }}>
 
                         
 
@@ -5449,7 +5461,7 @@ export default function AnalysisIndexPage() {
 
                         <div className="flex items-center gap-2.5">
 
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(245,158,11,0.15)' }}>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--warning) 15%, transparent)' }}>
 
                             <RiBookOpenFill size={16} style={{ color: '#f59e0b' }} />
 
@@ -5501,7 +5513,7 @@ export default function AnalysisIndexPage() {
 
                               {qualFiles.map((f, i) => (
 
-                                <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                                <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-lg" style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', border: '1px solid var(--border)' }}>
 
                                   <RiFileFill size={14} style={{ color: '#f59e0b' }} />
 
@@ -5519,11 +5531,11 @@ export default function AnalysisIndexPage() {
 
                           <label className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all"
 
-                            style={{ background: 'rgba(245,158,11,0.05)', border: '2px dashed rgba(245,158,11,0.3)' }}
+                            style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', border: '2px dashed color-mix(in srgb, var(--warning) 12%, transparent)' }}
 
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#f59e0b'; e.currentTarget.style.background = 'rgba(245,158,11,0.08)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#f59e0b'; e.currentTarget.style.background = 'color-mix(in srgb, var(--warning) 12%, transparent)'; }}
 
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.3)'; e.currentTarget.style.background = 'rgba(245,158,11,0.05)'; }}>
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--warning) 12%, transparent)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--warning) 12%, transparent)'; }}>
 
                             <RiUpload2Fill size={16} style={{ color: '#f59e0b' }} />
 
@@ -5549,7 +5561,7 @@ export default function AnalysisIndexPage() {
 
                     {hasExperimental && (
 
-                      <div className="rounded-xl p-4 space-y-4" style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.2)' }}>
+                      <div className="rounded-xl p-4 space-y-4" style={{ background: 'var(--surface-2)', border: '1px solid color-mix(in srgb, var(--success) 12%, transparent)' }}>
 
                         <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Experimental Settings</p>
 
@@ -5689,7 +5701,7 @@ export default function AnalysisIndexPage() {
 
                         <div key={i} className="flex gap-2 mb-2">
 
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-1" style={{ background: 'rgba(16,185,129,0.1)', fontSize: 11, fontWeight: 700, color: 'var(--success)' }}>H{i + 1}</div>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-1" style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', fontSize: 11, fontWeight: 700, color: 'var(--success)' }}>H{i + 1}</div>
 
                           <input className="input flex-1"
 
@@ -5721,7 +5733,7 @@ export default function AnalysisIndexPage() {
 
                         <div key={i} className="flex gap-2 mb-2">
 
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-1" style={{ background: 'rgba(99,102,241,0.1)', fontSize: 11, fontWeight: 700, color: 'var(--brand)' }}>{i + 1}</div>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-1" style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', fontSize: 11, fontWeight: 700, color: 'var(--brand)' }}>{i + 1}</div>
 
                           <input className="input flex-1"
 
@@ -5757,7 +5769,7 @@ export default function AnalysisIndexPage() {
                         <RiMicroscopeFill size={15} style={{ color: 'var(--brand)' }} />
                         <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>Variable Mapping</span>
                       </div>
-                      <span className="text-xs px-2.5 py-0.5 rounded-full font-medium" style={{ background: 'rgba(99,102,241,0.08)', color: 'var(--brand)' }}>
+                      <span className="text-xs px-2.5 py-0.5 rounded-full font-medium" style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>
                         Golden Rule: RQ → Variables → Test
                       </span>
                     </div>
@@ -5766,11 +5778,11 @@ export default function AnalysisIndexPage() {
                     <div className="rounded-xl p-3.5 transition-all shadow-sm"
                       style={{
                         background: advisorResult
-                          ? 'linear-gradient(135deg, rgba(99,102,241,0.05), rgba(16,185,129,0.03))'
-                          : 'rgba(99,102,241,0.025)',
+                          ? 'linear-gradient(135deg, var(--surface-2), var(--surface-2))'
+                          : 'var(--surface-2)',
                         border: advisorResult
-                          ? '1px solid rgba(99,102,241,0.28)'
-                          : '1px solid rgba(99,102,241,0.18)',
+                          ? '1px solid var(--border-2)'
+                          : '1px solid var(--border)',
                       }}>
                       {/* Compact Header Bar */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
@@ -5783,7 +5795,7 @@ export default function AnalysisIndexPage() {
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-xs font-bold" style={{ color: 'var(--text)' }}>AI Variable & Test Advisor</span>
                               <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full"
-                                style={{ background: 'rgba(99,102,241,0.1)', color: 'var(--brand)' }}>
+                                style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>
                                 Auto AI Guide
                               </span>
                             </div>
@@ -5823,18 +5835,18 @@ export default function AnalysisIndexPage() {
 
                       {/* Result Cards Display */}
                       {advisorResult && (
-                        <div className="mt-3 pt-2.5 border-t space-y-2.5 animate-fadeIn" style={{ borderColor: 'rgba(99,102,241,0.12)' }}>
+                        <div className="mt-3 pt-2.5 border-t space-y-2.5 animate-fadeIn" style={{ borderColor: 'color-mix(in srgb, var(--brand) 10%, transparent)' }}>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             {/* DV Card */}
                             <div className="p-3 rounded-lg transition-all"
-                              style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.16)' }}>
+                              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--brand)' }}>
                                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--brand)' }} />
                                   Outcome Variable (DV)
                                 </span>
                                 <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full"
-                                  style={{ background: 'rgba(99,102,241,0.12)', color: 'var(--brand)' }}>
+                                  style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>
                                   {advisorResult.dependent_variable?.scale || 'Continuous'}
                                 </span>
                               </div>
@@ -5848,14 +5860,14 @@ export default function AnalysisIndexPage() {
 
                             {/* IV Card */}
                             <div className="p-3 rounded-lg transition-all"
-                              style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.16)' }}>
+                              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--success)' }}>
                                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--success)' }} />
                                   Predictor / Grouping (IV)
                                 </span>
                                 <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full"
-                                  style={{ background: 'rgba(16,185,129,0.12)', color: 'var(--success)' }}>
+                                  style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success)' }}>
                                   {advisorResult.independent_variable?.scale || 'Nominal'}
                                   {advisorResult.independent_variable?.n_groups ? ` (${advisorResult.independent_variable.n_groups} grp)` : ''}
                                 </span>
@@ -5872,9 +5884,9 @@ export default function AnalysisIndexPage() {
                           {/* Implied Test Card */}
                           {advisorResult.implied_test && (
                             <div className="p-2.5 rounded-lg flex items-start gap-2.5"
-                              style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.18)' }}>
+                              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                               <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5"
-                                style={{ background: 'rgba(245,158,11,0.15)', color: '#d97706' }}>
+                                style={{ background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: '#d97706' }}>
                                 <RiCpuFill size={12} />
                               </div>
                               <div className="flex-1 min-w-0">
@@ -5899,9 +5911,9 @@ export default function AnalysisIndexPage() {
                               disabled={advisorApplied}
                               className="btn btn-sm shrink-0 flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold rounded-lg shadow-sm"
                               style={{
-                                background: advisorApplied ? 'rgba(16,185,129,0.12)' : 'var(--brand)',
+                                background: advisorApplied ? 'color-mix(in srgb, var(--success) 12%, transparent)' : 'var(--brand)',
                                 color: advisorApplied ? 'var(--success)' : '#fff',
-                                border: advisorApplied ? '1px solid rgba(16,185,129,0.3)' : 'none',
+                                border: advisorApplied ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : 'none',
                                 height: '26px',
                               }}>
                               {advisorApplied ? (
@@ -6097,7 +6109,7 @@ export default function AnalysisIndexPage() {
 
                         <div className="rounded-xl p-4 space-y-3"
 
-                          style={{ background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                          style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', border: '1px solid var(--border)' }}>
 
                           <div className="flex items-center justify-between">
 
@@ -6109,7 +6121,7 @@ export default function AnalysisIndexPage() {
 
                               <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20,
 
-                                background: 'rgba(99,102,241,0.12)', color: 'var(--brand)' }}>Prevents wrong tests</span>
+                                background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>Prevents wrong tests</span>
 
                             </div>
 
@@ -6123,9 +6135,9 @@ export default function AnalysisIndexPage() {
 
                               style={{ 
 
-                                background: scaleMode === 'auto' ? 'var(--surface)' : 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(79,70,229,0.15))', 
+                                background: scaleMode === 'auto' ? 'var(--surface)' : 'linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, transparent), rgba(79,70,229,0.15))', 
 
-                                border: `1px solid ${scaleMode === 'auto' ? 'var(--border)' : 'rgba(99,102,241,0.3)'}`, 
+                                border: `1px solid ${scaleMode === 'auto' ? 'var(--border)' : 'color-mix(in srgb, var(--brand) 10%, transparent)'}`, 
 
                                 color: scaleMode === 'auto' ? 'var(--text-2)' : 'var(--brand)' 
 
@@ -6283,7 +6295,7 @@ export default function AnalysisIndexPage() {
 
                         <div className="rounded-xl p-4 space-y-3"
 
-                          style={{ background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.18)' }}>
+                          style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--success) 12%, transparent)' }}>
 
                           <div className="flex items-center justify-between">
 
@@ -6295,7 +6307,7 @@ export default function AnalysisIndexPage() {
 
                               <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20,
 
-                                background: 'rgba(16,185,129,0.12)', color: 'var(--success)' }}>
+                                background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success)' }}>
 
                                 Groups Likert items
 
@@ -6313,9 +6325,9 @@ export default function AnalysisIndexPage() {
 
                               style={{ 
 
-                                background: constructMode === 'auto' ? 'var(--surface)' : 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.15))', 
+                                background: constructMode === 'auto' ? 'var(--surface)' : 'linear-gradient(135deg, color-mix(in srgb, var(--success) 12%, transparent), rgba(5,150,105,0.15))', 
 
-                                border: `1px solid ${constructMode === 'auto' ? 'var(--border)' : 'rgba(16,185,129,0.3)'}`, 
+                                border: `1px solid ${constructMode === 'auto' ? 'var(--border)' : 'color-mix(in srgb, var(--success) 30%, transparent)'}`, 
 
                                 color: constructMode === 'auto' ? 'var(--text-2)' : 'var(--success)' 
 
@@ -6379,7 +6391,7 @@ export default function AnalysisIndexPage() {
 
                                     <span className="w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold shrink-0"
 
-                                      style={{ background: 'rgba(16,185,129,0.15)', color: 'var(--success)' }}>{i + 1}</span>
+                                      style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success)' }}>{i + 1}</span>
 
                                     <input
 
@@ -6411,7 +6423,7 @@ export default function AnalysisIndexPage() {
 
                                     {(c.columns || []).map((col: string) => (
 
-                                      <span key={col} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 6, background: 'rgba(16,185,129,0.12)', fontSize: 11, color: 'var(--success)', fontWeight: 600 }}>
+                                      <span key={col} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 6, background: 'color-mix(in srgb, var(--success) 12%, transparent)', fontSize: 11, color: 'var(--success)', fontWeight: 600 }}>
 
                                         {col}
 
@@ -6477,7 +6489,7 @@ export default function AnalysisIndexPage() {
 
                                 onClick={addConstruct}
 
-                                style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--success)', background: 'rgba(16,185,129,0.08)', border: '1.5px dashed rgba(16,185,129,0.35)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer' }}
+                                style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--success)', background: 'color-mix(in srgb, var(--success) 12%, transparent)', border: '1.5px dashed color-mix(in srgb, var(--success) 12%, transparent)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer' }}
 
                               >
 
@@ -6605,7 +6617,7 @@ export default function AnalysisIndexPage() {
 
                               className="px-3 py-2 rounded-lg text-xs font-semibold transition-all text-left"
 
-                              style={{ background: academicTradition === t.value ? 'rgba(99,102,241,0.12)' : 'var(--surface-2)', border: `1.5px solid ${academicTradition === t.value ? 'var(--brand)' : 'var(--border)'}`, color: academicTradition === t.value ? 'var(--brand)' : 'var(--text-2)' }}>
+                              style={{ background: academicTradition === t.value ? 'color-mix(in srgb, var(--brand) 10%, transparent)' : 'var(--surface-2)', border: `1.5px solid ${academicTradition === t.value ? 'var(--brand)' : 'var(--border)'}`, color: academicTradition === t.value ? 'var(--brand)' : 'var(--text-2)' }}>
 
                               {t.label}
 
@@ -6625,7 +6637,7 @@ export default function AnalysisIndexPage() {
 
                     <div className="rounded-xl p-4 space-y-3"
 
-                      style={{ background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                      style={{ background: 'rgba(99,102,241,0.04)', border: '1px solid var(--border)' }}>
 
                       <div className="flex items-center justify-between">
 
@@ -6703,7 +6715,7 @@ export default function AnalysisIndexPage() {
 
                                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
 
-                                style={{ background: active ? 'rgba(99,102,241,0.12)' : 'var(--surface-2)', border: `1.5px solid ${active ? 'var(--brand)' : 'var(--border)'}`, color: active ? 'var(--brand)' : 'var(--text-2)' }}>
+                                style={{ background: active ? 'color-mix(in srgb, var(--brand) 10%, transparent)' : 'var(--surface-2)', border: `1.5px solid ${active ? 'var(--brand)' : 'var(--border)'}`, color: active ? 'var(--brand)' : 'var(--text-2)' }}>
 
                                 <Icon size={12} style={{ flexShrink: 0 }} />
 
@@ -6747,7 +6759,7 @@ export default function AnalysisIndexPage() {
 
                           <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20,
 
-                            background: 'rgba(16,185,129,0.12)', color: 'var(--success)' }}>Included in report</span>
+                            background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success)' }}>Included in report</span>
 
                         </div>
 
@@ -6759,7 +6771,7 @@ export default function AnalysisIndexPage() {
 
                             background: autoTables ? 'var(--surface)' : 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.15))',
 
-                            border: `1px solid ${autoTables ? 'var(--border)' : 'rgba(16,185,129,0.3)'}`,
+                            border: `1px solid ${autoTables ? 'var(--border)' : 'color-mix(in srgb, var(--success) 30%, transparent)'}`,
 
                             color: autoTables ? 'var(--text-2)' : 'var(--success)',
 
@@ -6803,7 +6815,7 @@ export default function AnalysisIndexPage() {
 
                                   style={{
 
-                                    background: active ? 'rgba(16,185,129,0.12)' : 'var(--surface-2)',
+                                    background: active ? 'color-mix(in srgb, var(--success) 12%, transparent)' : 'var(--surface-2)',
 
                                     border: `1.5px solid ${active ? 'var(--success)' : 'var(--border)'}`,
 
@@ -6869,7 +6881,7 @@ export default function AnalysisIndexPage() {
 
                       {chaptersDoc ? (
 
-                        <div className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all" style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
+                        <div className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all" style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid color-mix(in srgb, var(--success) 30%, transparent)' }}>
 
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.2)' }}>
 
@@ -6931,7 +6943,7 @@ export default function AnalysisIndexPage() {
 
                     {/* Brief summary */}
 
-                    <div className="rounded-xl p-4 space-y-2 mt-2" style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                    <div className="rounded-xl p-4 space-y-2 mt-2" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
 
                       <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--brand)' }}>Final Confirmation</p>
 
@@ -7295,7 +7307,7 @@ export default function AnalysisIndexPage() {
 
                   width: 56, height: 56, borderRadius: 16,
 
-                  background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)',
+                  background: 'rgba(99,102,241,0.08)', border: '1px solid var(--border)',
 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
 
@@ -7493,7 +7505,7 @@ export default function AnalysisIndexPage() {
 
                             marginTop: 8, padding: '4px 10px', borderRadius: 6,
 
-                            background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)',
+                            background: 'rgba(245,158,11,0.08)', border: '1px solid var(--border)',
 
                             fontSize: 11, fontWeight: 600, color: '#f59e0b',
 
