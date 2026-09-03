@@ -331,9 +331,8 @@ def run_all_tests(
             # Store in correct bucket
             _store_result(results, family, test_function, test_result)
 
-            # Add to summary if it has a p-value or it's an error
-            if test_result.get("p_value") is not None or test_result.get("error"):
-                _append_summary(results, test_spec, actual_fn_name, test_result)
+            # Add to summary: ensure all statistical and inferential test results are recorded
+            _append_summary(results, test_spec, actual_fn_name, test_result)
 
             # Cache the result
             set_cached(test_result, dataset_hash, test_function, variables, cache_params)

@@ -972,6 +972,8 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
   const [activeTab, setActiveTab] = useState<'findings' | 'descriptive' | 'assumptions' | 'reliability' | 'html_tables' | 'charts' | 'tables'>('findings');
   const [showTransform, setShowTransform] = useState(false);
   const [showAllFreqs, setShowAllFreqs] = useState(false);
+  const [showApaTable4, setShowApaTable4] = useState(false);
+  const [testFilter, setTestFilter] = useState<'all' | 'sig' | 'ns'>('all');
 
   const [userPrefs, setUserPrefs] = useState<{ font_type?: string, font_size?: string }>({});
   const [previewState, setPreviewState] = useState<{ type: 'chart' | 'table', index: number } | null>(null);
@@ -1053,14 +1055,62 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
   const results  = job.results || {};
   const tests    = job.selected_tests || [];
   // Normalize field names: backend may use different keys across versions
-  const rawSummary: any[] = results.summary || [];
+  // Harvest all inferential and statistical test results from summary and all family buckets
+  const rawSummary: any[] = [...(results.summary || [])];
+  const seenTestKeys = new Set(rawSummary.map((r: any) => `${(r.test_name || r.test_function || '').toLowerCase()}_${r.hypothesis_index ?? ''}`));
+
+  const testBuckets = ['comparison', 'correlation', 'regression', 'causal', 'multivariate', 'survival', 'timeseries', 'multilevel', 'posthoc'];
+  testBuckets.forEach(bKey => {
+    const bucket = results[bKey];
+    if (bucket && typeof bucket === 'object') {
+      Object.entries(bucket).forEach(([tKey, tRes]: [string, any]) => {
+        if (tRes && typeof tRes === 'object') {
+          const tName = tRes.test_name || tKey.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+          const dedupeKey = `${(tName || tKey).toLowerCase()}_${tRes.hypothesis_index ?? ''}`;
+          if (!seenTestKeys.has(dedupeKey) && (tRes.p_value !== undefined || tRes.statistic !== undefined || tRes.test_stat !== undefined || tRes.F !== undefined || tRes.t !== undefined || tRes.r !== undefined || tRes.chi2 !== undefined || tRes.error)) {
+            seenTestKeys.add(dedupeKey);
+            rawSummary.push({
+              test_name: tName,
+              test_function: tKey,
+              ...tRes,
+            });
+          }
+        }
+      });
+    }
+  });
+
+  if (Array.isArray(job.selected_tests)) {
+    job.selected_tests.forEach((st: any) => {
+      const tName = typeof st === 'string' ? st : st?.test_name || st?.test_function;
+      if (tName) {
+        const alreadyIn = rawSummary.some((r: any) => 
+          (r.test_name && r.test_name.toLowerCase().includes(tName.toLowerCase())) ||
+          (r.test_function && r.test_function.toLowerCase().includes(tName.toLowerCase()))
+        );
+        if (!alreadyIn) {
+          rawSummary.push({
+            test_name: tName,
+            test_function: typeof st === 'string' ? st : st?.test_function || tName,
+            hypothesis: st?.hypothesis || '',
+            hypothesis_index: st?.hypothesis_index ?? -1,
+            statistic: null,
+            p_value: null,
+            significant: null,
+            conclusion: 'This test was included in the study research design.',
+          });
+        }
+      }
+    });
+  }
+
   const summary = rawSummary.map((r: any) => {
     // ── statistic value (prefer new flat field, fall back to nested or old aliases) ──
     const statObj = r.statistic;
     const statValueRaw =
       r.statistic_value                               // new flat field
       ?? (typeof statObj === 'object' ? statObj?.value : statObj)  // nested or old flat
-      ?? r.test_stat ?? r.stat ?? r.chi2 ?? r.F ?? r.t ?? r.U ?? r.H ?? r.W ?? r.z;
+      ?? r.test_stat ?? r.stat ?? r.chi2 ?? r.F ?? r.t ?? r.r ?? r.beta ?? r.U ?? r.H ?? r.W ?? r.z;
 
     // ── statistic label ──────────────────────────────────────────────────────
     const statName =
@@ -1068,7 +1118,7 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
       ?? (typeof statObj === 'object' ? statObj?.label : null)     // nested
       ?? r.stat_name ?? r.test_statistic_name
       ?? (r.chi2 !== undefined ? 'χ²' : r.F !== undefined ? 'F' : r.t !== undefined ? 't'
-        : r.U !== undefined ? 'U' : r.H !== undefined ? 'H' : r.W !== undefined ? 'W'
+        : r.r !== undefined ? 'r' : r.beta !== undefined ? 'β' : r.U !== undefined ? 'U' : r.H !== undefined ? 'H' : r.W !== undefined ? 'W'
         : r.z !== undefined ? 'z' : 'Stat');
 
     // ── p-value ──────────────────────────────────────────────────────────────
@@ -1194,13 +1244,13 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
   const sigRate    = summary.length > 0 ? Math.round((sigCount / summary.length) * 100) : 0;
 
   const TABS = [
-    { id: 'findings',     label: 'Hypothesis Tests',  icon: RiFlaskFill,           count: summary.length },
-    { id: 'descriptive',  label: 'Descriptive',        icon: RiBarChart2Fill,       count: Object.keys(desc).length + Object.keys(freqs).length },
-    { id: 'assumptions',  label: 'Assumptions',        icon: RiShieldFill,          count: Object.keys(normality).length },
-    { id: 'reliability',  label: 'Reliability',        icon: RiCheckboxCircleFill,  count: Object.keys(reliability).length },
-    { id: 'html_tables',  label: 'APA Tables',         icon: RiTableFill,           count: htmlTableKeys.length },
-    { id: 'charts',       label: 'Figures',             icon: RiLineChartFill,       count: chartItems.length },
-    { id: 'tables',       label: 'Table Images',        icon: RiImageFill,           count: tableItems.length },
+    { id: 'findings',     label: 'Inferential Statistics', icon: RiFlaskFill,          count: summary.length },
+    { id: 'descriptive',  label: 'Descriptive Statistics', icon: RiBarChart2Fill,      count: Object.keys(desc).length + Object.keys(freqs).length },
+    { id: 'charts',       label: 'Visualizations',         icon: RiLineChartFill,      count: chartItems.length },
+    { id: 'html_tables',  label: 'APA Tables',             icon: RiTableFill,          count: htmlTableKeys.length },
+    { id: 'assumptions',  label: 'Assumptions',            icon: RiShieldFill,         count: Object.keys(normality).length },
+    { id: 'reliability',  label: 'Reliability',            icon: RiCheckboxCircleFill, count: Object.keys(reliability).length },
+    { id: 'tables',       label: 'Table Images',           icon: RiImageFill,          count: tableItems.length },
   ];
 
   // ──────────────────────────────────────── Levene / VIF / outlier data from results ────────────────────────────────────────
@@ -1328,31 +1378,86 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
 
       {/* Tab: Hypothesis Tests */}
 
-      {/* Tab: Hypothesis Tests */}
+      {/* Tab: Inferential Statistics & Hypothesis Tests */}
       {activeTab === 'findings' && (
         <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h3 className="font-bold text-base" style={{ color: 'var(--text)', margin: 0 }}>Inferential Statistics &amp; Hypothesis Tests</h3>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>Hypothesis decisions, test statistics (t, F, r, χ², β), exact p-values, and effect sizes</p>
+            </div>
+            {htmlTables.test_results && (
+              <button
+                onClick={() => setShowApaTable4(v => !v)}
+                className="btn btn-ghost text-xs flex items-center gap-1.5"
+                style={{ border: '1px solid var(--border)', background: 'var(--surface-2)', color: 'var(--brand)', fontWeight: 600, padding: '6px 12px', borderRadius: 8 }}
+              >
+                <RiTableFill size={13} />
+                {showApaTable4 ? 'Hide APA Table 4.4' : 'View APA Table 4.4'}
+              </button>
+            )}
+          </div>
+
+          {showApaTable4 && htmlTables.test_results && (
+            <div className="card p-4 overflow-hidden" style={{ border: '1px solid rgba(99,102,241,0.3)', background: 'var(--surface)' }}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-bold text-xs" style={{ color: 'var(--brand)' }}>Table 4.4: Summary of Hypotheses Testing and Inferential Statistics</p>
+                <button onClick={() => setShowApaTable4(false)} className="btn btn-ghost btn-icon p-1" style={{ width: 22, height: 22 }}><RiCloseFill size={13} /></button>
+              </div>
+              <div className="overflow-x-auto rf-table-embed" dangerouslySetInnerHTML={{ __html: htmlTables.test_results }} />
+            </div>
+          )}
+
           {summary.length === 0 ? (
             <div className="card p-10 text-center">
-              <RiBarChart2Fill size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
-              <p className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>No hypothesis test results yet</p>
-              <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Run an analysis to see findings here.</p>
+              <RiFlaskFill size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>No inferential statistical results available</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Run an inferential analysis to see hypothesis findings here.</p>
             </div>
           ) : (
             <>
               {/* ──────────────────────────────────────── Summary bar ──────────────────────────────────────── */}
               <div className="card px-4 py-3" style={{ background: 'var(--surface-2)' }}>
-                <div className="flex items-center gap-6 flex-wrap">
-                  {[
-                    { label: 'Tests Run',      value: summary.length,                                        color: 'var(--brand)' },
-                    { label: 'Significant',    value: sigCount,                                              color: '#10b981' },
-                    { label: 'Not Significant',value: nsCount,                                              color: 'var(--text-3)' },
-                    { label: 'Errors',         value: summary.filter((r: any) => r.error).length,           color: summary.filter((r: any) => r.error).length > 0 ? '#ef4444' : 'var(--text-3)' },
-                  ].map((s: any) => (
-                    <div key={s.label} className="flex items-center gap-2">
-                      <span style={{ fontSize: 20, fontWeight: 800, color: s.color, fontFamily: 'Syne, sans-serif' }}>{s.value}</span>
-                      <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{s.label}</span>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-6 flex-wrap">
+                    {[
+                      { label: 'Tests Run',      value: summary.length,                                        color: 'var(--brand)' },
+                      { label: 'Significant',    value: sigCount,                                              color: '#10b981' },
+                      { label: 'Not Significant',value: nsCount,                                              color: 'var(--text-3)' },
+                      { label: 'Errors',         value: summary.filter((r: any) => r.error).length,           color: summary.filter((r: any) => r.error).length > 0 ? '#ef4444' : 'var(--text-3)' },
+                    ].map((s: any) => (
+                      <div key={s.label} className="flex items-center gap-2">
+                        <span style={{ fontSize: 20, fontWeight: 800, color: s.color, fontFamily: 'Syne, sans-serif' }}>{s.value}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{s.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Filter pills */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[
+                      { id: 'all', label: `All (${summary.length})` },
+                      { id: 'sig', label: `Significant (${sigCount})` },
+                      { id: 'ns',  label: `Not Significant (${nsCount})` },
+                    ].map(f => (
+                      <button
+                        key={f.id}
+                        onClick={() => setTestFilter(f.id as any)}
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          padding: '3px 9px',
+                          borderRadius: 6,
+                          border: testFilter === f.id ? '1px solid var(--brand)' : '1px solid var(--border)',
+                          background: testFilter === f.id ? 'rgba(99,102,241,0.12)' : 'var(--surface)',
+                          color: testFilter === f.id ? 'var(--brand)' : 'var(--text-2)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -1401,7 +1506,7 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
               )}
 
               {/* ──────────────────────────────────────── Individual test cards ──────────────────────────────────────── */}
-              {summary.map((r: any, i: number) => {
+              {summary.filter((r: any) => testFilter === 'sig' ? r.significant : testFilter === 'ns' ? !r.significant : true).map((r: any, i: number) => {
                 const pVal = r.p_value !== undefined && r.p_value !== null ? Number(r.p_value) : null;
                 const statRaw = typeof r.statistic === 'object' ? r.statistic?.value : r.statistic;
                 const statName = r.statistic_name || r.statistic?.label || 'Stat';
@@ -1606,6 +1711,53 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
               </div>
             </div>
           )}
+
+          {/* Descriptive Visualizations (Charts & Figures) */}
+          {chartItems.length > 0 && (
+            <div className="card p-4 space-y-3" style={{ border: '1px solid var(--border)' }}>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <p className="font-bold text-sm" style={{ color: 'var(--text)', margin: 0 }}>Descriptive Visualizations &amp; Charts</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>Frequency distributions, demographic bar charts, and data figures</p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('charts')}
+                  className="btn btn-ghost text-xs flex items-center gap-1"
+                  style={{ color: 'var(--brand)', fontWeight: 600 }}
+                >
+                  View All in Visualizations Tab ({chartItems.length}) <RiArrowRightSFill size={14} />
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 12 }}>
+                {chartItems.slice(0, 6).map((item: any, idx: number) => {
+                  const meta = (job.chart_metadata || [])[item.originalIndex] || {};
+                  const caption = meta.title || meta.label || meta.description || `Figure ${idx + 1}`;
+                  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/$/, '');
+                  const mkUrl = `${baseUrl}/analysis/jobs/${job.id}/charts/${item.originalIndex}?v=${job.completed_at || job.id}`;
+                  return (
+                    <div key={item.originalIndex} className="card overflow-hidden" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+                      <div className="flex items-center justify-between px-3 py-1.5" style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-2)' }}>Figure {idx + 1}</span>
+                        <button onClick={() => setPreviewState({ type: 'chart', index: idx })} className="btn btn-ghost btn-icon p-1" style={{ width: 22, height: 22 }} title="Full screen">
+                          <RiEyeFill size={12} style={{ color: 'var(--brand)' }} />
+                        </button>
+                      </div>
+                      <div style={{ background: '#fff', minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 6, cursor: 'pointer' }} onClick={() => setPreviewState({ type: 'chart', index: idx })}>
+                        <ChartImage url={mkUrl} index={item.originalIndex} isPaid={!!job.report_paid} onPreview={() => setPreviewState({ type: 'chart', index: idx })} />
+                      </div>
+                      <div style={{ padding: '6px 10px', borderTop: '1px solid var(--border)', background: 'var(--surface-2)' }}>
+                        <p style={{ margin: 0, fontSize: 11, color: 'var(--text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={caption}>
+                          <strong>Figure {idx + 1}.</strong> {caption}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {Object.keys(desc).length === 0 && Object.keys(freqs).length === 0 && (
             <div className="card p-10 text-center">
               <RiDatabase2Fill size={36} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
@@ -2021,8 +2173,11 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
           <div>
             {chartItems.length > 0 ? (
               <>
-                <div className="flex items-center justify-between mb-3">
-                  <p style={{ fontSize: 12, color: 'var(--text-3)' }}>{chartItems.length} figure{chartItems.length !== 1 ? 's' : ''} generated</p>
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                  <div>
+                    <h3 className="font-bold text-base" style={{ color: 'var(--text)', margin: 0 }}>Data Visualizations &amp; Figures</h3>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{chartItems.length} publication-ready figure{chartItems.length !== 1 ? 's' : ''} (descriptive distributions, regression plots &amp; charts)</p>
+                  </div>
                   <button onClick={async () => { for (let i = 0; i < chartItems.length; i++) { await dlChart(chartItems[i].originalIndex, `Figure_${i+1}`); await new Promise(r => setTimeout(r, 150)); } toast.success(`${chartItems.length} charts downloaded`); }}
                     style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface-2)', color: 'var(--text-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                     <RiDownload2Fill size={13} /> Download All
