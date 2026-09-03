@@ -15,6 +15,7 @@ import numpy as np
 import hashlib
 import logging
 import json
+import re
 from datetime import datetime
 
 from analysis.engine.registry import get_registry, lookup
@@ -121,7 +122,14 @@ def run_all_tests(
     for test_spec in tests:
         test_function = (test_spec.get("test_function") or "").strip()
         test_name = test_spec.get("test_name") or test_function
-        variables = [v for v in (test_spec.get("variables") or []) if isinstance(v, str)]
+        raw_vars = [v for v in (test_spec.get("variables") or []) if isinstance(v, str)]
+        variables = _resolve_variables_for_test(
+            test_function=test_function,
+            test_name=test_name,
+            variables=raw_vars,
+            df=df,
+            brief=brief,
+        )
 
         if not test_function:
             continue
@@ -278,11 +286,15 @@ def run_all_tests(
             except Exception as ae:
                 logger.warning(f"[Dispatcher] Assumption check failed ({assumption}): {ae}")
 
-        # ── Auto-resolve variables for mediation / moderation tests ──────────
-        # These tests require exactly [IV, Med/Mod, DV]. If the LLM or fallback
-        # produced an empty/incomplete variable list, fill from the brief directly.
-        if actual_fn_name in ("mediation_analysis", "moderation_analysis", "moderated_mediation"):
-            variables = _resolve_medmod_variables(brief, df, actual_fn_name, variables)
+        # ── Re-resolve variables if fallback test function was selected ──────
+        if actual_fn_name != test_function:
+            variables = _resolve_variables_for_test(
+                test_function=actual_fn_name,
+                test_name=test_name,
+                variables=variables,
+                df=df,
+                brief=brief,
+            )
 
         # ── Run the (possibly substituted) test function ───────────────────────
         run_entry = registry.get(actual_fn_name, entry)
@@ -614,70 +626,228 @@ def _append_summary(results: dict, test_spec: dict, fn_used: str, test_result: d
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MEDIATION / MODERATION VARIABLE AUTO-RESOLVER
+# INTELLIGENT VARIABLE RESOLVER & FUZZY MATCHER
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _resolve_medmod_variables(
-    brief: dict,
-    df: "pd.DataFrame",
+def _match_column(target: str, df_cols: list[str]) -> str | None:
+    """Case-insensitive, whitespace/punctuation-tolerant column name matcher."""
+    if not target or not isinstance(target, str):
+        return None
+    if target in df_cols:
+        return target
+    target_clean = re.sub(r'[^a-z0-9]', '', target.lower())
+    if not target_clean:
+        return None
+    # 1. Exact match after alphanumeric normalization
+    for col in df_cols:
+        if re.sub(r'[^a-z0-9]', '', col.lower()) == target_clean:
+            return col
+    # 2. Substring matching
+    for col in df_cols:
+        col_clean = re.sub(r'[^a-z0-9]', '', col.lower())
+        if target_clean and (target_clean in col_clean or col_clean in target_clean):
+            return col
+    return None
+
+
+def _resolve_variables_for_test(
     test_function: str,
-    current_vars: list[str],
+    test_name: str,
+    variables: list[str],
+    df: "pd.DataFrame",
+    brief: dict,
 ) -> list[str]:
     """
-    For mediation_analysis, moderation_analysis, and moderated_mediation,
-    ensure the variable list is complete. Falls back to brief fields when the
-    LLM-provided variable list is missing or incomplete.
-
-    Expected variable order:
-      mediation_analysis:   [IV, Mediator, DV]
-      moderation_analysis:  [IV, Moderator, DV]
-      moderated_mediation:  [IV, Mediator, Moderator, DV]
+    Guarantees every statistical test receives existing columns from df,
+    properly ordered according to the test's requirements.
+    Prevents KeyErrors, empty variable lists, and group count mismatches.
     """
-    def _first_valid(raw: str) -> str:
-        """Take first comma-token; return empty string if column not in df."""
-        token = (raw or "").split(",")[0].strip()
-        return token  # caller validates against df.columns
+    df_cols = list(df.columns)
+    
+    # 1. Match all existing variables against df.columns
+    resolved: list[str] = []
+    for v in (variables or []):
+        if isinstance(v, str) and v.strip():
+            matched = _match_column(v.strip(), df_cols)
+            if matched and matched not in resolved:
+                resolved.append(matched)
 
-    iv_raw  = brief.get("independent_variable", "") or brief.get("iv_column", "") or ""
-    dv_raw  = brief.get("dependent_variable",   "") or brief.get("dv_column", "") or ""
-    med_raw = brief.get("mediating_variable",   "") or brief.get("mediating_column", "") or ""
-    mod_raw = brief.get("moderating_variable",  "") or brief.get("moderating_column", "") or ""
+    numeric_cols = [c for c in df_cols if pd.api.types.is_numeric_dtype(df[c])]
+    binary_cols = [c for c in df_cols if df[c].dropna().nunique() == 2]
+    multigroup_cols = [c for c in df_cols if 3 <= df[c].dropna().nunique() <= 15]
 
-    iv  = _first_valid(iv_raw)
-    dv  = _first_valid(dv_raw)
-    med = _first_valid(med_raw)
-    mod = _first_valid(mod_raw)
+    def _brief_cols(key: str) -> list[str]:
+        raw = brief.get(key, "") or ""
+        tokens = [t.strip() for t in raw.split(",") if t.strip()]
+        matched = []
+        for t in tokens:
+            m = _match_column(t, df_cols)
+            if m and m not in matched:
+                matched.append(m)
+        return matched
 
-    # Only use brief-resolved vars if the current list is incomplete
-    if test_function == "mediation_analysis":
-        needed = 3
-        if len(current_vars) >= needed:
-            return current_vars
-        # Build from brief
-        resolved = [v for v in [iv, med, dv] if v]
-        if len(resolved) == needed:
-            logger.info(f"[Dispatcher] mediation_analysis: auto-resolved variables → {resolved}")
-            return resolved
-        return current_vars  # partial — let the engine report the error
+    brief_ivs = _brief_cols("independent_variable")
+    brief_dvs = _brief_cols("dependent_variable")
+    brief_meds = _brief_cols("mediating_variable")
+    brief_mods = _brief_cols("moderating_variable")
 
-    elif test_function == "moderation_analysis":
-        needed = 3
-        if len(current_vars) >= needed:
-            return current_vars
-        resolved = [v for v in [iv, mod, dv] if v]
-        if len(resolved) == needed:
-            logger.info(f"[Dispatcher] moderation_analysis: auto-resolved variables → {resolved}")
-            return resolved
-        return current_vars
+    # ── Two-group comparisons (Independent t-test, Welch t-test, Mann-Whitney U) ──
+    if test_function in ("independent_t_test", "welch_t_test", "independent_t_cohend", "mann_whitney", "mann_whitney_r", "mann_whitney_ci"):
+        group_col = None
+        outcome_col = None
+        
+        for c in resolved:
+            if df[c].dropna().nunique() == 2 and group_col is None:
+                group_col = c
+            elif pd.api.types.is_numeric_dtype(df[c]) and outcome_col is None and c != group_col:
+                outcome_col = c
+                
+        if not group_col:
+            for c in brief_ivs:
+                if df[c].dropna().nunique() == 2:
+                    group_col = c
+                    break
+        if not group_col and binary_cols:
+            group_col = binary_cols[0]
+            
+        if not outcome_col:
+            for c in brief_dvs:
+                if pd.api.types.is_numeric_dtype(df[c]) and c != group_col:
+                    outcome_col = c
+                    break
+        if not outcome_col and numeric_cols:
+            outcome_col = [c for c in numeric_cols if c != group_col][0] if [c for c in numeric_cols if c != group_col] else numeric_cols[0]
+            
+        if group_col and outcome_col:
+            return [group_col, outcome_col]
 
-    elif test_function == "moderated_mediation":
-        needed = 4
-        if len(current_vars) >= needed:
-            return current_vars
-        resolved = [v for v in [iv, med, mod, dv] if v]
-        if len(resolved) == needed:
-            logger.info(f"[Dispatcher] moderated_mediation: auto-resolved variables → {resolved}")
-            return resolved
-        return current_vars
+    # ── Multi-group comparisons (One-Way ANOVA, Welch ANOVA, Kruskal-Wallis) ──
+    elif test_function in ("one_way_anova", "welch_anova", "anova_eta_squared", "anova_descriptives", "kruskal_wallis", "kruskal_wallis_eta2"):
+        group_col = None
+        outcome_col = None
+        
+        for c in resolved:
+            if df[c].dropna().nunique() >= 3 and group_col is None:
+                group_col = c
+            elif pd.api.types.is_numeric_dtype(df[c]) and outcome_col is None and c != group_col:
+                outcome_col = c
+                
+        if not group_col:
+            for c in brief_ivs:
+                if df[c].dropna().nunique() >= 3:
+                    group_col = c
+                    break
+        if not group_col and multigroup_cols:
+            group_col = multigroup_cols[0]
+            
+        if not outcome_col:
+            for c in brief_dvs:
+                if pd.api.types.is_numeric_dtype(df[c]) and c != group_col:
+                    outcome_col = c
+                    break
+        if not outcome_col and numeric_cols:
+            outcome_col = [c for c in numeric_cols if c != group_col][0] if [c for c in numeric_cols if c != group_col] else numeric_cols[0]
+            
+        if group_col and outcome_col:
+            return [group_col, outcome_col]
 
-    return current_vars
+    # ── Correlations (Pearson, Spearman, Kendall) ──
+    elif test_function in ("pearson_correlation", "spearman_correlation", "kendall_tau", "correlation_matrix", "point_biserial"):
+        num_res = [c for c in resolved if pd.api.types.is_numeric_dtype(df[c])]
+        if len(num_res) < 2:
+            for c in brief_ivs + brief_dvs:
+                if pd.api.types.is_numeric_dtype(df[c]) and c not in num_res:
+                    num_res.append(c)
+                if len(num_res) >= 2:
+                    break
+        if len(num_res) < 2:
+            for c in numeric_cols:
+                if c not in num_res:
+                    num_res.append(c)
+                if len(num_res) >= 2:
+                    break
+        if len(num_res) >= 2:
+            return num_res[:2]
+
+    # ── Regressions (Linear, Multiple Regression) ──
+    elif test_function in ("linear_regression", "multiple_regression", "simple_linear_regression", "stepwise_regression", "hierarchical_regression"):
+        dv = None
+        for c in resolved:
+            if c in brief_dvs and pd.api.types.is_numeric_dtype(df[c]):
+                dv = c
+                break
+        if not dv and brief_dvs and pd.api.types.is_numeric_dtype(df[brief_dvs[0]]):
+            dv = brief_dvs[0]
+        elif not dv and resolved and pd.api.types.is_numeric_dtype(df[resolved[0]]):
+            dv = resolved[0]
+        elif not dv and numeric_cols:
+            dv = numeric_cols[-1]
+            
+        ivs = [c for c in resolved if c != dv and pd.api.types.is_numeric_dtype(df[c])]
+        if not ivs:
+            for c in brief_ivs:
+                if pd.api.types.is_numeric_dtype(df[c]) and c != dv and c not in ivs:
+                    ivs.append(c)
+        if not ivs:
+            for c in numeric_cols:
+                if c != dv and c not in ivs:
+                    ivs.append(c)
+                if len(ivs) >= 3:
+                    break
+        if dv and ivs:
+            return [dv] + ivs
+
+    # ── Moderation Analysis ──
+    elif test_function in ("moderation_analysis", "moderated_mediation"):
+        iv = None
+        mod = None
+        dv = None
+        
+        for c in brief_ivs:
+            if pd.api.types.is_numeric_dtype(df[c]): iv = c; break
+        for c in brief_mods:
+            if pd.api.types.is_numeric_dtype(df[c]): mod = c; break
+        for c in brief_dvs:
+            if pd.api.types.is_numeric_dtype(df[c]): dv = c; break
+                
+        candidates = [c for c in resolved if pd.api.types.is_numeric_dtype(df[c])]
+        for c in candidates:
+            if not iv and c not in (mod, dv): iv = c
+            elif not mod and c not in (iv, dv): mod = c
+            elif not dv and c not in (iv, mod): dv = c
+            
+        for c in numeric_cols:
+            if not iv and c not in (mod, dv): iv = c
+            elif not mod and c not in (iv, mod): mod = c
+            elif not dv and c not in (iv, mod): dv = c
+            
+        if iv and mod and dv:
+            return [iv, mod, dv]
+
+    # ── Mediation Analysis ──
+    elif test_function == "mediation_analysis":
+        iv = None
+        med = None
+        dv = None
+        for c in brief_ivs:
+            if pd.api.types.is_numeric_dtype(df[c]): iv = c; break
+        for c in brief_meds:
+            if pd.api.types.is_numeric_dtype(df[c]): med = c; break
+        for c in brief_dvs:
+            if pd.api.types.is_numeric_dtype(df[c]): dv = c; break
+            
+        candidates = [c for c in resolved if pd.api.types.is_numeric_dtype(df[c])]
+        for c in candidates:
+            if not iv and c not in (med, dv): iv = c
+            elif not med and c not in (iv, dv): med = c
+            elif not dv and c not in (iv, med): dv = c
+            
+        for c in numeric_cols:
+            if not iv and c not in (med, dv): iv = c
+            elif not med and c not in (iv, med): med = c
+            elif not dv and c not in (iv, med): dv = c
+            
+        if iv and med and dv:
+            return [iv, med, dv]
+
+    return resolved if resolved else variables

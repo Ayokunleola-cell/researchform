@@ -1377,8 +1377,10 @@ def _select_tests(brief: dict, data_dict: dict, overrides: dict,
 
     dv_raw   = brief.get("dependent_variable", "") or brief.get("dv_column", "")
     iv_raw   = brief.get("independent_variable", "") or brief.get("iv_column", "")
-    dv_names = _split_vars(dv_raw)
-    iv_names = _split_vars(iv_raw)
+    all_clean_cols = [v["clean_name"] for v in variables]
+    from analysis.engine.dispatcher import _match_column
+    dv_names = [_match_column(v, all_clean_cols) or v for v in _split_vars(dv_raw)]
+    iv_names = [_match_column(v, all_clean_cols) or v for v in _split_vars(iv_raw)]
     dv = ", ".join(dv_names)  # full comma string for LLM prompt
     iv = ", ".join(iv_names)
     hypotheses        = brief.get("hypotheses", [])
@@ -2453,8 +2455,6 @@ def _write_report(brief: dict, results: dict, tests: list, data_dict: dict,
         for fi, cp in enumerate(chart_paths):
             if cp and not str(cp).lower().endswith('.html'):
                 flabel = _get_figure_label(str(cp), brief)
-                valid_figure_lines.append(f"  - Figure 4.{fi+1}: {flabel}")
-
     figures_block = ""
     if valid_figure_lines:
         figures_block = (
@@ -2463,6 +2463,18 @@ def _write_report(brief: dict, results: dict, tests: list, data_dict: dict,
             + "\n".join(valid_figure_lines)
             + "\n"
         )
+
+    chapter_context = ""
+    if chapter_texts and isinstance(chapter_texts, dict):
+        ctx_parts = []
+        for ch_k, ch_v in chapter_texts.items():
+            if ch_v and isinstance(ch_v, str) and ch_k != "full_text":
+                ctx_parts.append(f"--- {ch_k.upper()} ---\n{ch_v[:1500]}")
+        if ctx_parts:
+            chapter_context = "\nPREVIOUS CHAPTER CONTEXT (for theoretical alignment):\n" + "\n".join(ctx_parts) + "\n"
+
+    lit_rule = "Synthesize and discuss findings in relation to existing empirical literature and theoretical framework where applicable."
+
 
     # ════════════════════════════════════════════════════════════════════
     # PROMPT TEMPLATES — one per report type

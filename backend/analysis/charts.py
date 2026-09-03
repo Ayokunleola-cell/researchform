@@ -350,10 +350,28 @@ def create_visualisations(results: dict, df, brief: dict, job_id: str,
             freq = frequencies[col]
             if not freq or not isinstance(freq, dict):
                 continue
-            keys   = list(freq.keys())[:14]
-            values = [freq[k] for k in keys]
-            labels = [_trunc(str(k)) for k in keys]
-            total  = sum(values) or 1
+            raw_keys = list(freq.keys())[:14]
+            clean_keys, clean_labels, clean_values = [], [], []
+            for k in raw_keys:
+                v = freq[k]
+                val = 0.0
+                if isinstance(v, (int, float)):
+                    val = float(v)
+                elif isinstance(v, dict):
+                    val = float(v.get("count", 0) or v.get("n", 0) or 0)
+                elif isinstance(v, str):
+                    try:
+                        val = float(v.replace(",", "").strip())
+                    except ValueError:
+                        val = 0.0
+                clean_keys.append(k)
+                clean_labels.append(_trunc(str(k)))
+                clean_values.append(val)
+
+            keys   = clean_keys
+            labels = clean_labels
+            values = clean_values
+            total  = sum(values) or 1.0
             pcts   = [v / total * 100 for v in values]
 
             #  Bar chart 
