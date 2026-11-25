@@ -1,6 +1,7 @@
 // src/pages/analysis/index.tsx
 
 import React, { useEffect, useState, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import Cookies from 'js-cookie';
 
 import AppLayout from '../../components/layout/AppLayout';
@@ -807,489 +808,231 @@ const TABLE_TYPES = [
 
 
 
-// ─── AvailableColumnsPanel ────────────────────────────────────────────────────
-
-// Draggable column chips. Drag any chip straight onto a DV / IV / CV field.
-
-// Hovering a chip shows a sticky popup: delay-on-leave so the mouse can move
-
-// from chip into the popup without it closing.
+// ─── AvailableColumnsPanel ───────────────────────────────────────────────────
+// Draggable column chips. Hover a chip → fixed viewport popup appears (via
+// ReactDOM.createPortal so it NEVER clips into sidebars or overflow containers).
 
 function AvailableColumnsPanel({
-
-  dataDictionary, dvValue, ivValue, cvValue, mvValue, modvValue,
-
+  dataDictionary,
+  dvValue, ivValue, cvValue, mvValue, modvValue,
+  covValue, exclValue, grpValue,
   onAddDv, onAddIv, onAddCv, onAddMv, onAddModv,
-
+  onAddCov, onAddExcl, onAddGrp,
 }: {
-
   dataDictionary: Record<string, any>;
-
   dvValue: string; ivValue: string; cvValue: string;
-
   mvValue: string; modvValue: string;
-
-  onAddDv: (col: string) => void;
-
-  onAddIv: (col: string) => void;
-
-  onAddCv: (col: string) => void;
-
-  onAddMv: (col: string) => void;
-
+  covValue: string; exclValue: string; grpValue: string;
+  onAddDv:   (col: string) => void;
+  onAddIv:   (col: string) => void;
+  onAddCv:   (col: string) => void;
+  onAddMv:   (col: string) => void;
   onAddModv: (col: string) => void;
-
+  onAddCov:  (col: string) => void;
+  onAddExcl: (col: string) => void;
+  onAddGrp:  (col: string) => void;
 }) {
-
-  const [hovered, setHovered] = React.useState<string | null>(null);
-
+  const [hovered,  setHovered]  = React.useState<string | null>(null);
+  const [popupPos, setPopupPos] = React.useState<{ top: number; left: number; openDown: boolean } | null>(null);
   const leaveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => { setMounted(true); }, []);
 
+  const POPUP_W = 520;
+  const POPUP_H = 50;
+  const GAP     = 8;
 
+  const cancelLeave = () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); };
 
-  const handleEnter = (col: string) => {
+  const startLeave = () => {
+    leaveTimer.current = setTimeout(() => { setHovered(null); setPopupPos(null); }, 250);
+  };
 
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
+  const closePopup = () => { setHovered(null); setPopupPos(null); };
 
+  const handleChipEnter = (col: string, e: React.MouseEvent<HTMLElement>) => {
+    cancelLeave();
+    const r  = e.currentTarget.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const openDown = r.top < POPUP_H + GAP + 20;
+    let left = r.left + r.width / 2 - POPUP_W / 2;
+    left = Math.max(8, Math.min(left, vw - POPUP_W - 8));
+    const top = openDown ? r.bottom + GAP : r.top - POPUP_H - GAP;
+    setPopupPos({ top, left, openDown });
     setHovered(col);
-
   };
-
-
-
-  const handleLeave = () => {
-
-    leaveTimer.current = setTimeout(() => setHovered(null), 250);
-
-  };
-
-
-
-  const cancelLeave = () => {
-
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
-
-  };
-
-
 
   const toList = (v: string) => (v ? v.split(',').map(s => s.trim()).filter(Boolean) : []);
-
   const dvList   = toList(dvValue);
-
   const ivList   = toList(ivValue);
-
   const cvList   = toList(cvValue);
-
   const mvList   = toList(mvValue);
-
   const modvList = toList(modvValue);
-
-
-
-  const cols = Object.entries(dataDictionary);
-
-
+  const covList  = toList(covValue);
+  const exclList = toList(exclValue);
+  const grpList  = toList(grpValue);
 
   const slotFor = (col: string) => {
-
     if (dvList.includes(col))   return 'DV';
-
     if (ivList.includes(col))   return 'IV';
-
     if (cvList.includes(col))   return 'CV';
-
     if (mvList.includes(col))   return 'MV';
-
     if (modvList.includes(col)) return 'MODV';
-
+    if (covList.includes(col))  return 'COV';
+    if (exclList.includes(col)) return 'EXCL';
+    if (grpList.includes(col))  return 'GRP';
     return null;
-
   };
-
-
 
   const slotColor: Record<string, string> = {
-
-    DV: 'var(--brand)', IV: 'var(--success)', CV: '#f59e0b',
-
-    MV: '#8b5cf6', MODV: '#f97316',
-
+    DV:   'var(--brand)',
+    IV:   'var(--success)',
+    CV:   '#f59e0b',
+    MV:   '#8b5cf6',
+    MODV: '#f97316',
+    COV:  '#06b6d4',
+    EXCL: '#ef4444',
+    GRP:  '#84cc16',
   };
 
+  const BTN_CFG = [
+    { label: 'Dependent',   color: 'var(--brand)',   bg: 'rgba(99,102,241,0.13)',  hbg: 'rgba(99,102,241,0.28)',  bd: 'rgba(99,102,241,0.35)',  fn: onAddDv   },
+    { label: 'Independent', color: 'var(--success)', bg: 'rgba(16,185,129,0.13)',  hbg: 'rgba(16,185,129,0.28)',  bd: 'rgba(16,185,129,0.35)',  fn: onAddIv   },
+    { label: 'Control',     color: '#f59e0b',        bg: 'rgba(245,158,11,0.13)',  hbg: 'rgba(245,158,11,0.28)',  bd: 'rgba(245,158,11,0.35)',  fn: onAddCv   },
+    { label: 'Mediator',    color: '#8b5cf6',        bg: 'rgba(139,92,246,0.13)',  hbg: 'rgba(139,92,246,0.28)',  bd: 'rgba(139,92,246,0.35)',  fn: onAddMv   },
+    { label: 'Moderator',   color: '#f97316',        bg: 'rgba(249,115,22,0.13)',  hbg: 'rgba(249,115,22,0.28)',  bd: 'rgba(249,115,22,0.35)',  fn: onAddModv },
+    { label: 'Covariate',   color: '#06b6d4',        bg: 'rgba(6,182,212,0.13)',   hbg: 'rgba(6,182,212,0.28)',   bd: 'rgba(6,182,212,0.35)',   fn: onAddCov  },
+    { label: 'Exclude',     color: '#ef4444',        bg: 'rgba(239,68,68,0.13)',   hbg: 'rgba(239,68,68,0.28)',   bd: 'rgba(239,68,68,0.35)',   fn: onAddExcl },
+    { label: 'Group',       color: '#84cc16',        bg: 'rgba(132,204,22,0.13)',  hbg: 'rgba(132,204,22,0.28)',  bd: 'rgba(132,204,22,0.35)',  fn: onAddGrp  },
+  ];
 
+  const slotBg: Record<string, string> = {
+    DV:   'rgba(99,102,241,0.13)',
+    IV:   'rgba(16,185,129,0.13)',
+    CV:   'rgba(245,158,11,0.13)',
+    MV:   'rgba(139,92,246,0.13)',
+    MODV: 'rgba(249,115,22,0.13)',
+    COV:  'rgba(6,182,212,0.13)',
+    EXCL: 'rgba(239,68,68,0.13)',
+    GRP:  'rgba(132,204,22,0.13)',
+  };
+
+  // Portal popup — rendered into document.body so no parent CSS can clip it
+  const popup = (hovered && popupPos && mounted) ? ReactDOM.createPortal(
+    <div
+      onMouseEnter={cancelLeave}
+      onMouseLeave={startLeave}
+      style={{
+        position: 'fixed',
+        top: popupPos.top,
+        left: popupPos.left,
+        width: POPUP_W,
+        zIndex: 2147483647,
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderRadius: 10,
+        padding: '6px 6px',
+        display: 'flex',
+        gap: 4,
+        flexWrap: 'wrap',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.55)',
+        pointerEvents: 'auto',
+      }}
+    >
+      {/* Caret toward chip */}
+      <div style={{
+        position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+        ...(popupPos.openDown
+          ? { bottom: '100%', borderBottom: '6px solid var(--border)', borderTop: 'none' }
+          : { top:    '100%', borderTop:    '6px solid var(--border)', borderBottom: 'none' }),
+        width: 0, height: 0,
+        borderLeft: '6px solid transparent', borderRight: '6px solid transparent',
+      }} />
+      <div style={{
+        position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+        ...(popupPos.openDown
+          ? { bottom: 'calc(100% - 1px)', borderBottom: '6px solid var(--surface)', borderTop: 'none' }
+          : { top:    'calc(100% - 1px)', borderTop:    '6px solid var(--surface)', borderBottom: 'none' }),
+        width: 0, height: 0,
+        borderLeft: '6px solid transparent', borderRight: '6px solid transparent',
+        zIndex: 1,
+      }} />
+
+      {BTN_CFG.map(btn => (
+        <button
+          key={btn.label}
+          type="button"
+          onClick={() => { if (hovered) { btn.fn(hovered); closePopup(); } }}
+          style={{
+            flex: '1 1 auto',
+            fontSize: 10, fontWeight: 700, padding: '5px 8px', borderRadius: 7,
+            cursor: 'pointer', whiteSpace: 'nowrap',
+            background: btn.bg, color: btn.color,
+            border: `1.5px solid ${btn.bd}`,
+            transition: 'background 0.12s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = btn.hbg)}
+          onMouseLeave={e => (e.currentTarget.style.background = btn.bg)}
+        >
+          {btn.label}
+        </button>
+      ))}
+    </div>,
+    document.body
+  ) : null;
 
   return (
-
-    <div style={{
-
-      marginTop: 8,
-
-      border: '1px solid var(--border)', borderRadius: 12,
-
-      background: 'var(--surface-2)', overflow: 'visible',
-
-    }}>
-
-      <div style={{ padding: '8px 12px 6px', borderBottom: '1px solid var(--border)' }}>
-
-        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-
-          Available columns — drag to a field above, or hover to assign
-
-        </span>
-
-      </div>
-
-      <div style={{ padding: '10px 12px 12px', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-
-        {cols.map(([col, info]: [string, any], idx: number) => {
-
-          const slot = slotFor(col);
-
-          const color = slot ? slotColor[slot] : 'var(--text-2)';
-
-          const bg = slot === 'DV'   ? 'rgba(99,102,241,0.13)'
-
-                   : slot === 'IV'   ? 'rgba(16,185,129,0.13)'
-
-                   : slot === 'CV'   ? 'rgba(245,158,11,0.13)'
-
-                   : slot === 'MV'   ? 'rgba(139,92,246,0.13)'
-
-                   : slot === 'MODV' ? 'rgba(249,115,22,0.13)'
-
-                   : 'var(--surface)';
-
-          const isHov = hovered === col;
-
-
-
-          // Smart popup positioning: avoid left-edge overflow for first chips,
-
-          // right-edge overflow for last chips.
-
-          const isLeftEdge = idx < 2;
-
-          const isRightEdge = idx >= cols.length - 2;
-
-          const popupLeft   = isLeftEdge ? '0' : isRightEdge ? 'auto' : '50%';
-
-          const popupRight  = isRightEdge ? '0' : 'auto';
-
-          const popupTransform = (!isLeftEdge && !isRightEdge) ? 'translateX(-50%)' : 'none';
-
-          // Arrow tracks the chip centre relative to popup alignment
-
-          const arrowLeft  = isLeftEdge ? '18px' : isRightEdge ? 'auto' : '50%';
-
-          const arrowRight = isRightEdge ? '18px' : 'auto';
-
-          const arrowTransform = (!isLeftEdge && !isRightEdge) ? 'translateX(-50%)' : 'none';
-
-
-
-          return (
-
-            <div key={col} style={{ position: 'relative', display: 'inline-block' }}
-
-              onMouseEnter={() => handleEnter(col)}
-
-              onMouseLeave={handleLeave}
-
-            >
-
-              {/* Draggable chip */}
-
+    <>
+      <div style={{ marginTop: 8, border: '1px solid var(--border)', borderRadius: 12, background: 'var(--surface-2)' }}>
+        <div style={{ padding: '8px 12px 6px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+            Available columns — drag to a field above, or hover to assign
+          </span>
+        </div>
+        <div style={{ padding: '10px 12px 12px', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {Object.entries(dataDictionary).map(([col, info]: [string, any]) => {
+            const slot  = slotFor(col);
+            const color = slot ? slotColor[slot] : 'var(--text-2)';
+            const bg    = slot ? (slotBg[slot] || 'var(--surface)') : 'var(--surface)';
+            const isHov = hovered === col;
+            return (
               <span
-
+                key={col}
                 draggable
-
-                onDragStart={e => {
-
-                  e.dataTransfer.setData('text/plain', col);
-
-                  e.dataTransfer.effectAllowed = 'copy';
-
-                }}
-
+                onDragStart={e => { e.dataTransfer.setData('text/plain', col); e.dataTransfer.effectAllowed = 'copy'; }}
+                onMouseEnter={e => handleChipEnter(col, e)}
+                onMouseLeave={startLeave}
                 style={{
-
                   display: 'inline-flex', alignItems: 'center', gap: 5,
-
                   padding: '5px 10px', borderRadius: 8, cursor: 'grab',
-
                   fontSize: 12, fontWeight: 600,
-
                   background: bg,
-
                   border: `1.5px solid ${slot ? color + '55' : 'var(--border)'}`,
-
                   color, userSelect: 'none',
-
                   transition: 'transform 0.1s, box-shadow 0.1s',
-
                   transform: isHov ? 'scale(1.04)' : 'scale(1)',
-
                   boxShadow: isHov ? `0 2px 12px ${color}44` : 'none',
-
                 }}
-
-                title={`${info.level ? `Level: ${info.level} · ` : ''}Drag onto a field or hover to assign`}
-
+                title={`${info?.level ? `Level: ${info.level} · ` : ''}Hover to assign role`}
               >
-
                 <span style={{ fontSize: 9, opacity: 0.45 }}>⠿</span>
-
                 {col}
-
                 {slot && (
-
                   <span style={{
-
                     fontSize: 9, fontWeight: 800, padding: '1px 4px', borderRadius: 4,
-
                     background: color + '33', color, letterSpacing: '0.04em',
-
                   }}>{slot}</span>
-
                 )}
-
               </span>
-
-
-
-              {/* Transparent bridge — covers the gap so mouse doesn't leave the hover zone */}
-
-              {isHov && (
-
-                <div style={{
-
-                  position: 'absolute', bottom: '100%', left: 0, right: 0,
-
-                  height: 8, background: 'transparent',
-
-                }} />
-
-              )}
-
-
-
-              {/* Hover assign popup — appears ABOVE the chip */}
-
-              {isHov && (
-
-                <div
-
-                  onMouseEnter={cancelLeave}
-
-                  onMouseLeave={handleLeave}
-
-                  style={{
-
-                    position: 'absolute', bottom: 'calc(100% + 8px)',
-
-                    left: popupLeft, right: popupRight,
-
-                    transform: popupTransform,
-
-                    background: 'var(--surface)',
-
-                    border: '1px solid var(--border)',
-
-                    borderRadius: 10, padding: '5px 6px',
-
-                    display: 'flex', gap: 4, zIndex: 300,
-
-                    boxShadow: '0 6px 24px rgba(0,0,0,0.35)',
-
-                    whiteSpace: 'nowrap',
-
-                  }}
-
-                >
-
-                  {/* Arrow pointing DOWN toward the chip */}
-
-                  <div style={{
-
-                    position: 'absolute', top: '100%',
-
-                    left: arrowLeft, right: arrowRight,
-
-                    transform: arrowTransform,
-
-                    width: 0, height: 0,
-
-                    borderLeft: '5px solid transparent',
-
-                    borderRight: '5px solid transparent',
-
-                    borderTop: '5px solid var(--border)',
-
-                  }} />
-
-                  <div style={{
-
-                    position: 'absolute', top: 'calc(100% - 1px)',
-
-                    left: arrowLeft, right: arrowRight,
-
-                    transform: arrowTransform,
-
-                    width: 0, height: 0,
-
-                    borderLeft: '5px solid transparent',
-
-                    borderRight: '5px solid transparent',
-
-                    borderTop: '5px solid var(--surface)',
-
-                    zIndex: 1,
-
-                  }} />
-
-                  <button
-
-                    onClick={() => { onAddDv(col); setHovered(null); }}
-
-                    style={{
-
-                      fontSize: 11, fontWeight: 700, padding: '5px 10px', borderRadius: 7,
-
-                      cursor: 'pointer', whiteSpace: 'nowrap',
-
-                      background: 'var(--border)', color: 'var(--brand)',
-
-                      border: '1.5px solid rgba(99,102,241,0.35)',
-
-                      transition: 'background 0.1s',
-
-                    }}
-
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--border-2)')}
-
-                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--border)')}
-
-                  >Dependent</button>
-
-                  <button
-
-                    onClick={() => { onAddIv(col); setHovered(null); }}
-
-                    style={{
-
-                      fontSize: 11, fontWeight: 700, padding: '5px 10px', borderRadius: 7,
-
-                      cursor: 'pointer', whiteSpace: 'nowrap',
-
-                      background: 'rgba(16,185,129,0.15)', color: 'var(--success)',
-
-                      border: '1.5px solid rgba(16,185,129,0.35)',
-
-                      transition: 'background 0.1s',
-
-                    }}
-
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(16,185,129,0.28)')}
-
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(16,185,129,0.15)')}
-
-                  >Independent</button>
-
-                  <button
-
-                    onClick={() => { onAddCv(col); setHovered(null); }}
-
-                    style={{
-
-                      fontSize: 11, fontWeight: 700, padding: '5px 10px', borderRadius: 7,
-
-                      cursor: 'pointer', whiteSpace: 'nowrap',
-
-                      background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: '#f59e0b',
-
-                      border: '1.5px solid rgba(245,158,11,0.35)',
-
-                      transition: 'background 0.1s',
-
-                    }}
-
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(245,158,11,0.28)')}
-
-                    onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--warning) 15%, transparent)')}
-
-                  >Control</button>
-
-                  <button
-
-                    onClick={() => { onAddMv(col); setHovered(null); }}
-
-                    style={{
-
-                      fontSize: 11, fontWeight: 700, padding: '5px 10px', borderRadius: 7,
-
-                      cursor: 'pointer', whiteSpace: 'nowrap',
-
-                      background: 'rgba(139,92,246,0.15)', color: '#8b5cf6',
-
-                      border: '1.5px solid rgba(139,92,246,0.35)',
-
-                      transition: 'background 0.1s',
-
-                    }}
-
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.28)')}
-
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.15)')}
-
-                  >Mediator</button>
-
-                  <button
-
-                    onClick={() => { onAddModv(col); setHovered(null); }}
-
-                    style={{
-
-                      fontSize: 11, fontWeight: 700, padding: '5px 10px', borderRadius: 7,
-
-                      cursor: 'pointer', whiteSpace: 'nowrap',
-
-                      background: 'rgba(249,115,22,0.15)', color: '#f97316',
-
-                      border: '1.5px solid rgba(249,115,22,0.35)',
-
-                      transition: 'background 0.1s',
-
-                    }}
-
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(249,115,22,0.28)')}
-
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(249,115,22,0.15)')}
-
-                  >Moderator</button>
-
-                </div>
-
-              )}
-
-            </div>
-
-          );
-
-        })}
-
+            );
+          })}
+        </div>
       </div>
-
-    </div>
-
+      {popup}
+    </>
   );
-
 }
-
-
-
-// ─── Multi-Variable Tag Pill Input ────────────────────────────────────────────
 
 function MultiVarInput({ value, onChange, id, placeholder, accentColor = 'var(--brand)', errorBorder }: {
 
@@ -3922,6 +3665,10 @@ export default function AnalysisIndexPage() {
   const [advisorResult, setAdvisorResult] = useState<any>(null);
   const [advisorApplied, setAdvisorApplied] = useState(false);
 
+  // AI Scale Advisor State
+  const [scaleAdvisorLoading, setScaleAdvisorLoading] = useState(false);
+  const [scaleAdvisorResult, setScaleAdvisorResult] = useState<any>(null);
+
   const [constructMode, setConstructMode] = useState<'auto' | 'manual'>('auto');
 
   const [selectedTechniques, setSelectedTechniques] = useState<Set<string>>(new Set());
@@ -4499,17 +4246,106 @@ export default function AnalysisIndexPage() {
 
   const handleApplyAdvisorVariables = () => {
     if (!advisorResult) return;
+
+    // Apply Dependent Variable
     if (advisorResult.dependent_variable?.name) {
       update('dependent_variable', advisorResult.dependent_variable.name);
     }
+    // Apply Independent Variable
     if (advisorResult.independent_variable?.name) {
       update('independent_variable', advisorResult.independent_variable.name);
     }
+    // Apply Control Variables (join as comma-separated if multiple)
+    const ctrlVars: {name:string}[] = advisorResult.control_variables || [];
+    if (ctrlVars.length > 0) {
+      const ctrlNames = ctrlVars.map((v: {name:string}) => v.name).filter(Boolean).join(', ');
+      if (ctrlNames) update('control_variable', ctrlNames);
+    }
+    // Apply Mediating Variables (first one; can be expanded later)
+    const medVars: {name:string}[] = advisorResult.mediating_variables || [];
+    if (medVars.length > 0 && medVars[0]?.name) {
+      update('mediating_variable', medVars.map((v: {name:string}) => v.name).filter(Boolean).join(', '));
+    }
+    // Apply Moderating Variables (first one; can be expanded later)
+    const modVars: {name:string}[] = advisorResult.moderating_variables || [];
+    if (modVars.length > 0 && modVars[0]?.name) {
+      update('moderating_variable', modVars.map((v: {name:string}) => v.name).filter(Boolean).join(', '));
+    }
+
     setAdvisorApplied(true);
-    toast.success('Variables populated into fields below!', { duration: 3500 });
+    toast.success('All AI-suggested variables populated into fields below!', { duration: 3500 });
+  };
+
+  // ── AI Scale Advisor Handler ──────────────────────────────────────────────
+  const handleScaleAdvisor = async () => {
+    const cols: string[] = dataDictionary ? Object.keys(dataDictionary) : [];
+    if (cols.length === 0) {
+      toast.error('No dataset loaded. Please upload a file first.', { duration: 4000 });
+      return;
+    }
+    setScaleAdvisorLoading(true);
+    setScaleAdvisorResult(null);
+    try {
+      const columnsMeta = cols.map((name: string) => {
+        const info = dataDictionary?.[name] || {};
+        return {
+          name,
+          dtype: info.dtype || 'object',
+          n_unique: info.n_unique ?? null,
+          sample: (info.sample_values || []).slice(0, 5),
+        };
+      });
+      const token = typeof window !== 'undefined' ? (Cookies.get('rf_token') || localStorage.getItem('auth_token')) : null;
+      const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/analysis/scale-advisor`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ brief, columns: columnsMeta }),
+      });
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({}));
+        throw new Error(errBody.detail || `Server returned ${resp.status}`);
+      }
+      const data = await resp.json();
+      setScaleAdvisorResult(data);
+      toast.success(`Scale analysis complete — ${Object.keys(data.variable_scales || {}).length} variables classified (${data.source === 'ai' ? 'AI' : 'heuristic'})`, { duration: 4000 });
+    } catch (err: any) {
+      console.error('Scale advisor error:', err);
+      toast.error(err?.message || 'Scale analysis failed. Check connection or enter scales manually.');
+    } finally {
+      setScaleAdvisorLoading(false);
+    }
+  };
+
+  const handleApplyScaleAdvisor = (onlyEmpty: boolean = true) => {
+    if (!scaleAdvisorResult?.variable_scales) return;
+    const next = { ...(brief.variable_scales || {}) };
+    for (const [col, info] of Object.entries(scaleAdvisorResult.variable_scales)) {
+      const scale = (info as any)?.scale || '';
+      if (scale && (!onlyEmpty || !next[col])) {
+        next[col] = scale;
+      }
+    }
+    update('variable_scales', next);
+
+    // Also apply constructs if in auto mode
+    if (scaleAdvisorResult.likert_constructs?.length > 0 && constructMode === 'auto') {
+      const existing = brief.likert_constructs || [];
+      const newConstructs = scaleAdvisorResult.likert_constructs
+        .filter((c: any) => c.name && c.columns?.length >= 3)
+        .map((c: any) => ({ name: c.name, columns: c.columns }));
+      if (newConstructs.length > 0 && existing.length === 0) {
+        update('likert_constructs', newConstructs);
+      }
+    }
+
+    toast.success(`Applied ${Object.keys(scaleAdvisorResult.variable_scales).length} scale suggestions`);
   };
 
   const MAX_FILE_SIZE_MB = 10;
+
 
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
@@ -5876,6 +5712,64 @@ export default function AnalysisIndexPage() {
                             </div>
                           </div>
 
+                          {/* Control / Mediating / Moderating Variable Cards */}
+                          {(() => {
+                            const ctrlVars: {name:string; why:string}[] = advisorResult.control_variables || [];
+                            const medVars:  {name:string; why:string}[] = advisorResult.mediating_variables  || [];
+                            const modVars:  {name:string; why:string}[] = advisorResult.moderating_variables || [];
+                            const hasExtra = ctrlVars.length > 0 || medVars.length > 0 || modVars.length > 0;
+                            if (!hasExtra) return null;
+                            return (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-1">
+                                {/* Control Variables */}
+                                {ctrlVars.length > 0 && (
+                                  <div className="p-3 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 mb-1" style={{ color: '#f59e0b' }}>
+                                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#f59e0b' }} />
+                                      Control Variable(s)
+                                    </span>
+                                    {ctrlVars.map((v,i) => (
+                                      <div key={i}>
+                                        <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--text)' }}>{v.name}</p>
+                                        <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-2)' }}>{v.why}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                {/* Mediating Variables */}
+                                {medVars.length > 0 && (
+                                  <div className="p-3 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 mb-1" style={{ color: '#8b5cf6' }}>
+                                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#8b5cf6' }} />
+                                      Mediating Variable(s)
+                                    </span>
+                                    {medVars.map((v,i) => (
+                                      <div key={i}>
+                                        <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--text)' }}>{v.name}</p>
+                                        <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-2)' }}>{v.why}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                {/* Moderating Variables */}
+                                {modVars.length > 0 && (
+                                  <div className="p-3 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 mb-1" style={{ color: '#f97316' }}>
+                                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#f97316' }} />
+                                      Moderating Variable(s)
+                                    </span>
+                                    {modVars.map((v,i) => (
+                                      <div key={i}>
+                                        <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--text)' }}>{v.name}</p>
+                                        <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-2)' }}>{v.why}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+
                           {/* Implied Test Card */}
                           {advisorResult.implied_test && (
                             <div className="p-2.5 rounded-lg flex items-start gap-2.5"
@@ -5932,9 +5826,7 @@ export default function AnalysisIndexPage() {
                       )}
                     </div>
 
-                    <Field label="Dependent Variable(s) — Outcome" error={touched ? stepErrors.dependent_variable : undefined}
-
-                      hint="The variable you are trying to predict or explain (e.g. sales, score, satisfaction)">
+                    <Field label="Dependent Variable(s) — Outcome" error={touched ? stepErrors.dependent_variable : undefined}>
 
                       <MultiVarInput id="brief-dv" value={brief.dependent_variable}
 
@@ -5946,9 +5838,7 @@ export default function AnalysisIndexPage() {
 
                     </Field>
 
-                    <Field label="Independent Variable(s) — Predictor / Grouping" error={touched ? stepErrors.independent_variable : undefined}
-
-                      hint="The variable(s) that explain or influence the outcome, or categorical groups/factors to compare (e.g. ai_adoption, gender, department). Comma-separated.">
+                    <Field label="Independent Variable(s) — Predictor / Grouping" error={touched ? stepErrors.independent_variable : undefined}>
 
                       <MultiVarInput id="brief-iv" value={brief.independent_variable}
 
@@ -5960,9 +5850,7 @@ export default function AnalysisIndexPage() {
 
                     </Field>
 
-                    <Field label="Control Variable(s)" required={false}
-
-                      hint="Variables held constant to eliminate confounding effects (e.g. Age, Region, Tenure)">
+                    <Field label="Control Variable(s)" required={false}>
 
                       <MultiVarInput id="brief-cv" value={brief.control_variable || ''}
 
@@ -5972,9 +5860,7 @@ export default function AnalysisIndexPage() {
 
                     </Field>
 
-                    <Field label="Mediating Variable(s)" required={false}
-
-                      hint="Explains HOW or WHY the IV affects the DV — sits in the causal chain (e.g. Psychological Safety, Motivation)">
+                    <Field label="Mediating Variable(s)" required={false}>
 
                       <MultiVarInput id="brief-mv" value={brief.mediating_variable || ''}
 
@@ -5984,15 +5870,43 @@ export default function AnalysisIndexPage() {
 
                     </Field>
 
-                    <Field label="Moderating Variable(s)" required={false}
-
-                      hint="Changes the STRENGTH or DIRECTION of the IV → DV relationship (e.g. Digital Workload, Leadership Support)">
+                    <Field label="Moderating Variable(s)" required={false}>
 
                       <MultiVarInput id="brief-modv" value={brief.moderating_variable || ''}
 
                         onChange={v => update('moderating_variable', v)}
 
                         accentColor="#f97316" />
+
+                    </Field>
+
+                    <Field label="Covariate Variable(s)" required={false}>
+
+                      <MultiVarInput id="brief-cov" value={brief.covariate_variable || ''}
+
+                        onChange={v => update('covariate_variable', v)}
+
+                        accentColor="#06b6d4" />
+
+                    </Field>
+
+                    <Field label="Group Variable(s)" required={false}>
+
+                      <MultiVarInput id="brief-grp" value={brief.group_variable || ''}
+
+                        onChange={v => update('group_variable', v)}
+
+                        accentColor="#84cc16" />
+
+                    </Field>
+
+                    <Field label="Exclude Variable(s)" required={false}>
+
+                      <MultiVarInput id="brief-excl" value={brief.exclude_variable || ''}
+
+                        onChange={v => update('exclude_variable', v)}
+
+                        accentColor="#ef4444" />
 
                     </Field>
 
@@ -6012,44 +5926,50 @@ export default function AnalysisIndexPage() {
 
                         modvValue={brief.moderating_variable || ''}
 
+                        covValue={brief.covariate_variable || ''}
+
+                        exclValue={brief.exclude_variable || ''}
+
+                        grpValue={brief.group_variable || ''}
+
                         onAddDv={col => {
-
                           const cur = brief.dependent_variable ? brief.dependent_variable.split(',').map((v: string) => v.trim()).filter(Boolean) : [];
-
                           if (!cur.includes(col)) update('dependent_variable', [...cur, col].join(', '));
-
                         }}
 
                         onAddIv={col => {
-
                           const cur = brief.independent_variable ? brief.independent_variable.split(',').map((v: string) => v.trim()).filter(Boolean) : [];
-
                           if (!cur.includes(col)) update('independent_variable', [...cur, col].join(', '));
-
                         }}
 
                         onAddCv={col => {
-
                           const cur = (brief.control_variable || '').split(',').map((v: string) => v.trim()).filter(Boolean);
-
                           if (!cur.includes(col)) update('control_variable', [...cur, col].join(', '));
-
                         }}
 
                         onAddMv={col => {
-
                           const cur = (brief.mediating_variable || '').split(',').map((v: string) => v.trim()).filter(Boolean);
-
                           if (!cur.includes(col)) update('mediating_variable', [...cur, col].join(', '));
-
                         }}
 
                         onAddModv={col => {
-
                           const cur = (brief.moderating_variable || '').split(',').map((v: string) => v.trim()).filter(Boolean);
-
                           if (!cur.includes(col)) update('moderating_variable', [...cur, col].join(', '));
+                        }}
 
+                        onAddCov={col => {
+                          const cur = (brief.covariate_variable || '').split(',').map((v: string) => v.trim()).filter(Boolean);
+                          if (!cur.includes(col)) update('covariate_variable', [...cur, col].join(', '));
+                        }}
+
+                        onAddExcl={col => {
+                          const cur = (brief.exclude_variable || '').split(',').map((v: string) => v.trim()).filter(Boolean);
+                          if (!cur.includes(col)) update('exclude_variable', [...cur, col].join(', '));
+                        }}
+
+                        onAddGrp={col => {
+                          const cur = (brief.group_variable || '').split(',').map((v: string) => v.trim()).filter(Boolean);
+                          if (!cur.includes(col)) update('group_variable', [...cur, col].join(', '));
                         }}
 
                       />
@@ -6058,191 +5978,517 @@ export default function AnalysisIndexPage() {
 
 
 
-                    {/* ── Variable Scale Types ── */}
+                    {/* ── Variable Scale Types — integrated with decoded data ── */}
 
                     {(() => {
+                      // ── Helpers ──────────────────────────────────────────────
+                      const toList = (v: string | undefined) =>
+                        (v || '').split(',').map((s: string) => s.trim()).filter(Boolean);
 
-                      const allVars = [
+                      const dvList   = toList(brief.dependent_variable);
+                      const ivList   = toList(brief.independent_variable);
+                      const cvList   = toList(brief.control_variable);
+                      const mvList   = toList(brief.mediating_variable);
+                      const modvList = toList(brief.moderating_variable);
+                      const covList  = toList(brief.covariate_variable);
+                      const exclList = toList(brief.exclude_variable);
+                      const grpList  = toList(brief.group_variable);
 
-                        brief.dependent_variable, brief.independent_variable,
+                      // All explicitly named vars (from brief fields)
+                      const namedVars: string[] = Array.from(new Set([
+                        ...dvList, ...ivList, ...cvList, ...mvList, ...modvList,
+                        ...covList, ...exclList, ...grpList,
+                      ])).filter(Boolean);
 
-                        brief.control_variable, brief.mediating_variable, brief.moderating_variable,
+                      // All decoded dataset columns
+                      const decodedCols: string[] = dataDictionary ? Object.keys(dataDictionary) : [];
 
-                      ]
+                      // Union: named vars + decoded cols (named first)
+                      const allCols: string[] = Array.from(new Set([...namedVars, ...decodedCols])).filter(Boolean);
 
-                        .filter(Boolean)
+                      // Role for a column
+                      const roleOf = (col: string): string | null => {
+                        if (dvList.includes(col))   return 'DV';
+                        if (ivList.includes(col))   return 'IV';
+                        if (cvList.includes(col))   return 'CV';
+                        if (mvList.includes(col))   return 'MV';
+                        if (modvList.includes(col)) return 'MODV';
+                        if (covList.includes(col))  return 'COV';
+                        if (exclList.includes(col)) return 'EXCL';
+                        if (grpList.includes(col))  return 'GRP';
+                        return null;
+                      };
 
-                        .flatMap((v: string) => v.split(',').map((s: string) => s.trim()))
+                      const roleColor: Record<string, string> = {
+                        DV: '#6366f1', IV: '#10b981', CV: '#f59e0b',
+                        MV: '#8b5cf6', MODV: '#f97316',
+                        COV: '#06b6d4', EXCL: '#ef4444', GRP: '#84cc16',
+                      };
+                      const roleLabel: Record<string, string> = {
+                        DV: 'Dependent', IV: 'Independent', CV: 'Control',
+                        MV: 'Mediating', MODV: 'Moderating',
+                        COV: 'Covariate', EXCL: 'Exclude', GRP: 'Group',
+                      };
 
-                        .filter(Boolean)
+                      // ── Auto-suggest scale from dataDictionary or name heuristics ──
+                      const inferScale = (col: string): string => {
+                        const info = dataDictionary?.[col];
+                        const lv   = (info?.level || '').toLowerCase();
+                        const dt   = (info?.dtype || '').toLowerCase();
+                        const nu   = info?.n_unique ?? null;
+                        const name = col.toLowerCase();
 
-                        .filter((v: string, i: number, arr: string[]) => arr.indexOf(v) === i);
+                        // Explicit level from decode
+                        if (lv === 'ratio' || lv === 'continuous' || lv === 'numeric' || lv === 'scale') return 'ratio';
+                        if (lv === 'interval') return 'interval';
+                        if (lv === 'ordinal') {
+                          // Distinguish Likert by name pattern or unique count
+                          if (nu !== null && nu <= 7 && (name.includes('q') || name.includes('likert') || name.startsWith('q'))) {
+                            return nu <= 5 ? 'likert_5' : 'likert_7';
+                          }
+                          return 'ordinal';
+                        }
+                        if (lv === 'nominal' || lv === 'categorical') {
+                          if (nu !== null && nu <= 2) return 'binary';
+                          return 'categorical';
+                        }
 
+                        // Name-based heuristics
+                        if (/^(gender|sex)$/i.test(name)) return 'binary';
+                        if (/^(age|years?|income|salary|score|gpa|duration|hours|count)/.test(name)) return 'ratio';
+                        if (/(department|dept|profession|shift|hospital|site|region|type|category|group)/.test(name)) return 'categorical';
+                        if (/(_score$|composite|index|total)/.test(name)) return 'ratio';
+                        // Likert by prefix pattern: q9_, q10_, etc.
+                        if (/^q\d+_/.test(name)) {
+                          if (nu !== null && nu <= 5) return 'likert_5';
+                          if (nu !== null && nu <= 7) return 'likert_7';
+                          return 'likert_5'; // default survey item assumption
+                        }
+                        if (/(employ|contract|type|mode|model|level)/.test(name)) return 'categorical';
 
+                        // Dtype fallback
+                        if (dt.includes('int') || dt.includes('float')) {
+                          if (nu !== null && nu <= 7) return nu <= 5 ? 'likert_5' : 'likert_7';
+                          return 'ratio';
+                        }
+                        if (dt.includes('object') || dt.includes('str') || dt.includes('bool')) return 'categorical';
+
+                        return ''; // no suggestion
+                      };
 
                       const scaleOptions = [
-
                         { value: 'nominal',    label: 'Nominal',            hint: 'Categories, no order (e.g. Gender, Region)' },
-
                         { value: 'binary',     label: 'Binary',             hint: '0/1 or Yes/No' },
-
+                        { value: 'categorical',label: 'Categorical',        hint: 'Multi-class unordered groups (e.g. Profession, Department)' },
                         { value: 'ordinal',    label: 'Ordinal',            hint: 'Ranked (e.g. Low / Med / High)' },
-
                         { value: 'likert_5',   label: 'Likert (1–5)',       hint: '5-point agreement scale' },
-
                         { value: 'likert_7',   label: 'Likert (1–7)',       hint: '7-point agreement scale' },
-
                         { value: 'interval',   label: 'Interval',           hint: 'Equal spacing, no true zero' },
-
                         { value: 'ratio',      label: 'Ratio / Continuous', hint: 'True zero (e.g. Age, Score, Income)' },
-
                       ];
 
+                      const scaleLabel: Record<string, string> = Object.fromEntries(scaleOptions.map(o => [o.value, o.label]));
+                      const scaleHint:  Record<string, string> = Object.fromEntries(scaleOptions.map(o => [o.value, o.hint]));
+
+                      const manualCount   = allCols.filter((v: string) => !!brief.variable_scales?.[v]).length;
+                      const totalCols     = allCols.length;
+
+                      // Auto-suggest all: fill ALL columns (assigned and unassigned)
+                      // Overwrites only empty slots; never removes a manually chosen scale.
+                      const autoSuggestAll = () => {
+                        const next = { ...(brief.variable_scales || {}) };
+                        // Include every column — named (assigned) + decoded
+                        const allTargets = Array.from(new Set([
+                          ...dvList, ...ivList, ...cvList, ...mvList, ...modvList,
+                          ...covList, ...exclList, ...grpList,
+                          ...allCols,
+                        ])).filter(Boolean);
+                        allTargets.forEach((col: string) => {
+                          // Always infer; only skip if user has already set a value
+                          if (!next[col]) {
+                            const s = inferScale(col);
+                            if (s) next[col] = s;
+                          }
+                        });
+                        update('variable_scales', next);
+                      };
+
+                      // Quick-assign role helpers (supports all 8 role types)
+                      const roleField = (role: string) =>
+                        role === 'DV'   ? 'dependent_variable'
+                      : role === 'IV'   ? 'independent_variable'
+                      : role === 'CV'   ? 'control_variable'
+                      : role === 'MV'   ? 'mediating_variable'
+                      : role === 'MODV' ? 'moderating_variable'
+                      : role === 'COV'  ? 'covariate_variable'
+                      : role === 'EXCL' ? 'exclude_variable'
+                      : role === 'GRP'  ? 'group_variable'
+                      : 'independent_variable';
+
+                      const addToRole = (col: string, role: string) => {
+                        const field = roleField(role);
+                        const cur = toList(brief[field]);
+                        if (!cur.includes(col)) update(field, [...cur, col].join(', '));
+                      };
+
+                      const removeFromRole = (col: string, role: string) => {
+                        const field = roleField(role);
+                        const cur = toList(brief[field]);
+                        update(field, cur.filter((v: string) => v !== col).join(', '));
+                      };
+
+                      // Split cols into groups: assigned roles first, then unassigned
+                      const assignedCols   = allCols.filter((c: string) => roleOf(c) !== null);
+                      const unassignedCols = allCols.filter((c: string) => roleOf(c) === null);
+
+                      const renderRow = (col: string) => {
+                        const role     = roleOf(col);
+                        const info     = dataDictionary?.[col];
+                        const current  = brief.variable_scales?.[col] || '';
+                        const suggested = inferScale(col);
+                        const isSuggested = !current && !!suggested;
+                        const displayVal  = current || suggested;
+
+                        return (
+                          <div key={col}
+                            style={{
+                              background: role ? `color-mix(in srgb, ${roleColor[role]} 7%, var(--surface-2))` : 'var(--surface-2)',
+                              border: `1px solid ${role ? roleColor[role] + '44' : 'var(--border)'}`,
+                              borderRadius: 10, padding: '8px 10px',
+                              display: 'grid', gridTemplateColumns: '1fr auto', gap: 6,
+                              alignItems: 'start',
+                            }}
+                          >
+                            {/* Left: col name + decoded metadata + role badge */}
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', fontFamily: 'monospace' }}>{col}</span>
+                                {role && (
+                                  <span style={{
+                                    fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 6,
+                                    background: roleColor[role] + '22', color: roleColor[role], letterSpacing: '0.05em',
+                                  }}>{role} — {roleLabel[role]}</span>
+                                )}
+                                {isSuggested && (
+                                  <span style={{
+                                    fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 5,
+                                    background: 'rgba(245,158,11,0.12)', color: '#f59e0b',
+                                  }}>suggested</span>
+                                )}
+                              </div>
 
 
-                      const manualCount = allVars.filter((v: string) => !!brief.variable_scales?.[v]).length;
 
+                              {/* Quick role assign buttons (only for unassigned) */}
+                              {!role && (
+                                <div style={{ display: 'flex', gap: 4, marginTop: 5, flexWrap: 'wrap' }}>
+                                  {(['DV','IV','CV','MV','MODV'] as const).map(r => (
+                                    <button key={r} type="button"
+                                      onClick={() => addToRole(col, r)}
+                                      style={{
+                                        fontSize: 9, fontWeight: 700, padding: '1px 7px', borderRadius: 5, cursor: 'pointer',
+                                        background: roleColor[r] + '18', color: roleColor[r],
+                                        border: `1px solid ${roleColor[r]}44`, transition: 'all 0.1s',
+                                      }}
+                                      title={`Assign as ${roleLabel[r]}`}
+                                    >
+                                      +{r}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
 
+                              {/* Remove from role button */}
+                              {role && (
+                                <button type="button"
+                                  onClick={() => removeFromRole(col, role)}
+                                  style={{
+                                    marginTop: 4, fontSize: 9, fontWeight: 600, padding: '1px 7px', borderRadius: 5,
+                                    cursor: 'pointer', background: 'var(--surface)', color: 'var(--text-3)',
+                                    border: '1px solid var(--border)',
+                                  }}
+                                >
+                                  ✕ Remove from {role}
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Right: scale type select */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                              <select
+                                value={current}
+                                onChange={e => update('variable_scales', { ...brief.variable_scales, [col]: e.target.value })}
+                                className="input"
+                                style={{
+                                  fontSize: 11, padding: '2px 6px', height: 28, width: 140,
+                                  borderColor: current ? 'var(--brand)' : isSuggested ? '#f59e0b55' : 'var(--border)',
+                                  background: current ? 'color-mix(in srgb, var(--brand) 6%, var(--surface))' : 'var(--surface)',
+                                }}
+                                title={current ? scaleHint[current] : isSuggested ? `Suggested: ${scaleHint[suggested] || suggested}` : 'Select scale type'}
+                              >
+                                <option value="">{isSuggested ? `≈ ${scaleLabel[suggested] || suggested}` : '— scale type —'}</option>
+                                {scaleOptions.map(o => (
+                                  <option key={o.value} value={o.value} title={o.hint}>{o.label}</option>
+                                ))}
+                              </select>
+                              {/* Accept suggestion button */}
+                              {isSuggested && (
+                                <button type="button"
+                                  onClick={() => update('variable_scales', { ...brief.variable_scales, [col]: suggested })}
+                                  style={{
+                                    fontSize: 9, fontWeight: 700, padding: '1px 7px', borderRadius: 5,
+                                    background: 'rgba(245,158,11,0.12)', color: '#f59e0b',
+                                    border: '1px solid rgba(245,158,11,0.25)', cursor: 'pointer',
+                                  }}
+                                  title="Accept suggested scale type"
+                                >✓ Accept</button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      };
 
                       return (
-
                         <div className="rounded-xl p-4 space-y-3"
+                          style={{ background: 'color-mix(in srgb, var(--brand) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--brand) 18%, transparent)' }}>
 
-                          style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', border: '1px solid var(--border)' }}>
-
-                          <div className="flex items-center justify-between">
-
-                            <div className="flex items-center gap-2">
-
+                          {/* Header */}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                               <RiBrainFill size={14} style={{ color: 'var(--brand)' }} />
-
                               <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>Variable Scale Types</span>
-
                               <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20,
-
-                                background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>Prevents wrong tests</span>
-
+                                background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>
+                                Prevents wrong tests
+                              </span>
+                              {manualCount > 0 && (
+                                <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20,
+                                  background: 'rgba(16,185,129,0.12)', color: 'var(--success)' }}>
+                                  {manualCount}/{totalCols} set
+                                </span>
+                              )}
                             </div>
 
-                            <button
+                            <div style={{ display: 'flex', gap: 6 }}>
+                              {/* AI Suggest — only in manual mode */}
+                              {scaleMode === 'manual' && totalCols > 0 && manualCount < totalCols && (
+                                <button type="button"
+                                  onClick={() => { handleScaleAdvisor().then(() => { setTimeout(() => handleApplyScaleAdvisor(true), 300); }); }}
+                                  disabled={scaleAdvisorLoading}
+                                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm"
+                                  style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', color: '#6366f1' }}
+                                  title="Use AI to suggest scale types for empty variables">
+                                  {scaleAdvisorLoading ? <RiLoader4Line size={12} className="animate-spin" /> : <RiBrainFill size={12} />}
+                                  {scaleAdvisorLoading ? 'Analyzing...' : 'AI Suggest'}
+                                </button>
+                              )}
 
-                              type="button"
 
-                              onClick={() => setScaleMode(m => m === 'auto' ? 'manual' : 'auto')}
-
-                              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
-
-                              style={{ 
-
-                                background: scaleMode === 'auto' ? 'var(--surface)' : 'linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, transparent), rgba(79,70,229,0.15))', 
-
-                                border: `1px solid ${scaleMode === 'auto' ? 'var(--border)' : 'color-mix(in srgb, var(--brand) 10%, transparent)'}`, 
-
-                                color: scaleMode === 'auto' ? 'var(--text-2)' : 'var(--brand)' 
-
-                              }}>
-
-                              {scaleMode === 'auto' ? <RiCpuFill size={13} /> : <RiBrainFill size={13} />} 
-
-                              {scaleMode === 'auto' ? 'Manual Selection' : 'Auto AI'}
-
-                            </button>
-
+                              {/* AI Auto / Manual Mode toggle */}
+                              <button type="button"
+                                onClick={() => setScaleMode(m => m === 'auto' ? 'manual' : 'auto')}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
+                                style={{
+                                  background: scaleMode === 'manual'
+                                    ? 'linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, transparent), rgba(79,70,229,0.15))'
+                                    : 'var(--surface)',
+                                  border: `1px solid ${scaleMode === 'manual' ? 'color-mix(in srgb, var(--brand) 18%, transparent)' : 'var(--border)'}`,
+                                  color: scaleMode === 'manual' ? 'var(--brand)' : 'var(--text-2)',
+                                }}>
+                                {scaleMode === 'manual' ? <RiBrainFill size={13} /> : <RiCpuFill size={13} />}
+                                {scaleMode === 'manual' ? 'AI Auto' : 'Manual Mode'}
+                              </button>
+                            </div>
                           </div>
 
-
-
+                          {/* AI Auto mode — live preview with AI suggestions */}
                           {scaleMode === 'auto' ? (
-
-                            <div className="space-y-1">
-
-                              <p style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.5, margin: 0 }}>
-
-                                AI auto will infer scale types based on your dataset column names, sample values, and research brief, classifying each variable as Nominal, Ordinal, Likert, or Ratio and enforcing the correct test families automatically.
-
-                              </p>
-
-                              {manualCount > 0 && (
-
-                                <p style={{ fontSize: 11, color: 'var(--success)', margin: '4px 0 0', fontWeight: 600 }}>
-
-                                  ✓ {manualCount} manual override{manualCount > 1 ? 's' : ''} retained — AI auto will fill the rest
-
-                                </p>
-
+                            <div style={{
+                              background: 'var(--surface-2)', borderRadius: 10, padding: '14px 16px',
+                              border: '1px solid var(--border)',
+                            }}>
+                              {/* Not yet loaded — show trigger */}
+                              {!scaleAdvisorResult && !scaleAdvisorLoading && (
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                  <div style={{
+                                    width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                                    background: 'color-mix(in srgb, var(--brand) 12%, transparent)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  }}>
+                                    <RiBrainFill size={16} style={{ color: 'var(--brand)' }} />
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', margin: '0 0 4px' }}>
+                                      AI Auto Scale Detection
+                                    </p>
+                                    <p style={{ fontSize: 11, color: 'var(--text-3)', lineHeight: 1.6, margin: '0 0 10px' }}>
+                                      Click below to analyze your dataset columns and research context. AI will classify each variable
+                                      and detect Likert construct groupings automatically.
+                                    </p>
+                                    <button type="button" onClick={handleScaleAdvisor}
+                                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all hover:-translate-y-0.5"
+                                      style={{ background: 'linear-gradient(135deg, var(--brand), #7c3aed)', color: '#fff', border: 'none' }}>
+                                      <RiBrainFill size={13} /> Analyze Dataset with AI
+                                    </button>
+                                  </div>
+                                </div>
                               )}
 
-                            </div>
+                              {/* Loading state */}
+                              {scaleAdvisorLoading && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
+                                  <RiLoader4Line size={20} className="animate-spin" style={{ color: 'var(--brand)' }} />
+                                  <div>
+                                    <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', margin: 0 }}>
+                                      Analyzing columns...
+                                    </p>
+                                    <p style={{ fontSize: 11, color: 'var(--text-3)', margin: '2px 0 0' }}>
+                                      AI is classifying variable scale types and detecting constructs
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
 
-                          ) : (
-
-                            <div className="space-y-2 animate-slide-up">
-
-                              <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Assign scale type to each variable:</p>
-
-                              {allVars.length > 0 ? (
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-
-                                  {allVars.map((varName: string) => (
-
-                                    <div key={varName} className="flex items-center justify-between gap-2 p-2 rounded-lg"
-
-                                      style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-
-                                      <span className="text-xs font-semibold truncate flex-1" style={{ color: 'var(--text-2)' }}>{varName}</span>
-
-                                      <select
-
-                                        value={brief.variable_scales?.[varName] || ''}
-
-                                        onChange={e => update('variable_scales', { ...brief.variable_scales, [varName]: e.target.value })}
-
-                                        className="input"
-
-                                        style={{ fontSize: 11, padding: '2px 8px', height: 28, width: 135 }}
-
-                                      >
-
-                                        <option value="">— scale type —</option>
-
-                                        {scaleOptions.map(o => (
-
-                                          <option key={o.value} value={o.value} title={o.hint}>{o.label}</option>
-
-                                        ))}
-
-                                      </select>
-
+                              {/* Results loaded — show preview */}
+                              {scaleAdvisorResult && !scaleAdvisorLoading && (() => {
+                                const scales = scaleAdvisorResult.variable_scales || {};
+                                const constructs = scaleAdvisorResult.likert_constructs || [];
+                                const scaleEntries = Object.entries(scales);
+                                const isAI = scaleAdvisorResult.source === 'ai';
+                                return (
+                                  <div className="space-y-3">
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <RiBrainFill size={14} style={{ color: 'var(--brand)' }} />
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>
+                                          {scaleEntries.length} variables classified
+                                        </span>
+                                        <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20,
+                                          background: isAI ? 'rgba(99,102,241,0.12)' : 'rgba(245,158,11,0.12)',
+                                          color: isAI ? '#6366f1' : '#f59e0b' }}>
+                                          {isAI ? 'AI-powered' : 'Heuristic'}
+                                        </span>
+                                      </div>
+                                      <div style={{ display: 'flex', gap: 6 }}>
+                                        <button type="button" onClick={() => handleApplyScaleAdvisor(false)}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm"
+                                          style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981' }}>
+                                          Accept All
+                                        </button>
+                                        <button type="button" onClick={handleScaleAdvisor}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm"
+                                          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-2)' }}>
+                                          Re-analyze
+                                        </button>
+                                      </div>
                                     </div>
 
-                                  ))}
+                                    {/* Scale preview grid */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 6 }}>
+                                      {scaleEntries.slice(0, 20).map(([col, info]: [string, any]) => {
+                                        const scaleName = scaleLabel[info?.scale] || info?.scale || '?';
+                                        const reason = info?.reason || '';
+                                        const role = roleOf(col);
+                                        return (
+                                          <div key={col} style={{
+                                            background: 'var(--surface)', borderRadius: 8, padding: '8px 10px',
+                                            border: '1px solid var(--border)', fontSize: 11,
+                                          }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
+                                              {role && (
+                                                <span style={{ fontSize: 9, fontWeight: 700, padding: '0 5px', borderRadius: 4,
+                                                  background: `${roleColor[role]}20`, color: roleColor[role] }}>{role}</span>
+                                              )}
+                                              <span style={{ fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{col}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--brand)', padding: '1px 6px', borderRadius: 4,
+                                                background: 'color-mix(in srgb, var(--brand) 10%, transparent)' }}>{scaleName}</span>
+                                            </div>
+                                            {reason && (
+                                              <p style={{ fontSize: 9, color: 'var(--text-3)', margin: '3px 0 0', lineHeight: 1.4 }}>{reason}</p>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                    {scaleEntries.length > 20 && (
+                                      <p style={{ fontSize: 10, color: 'var(--text-3)', margin: 0 }}>
+                                        + {scaleEntries.length - 20} more variables (switch to Manual Mode to view all)
+                                      </p>
+                                    )}
 
-                                </div>
+                                    {/* Constructs preview */}
+                                    {constructs.length > 0 && (
+                                      <div style={{ marginTop: 8 }}>
+                                        <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', margin: '0 0 6px' }}>
+                                          Detected Constructs ({constructs.length})
+                                        </p>
+                                        {constructs.map((c: any, i: number) => (
+                                          <div key={i} style={{
+                                            background: 'rgba(16,185,129,0.06)', borderRadius: 8, padding: '8px 10px',
+                                            border: '1px solid rgba(16,185,129,0.15)', marginBottom: 4,
+                                          }}>
+                                            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--success)' }}>{c.name}</span>
+                                            <span style={{ fontSize: 10, color: 'var(--text-3)', marginLeft: 6 }}>({(c.columns || []).length} items)</span>
+                                            {c.reason && <p style={{ fontSize: 9, color: 'var(--text-3)', margin: '2px 0 0' }}>{c.reason}</p>}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
 
-                              ) : (
-
-                                <p style={{ fontSize: 11, color: 'var(--text-3)', margin: 0 }}>
-
-                                  Add variable names in the DV / IV fields above to set scale types here.
-
-                                </p>
-
-                              )}
-
+                                    <p style={{ fontSize: 10, color: 'var(--text-3)', margin: '6px 0 0', fontStyle: 'italic' }}>
+                                      Click <strong>Accept All</strong> to apply these scales, or switch to <strong>Manual Mode</strong> to override individual variables.
+                                    </p>
+                                  </div>
+                                );
+                              })()}
                             </div>
+                          ) : (
+                            /* Manual Mode — show per-variable dropdowns */
+                            <div className="space-y-3 animate-slide-up">
+                              <p style={{ fontSize: 11, color: 'var(--text-3)', margin: 0, lineHeight: 1.5 }}>
+                                Select a scale type for each variable. Assigned variables (DV, IV, etc.) appear first.
+                                Leave blank to let AI Auto fill the rest.
+                              </p>
+                              {totalCols === 0 ? (
+                                <p style={{ fontSize: 11, color: 'var(--text-3)', margin: 0 }}>
+                                  Add variable names in the DV/IV fields above or upload a dataset to see all columns here.
+                                </p>
+                              ) : (
+                                <>
+                                  {/* Assigned variables group */}
+                                  {assignedCols.length > 0 && (
+                                    <div className="space-y-1.5">
+                                      <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                                        ✦ Assigned Variables ({assignedCols.length})
+                                      </p>
+                                      {assignedCols.map((col: string) => renderRow(col))}
+                                    </div>
+                                  )}
 
+                                  {/* Unassigned dataset columns */}
+                                  {unassignedCols.length > 0 && (
+                                    <div className="space-y-1.5">
+                                      <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                                        ○ Other Dataset Columns ({unassignedCols.length}) — click +DV/+IV/+CV/+MV/+MODV to assign
+                                      </p>
+                                      {unassignedCols.map((col: string) => renderRow(col))}
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           )}
-
                         </div>
-
                       );
-
                     })()}
 
 
 
+
                     {/* ── Measurement Scales / Constructs ── */}
+
 
                     {(() => {
 

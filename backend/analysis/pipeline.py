@@ -208,6 +208,17 @@ def run_stages_3_to_9(job, db):
                 except Exception as pvi_err:
                     stage_warnings.append(f"[Per-Variable Imputation] Non-fatal: {pvi_err}")
 
+            # ── Stage 5b — Composite Mean Computation ────────────────────────
+            # Research standard: compute scale means from Likert items so that
+            # brief variables like "job_performance_mean" resolve to real columns.
+            try:
+                from analysis.composite_means import compute_composite_means
+                df, brief, cm_log = compute_composite_means(df, brief, data_dict)
+                if cm_log:
+                    stage_warnings.extend(cm_log)
+            except Exception as cm_err:
+                stage_warnings.append(f"[Composite Means] Non-fatal: {cm_err}")
+
             results = run_all_tests(
                 tests=tests,
                 df=df,
@@ -568,8 +579,8 @@ Hypotheses: {json.dumps(brief.get('hypotheses', []))}
 
 STUDENT-DEFINED VARIABLE SCALES (authoritative — do NOT override these):
 {json.dumps(brief.get('variable_scales') or {}, indent=2) if brief.get('variable_scales') else '(none provided — infer from data)'}
-Scale key: nominal=categories no order | ordinal=ranked | likert_5/likert_7=Likert scale |
-           interval=equal spacing no zero | ratio/continuous=true zero | binary=0/1
+Scale key: nominal=categories no order | categorical=multi-class unordered groups | ordinal=ranked | likert_5/likert_7=Likert scale |
+           interval=equal spacing no zero | ratio/continuous=true zero | binary=0/1 or Yes/No
 
 STUDENT-DEFINED CONSTRUCTS (authoritative — use for Cronbach's Alpha naming):
 {json.dumps(brief.get('likert_constructs') or [], indent=2) if brief.get('likert_constructs') else '(none provided — auto-detect from data)'}
@@ -1476,6 +1487,7 @@ STUDENT-DEFINED VARIABLE SCALES (CRITICAL — use these to select correct test f
 
 SCALE SELECTION RULES (NON-NEGOTIABLE):
   nominal variables     → chi_square / frequency_analysis / cramers_v ONLY — NO means, NO t-test, NO ANOVA
+  categorical variables → same as nominal: chi_square / frequency_analysis / cramers_v — multi-class groups, NO means
   binary variables      → chi_square / fisher_exact / logistic_regression ONLY
   ordinal variables     → spearman_correlation / mann_whitney / kruskal_wallis — NO Pearson, NO t-test
   likert_5 / likert_7   → treat as ordinal UNLESS >5 items summed into a scale (then interval allowed)
@@ -1737,12 +1749,21 @@ PRIORITY RESOLUTION (when data type is ambiguous):
 RESEARCH BRIEF:
 Topic: {brief.get('topic')}
 Study Type: {brief.get('study_type')}
-Dependent Variable: {dv}
-Independent Variable: {iv}
+Dependent Variable (DV / Outcome): {dv}
+Independent Variable (IV / Predictor): {iv}
+Control Variable(s): {brief.get('control_variable') or '(none specified)'}
+Mediating Variable(s): {brief.get('mediating_variable') or brief.get('mediating_column') or '(none specified)'}
+Moderating Variable(s): {brief.get('moderating_variable') or brief.get('moderating_column') or '(none specified)'}
 Hypotheses: {json.dumps(hypotheses)}
 Likert Constructs: {json.dumps(likert_constructs)}
 Demographic Columns: {json.dumps(demographic_cols)}
 Significance Level: {brief.get('significance_level', 0.05)}
+
+VARIABLE ASSIGNMENT RULES:
+- For mediation_analysis: variables MUST be [iv_col, mediating_col, dv_col]
+- For moderation_analysis: variables MUST be [iv_col, moderating_col, dv_col]
+- For ancova: include the Control Variable as a covariate in the variables list
+- For partial_correlation: include the Control Variable as the third variable
 
 DATA COLUMNS:
 Ordinal/Likert vars: {json.dumps(ordinal_vars[:15])}

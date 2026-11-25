@@ -115,33 +115,71 @@ def _auto_conclusion(test_name, stat_label, stat_val, df, p_value, alpha, signif
 
 
 def interpret_effect_size(name: str, value: float) -> str:
-    """Universal effect size interpreter."""
+    """Universal effect size interpreter.
+
+    Handles all naming variants used across test modules so we never return
+    "see guidelines" for a standard η² / Cohen's d / r result.
+    """
     if value is None:
         return "N/A"
     abs_val = abs(value)
-    if name in ("Cohen's d",):
+
+    # ── Cohen's d (all variants) ──────────────────────────────────────────────
+    if name in ("Cohen's d", "d", "cohens_d", "cohen's_d", "cohen_d"):
         if abs_val < 0.2:   return "negligible"
         if abs_val < 0.5:   return "small"
         if abs_val < 0.8:   return "medium"
         return "large"
-    if name in ("eta-squared", "partial eta-squared", "omega-squared"):
+
+    # ── Eta-squared / partial eta-squared / omega-squared (all variants) ──────
+    if name in (
+        "eta-squared", "partial eta-squared", "omega-squared",
+        "eta_squared", "partial_eta_squared", "omega_squared",
+        "η²", "η² (partial)", "partial η²", "ω²",
+        "eta squared", "partial eta squared", "omega squared",
+    ):
         if abs_val < 0.01:  return "negligible"
         if abs_val < 0.06:  return "small"
         if abs_val < 0.14:  return "medium"
         return "large"
-    if name in ("r", "Pearson r", "Spearman rho", "point-biserial r"):
+
+    # ── Correlation r / rho / tau (all variants) ─────────────────────────────
+    if name in (
+        "r", "Pearson r", "Spearman rho", "point-biserial r",
+        "rho", "r_pb", "tau", "τ", "pearson_r", "spearman_rho",
+        "point_biserial_r", "kendall_tau",
+    ):
         if abs_val < 0.1:   return "negligible"
         if abs_val < 0.3:   return "small"
         if abs_val < 0.5:   return "medium"
         return "large"
-    if name in ("Cramer's V", "phi"):
+
+    # ── Cramer's V / phi ─────────────────────────────────────────────────────
+    if name in ("Cramer's V", "phi", "V", "Cramér's V", "cramers_v", "φ", "cramers_v"):
         if abs_val < 0.1:   return "negligible"
         if abs_val < 0.3:   return "small"
         if abs_val < 0.5:   return "medium"
         return "large"
-    if name == "R-squared":
+
+    # ── R-squared / Adjusted R-squared ───────────────────────────────────────
+    if name in ("R-squared", "R²", "r_squared", "r2", "R2", "adj_r_squared", "R² (adj)", "rsquared"):
         if abs_val < 0.02:  return "negligible"
         if abs_val < 0.13:  return "small"
         if abs_val < 0.26:  return "medium"
         return "large"
+
+    # ── Cronbach's alpha / McDonald's omega ──────────────────────────────────
+    if name in ("Cronbach's α", "alpha", "α", "ω", "omega", "McDonald's ω"):
+        if abs_val >= 0.90: return "Excellent"
+        if abs_val >= 0.80: return "Good"
+        if abs_val >= 0.70: return "Acceptable"
+        if abs_val >= 0.60: return "Poor"
+        return "Unacceptable"
+
+    # ── Kendall's W (effect size for Friedman) ───────────────────────────────
+    if name in ("Kendall's W", "W", "kendall_w"):
+        if abs_val < 0.30:  return "weak"
+        if abs_val < 0.70:  return "moderate"
+        return "strong"
+
     return "see guidelines"

@@ -1439,7 +1439,10 @@ async def get_chart(job_id: str, index: int, db: AsyncSession = Depends(get_db))
     if not resolved_path or not os.path.exists(resolved_path):
         print(f"GET CHART 404 for job {job_id} index {index}, tried: {raw_path}")
         raise HTTPException(404)
-    return FileResponse(resolved_path, media_type="image/png")
+    # Detect file type — HTML fallback charts need text/html, not image/png
+    ext = os.path.splitext(resolved_path)[1].lower()
+    media_type = "text/html" if ext == ".html" else "image/png"
+    return FileResponse(resolved_path, media_type=media_type)
 
 # ─── Background pipeline runner ───────────────────────────────────────
 def _run_pipeline(job_id: str, file_path: str = None):
@@ -1531,38 +1534,55 @@ def _run_pipeline(job_id: str, file_path: str = None):
                 while elapsed < timeout_seconds:
                     time.sleep(poll_interval)
                     elapsed += poll_interval
-                    # Commit any open transaction so the next read starts fresh
-                    # and can see writes made by other connections (fixes SQLite isolation)
+                    # Force a fresh read — commit clears the SQLite WAL read-lock
+                    # so the next SELECT sees writes from other connections
                     db.commit()
-                    # Bypass ORM identity map — read directly from DB
                     row = db.execute(
                         sa_text("SELECT preprocessing_mode, manual_choices FROM analysis_jobs WHERE id = :id"),
                         {"id": job_id}
                     ).fetchone()
                     if row and row[0] is not None and str(row[0]).strip() != "":
-                        preprocessing_mode = str(row[0])
-                        import json
-                        try:
-                            manual_choices_val = json.loads(row[1]) if row[1] else {}
-                        except Exception:
+                        preprocessing_mode = str(row[0]).strip()
+                        # Safely parse manual_choices — SQLite JSON column returns a
+                        # string; handle None / empty / already-dict gracefully
+                        raw_mc = row[1]
+                        if isinstance(raw_mc, dict):
+                            manual_choices_val = raw_mc
+                        elif raw_mc:
+                            import json
+                            try:
+                                manual_choices_val = json.loads(raw_mc)
+                            except Exception:
+                                manual_choices_val = {}
+                        else:
                             manual_choices_val = {}
                         break
 
                 if preprocessing_mode is None:
                     raise ValueError("Preprocessing choice timed out after 24 hours")
 
-                # Sync the values back onto the job object
-                job.preprocessing_mode = preprocessing_mode
-                job.manual_choices = manual_choices_val
+                # Re-fetch the job from DB to get a fresh ORM object — avoids the
+                # SQLAlchemy identity-map serving stale cached values after the poll
+                db.expire(job)
+                db.refresh(job)
 
+                # Stamp values from poll onto the refreshed job object
+                job.preprocessing_mode = preprocessing_mode
+                job.manual_choices     = manual_choices_val
 
                 # ── Stage 1d: Apply chosen cleaning strategy ────────────────
-                job.status = "cleaning"
+                # Use raw SQL to guarantee the status write is visible immediately
+                db.execute(
+                    sa_text("UPDATE analysis_jobs SET status='cleaning', preprocessing_mode=:mode WHERE id=:id"),
+                    {"mode": preprocessing_mode, "id": job_id}
+                )
                 db.commit()
+                # Keep ORM object in sync
+                job.status = "cleaning"
 
                 try:
-                    choices = job.manual_choices or {}
-                    if job.preprocessing_mode == "auto":
+                    choices = manual_choices_val or {}
+                    if preprocessing_mode == "auto":
                         inspection_report = job.inspection_report or {}
                         cleaned_df, cleaning_summary = auto_clean(raw_df, inspection_report)
                     else:
@@ -1589,9 +1609,11 @@ def _run_pipeline(job_id: str, file_path: str = None):
                 job.cleaning_summary = {"cleaned": False, "actions_taken": []}
                 db.commit()
 
+
             # ── Stage 2: Decode ───────────────────────────────────────
-            job.status = "decoding"
+            db.execute(sa_text("UPDATE analysis_jobs SET status='decoding' WHERE id=:id"), {"id": job_id})
             db.commit()
+            job.status = "decoding"
 
             from analysis.decode import decode_file, decode_from_db
             from analysis.decode.dictionary.builder import to_json_serializable
@@ -1601,12 +1623,26 @@ def _run_pipeline(job_id: str, file_path: str = None):
             # Track LLM usage specifically for decoding
             start_job_tracking(job.id)
 
+            # Extract research brief so decode can stamp variable roles + scale overrides
+            # NOTE: the model field is project_brief (not research_brief)
+            _brief_for_decode = getattr(job, 'project_brief', None) or {}
+            if isinstance(_brief_for_decode, str):
+                try:
+                    import json as _json
+                    _brief_for_decode = _json.loads(_brief_for_decode)
+                except Exception:
+                    _brief_for_decode = {}
+
+
             if file_path and os.path.exists(file_path):
-                result = decode_file(file_path, job_id=job.id, user_id=job.user_id)
+                result = decode_file(file_path, job_id=job.id, user_id=job.user_id,
+                                     brief=_brief_for_decode)
             elif job.survey_id:
-                result = decode_from_db(job.survey_id, db, job_id=job.id, user_id=job.user_id)
+                result = decode_from_db(job.survey_id, db, job_id=job.id, user_id=job.user_id,
+                                        brief=_brief_for_decode)
             else:
                 raise ValueError("No data source available")
+
 
             job.data_dictionary = to_json_serializable(result["data_dictionary"])
             job.decode_warnings = to_json_serializable(result["warnings"])
@@ -1727,46 +1763,36 @@ async def variable_advisor(request: Request, current_user: Optional[User] = Depe
 
     # ── Heuristic extraction (always runs as base) ───────────────────────────
     def extract_heuristic():
-        dv_candidates, iv_candidates = [], []
+        dv_candidates, iv_candidates, control_candidates, mediator_candidates, moderator_candidates = [], [], [], [], []
 
-        patterns_dv = [
-            r"difference in ([\w\s]+?) between",
-            r"effect (?:of .+? )?on ([\w\s]+)",
-            r"impact (?:of .+? )?on ([\w\s]+)",
-            r"predict ([\w\s]+)",
-            r"relationship between .+? and ([\w\s]+)",
-            r"association between .+? and ([\w\s]+)",
-        ]
-        patterns_iv = [
-            r"difference in .+? between ([\w\s]+?) and ([\w\s]+?)(?:\?|$|\s)",
-            r"effect of ([\w\s]+?) on",
-            r"impact of ([\w\s]+?) on",
-            r"relationship between ([\w\s]+?) and",
-            r"association between ([\w\s]+?) and",
-            r"influence of ([\w\s]+?) on",
-        ]
+        patterns_dv = [r"difference in ([\w\s]+?) between", r"effect (?:of .+? )?on ([\w\s]+)", r"impact (?:of .+? )?on ([\w\s]+)", r"predict ([\w\s]+)", r"relationship between .+? and ([\w\s]+)", r"association between .+? and ([\w\s]+)"]
+        patterns_iv = [r"difference in .+? between ([\w\s]+?) and ([\w\s]+?)(?:\?|$|\s)", r"effect of ([\w\s]+?) on", r"impact of ([\w\s]+?) on", r"relationship between ([\w\s]+?) and", r"association between ([\w\s]+?) and", r"influence of ([\w\s]+?) on"]
+        patterns_control = [r"controlling for ([\w\s]+)", r"adjusting for ([\w\s]+)", r"holding constant ([\w\s]+)", r"covariate ([\w\s]+)"]
+        patterns_mediator = [r"mediates", r"through ([\w\s]+)", r"mechanism", r"indirect effect"]
+        patterns_moderator = [r"moderates", r"interaction", r"depends on", r"stronger for", r"conditional"]
 
         all_text = " ".join(rqs + hypotheses + objectives).lower()
 
         for pat in patterns_dv:
             m = _re.search(pat, all_text)
             if m:
-                candidate = m.group(1).strip().title()
-                if candidate and len(candidate) > 2:
-                    dv_candidates.append(candidate)
-                    break
-
+                cand = m.group(1).strip().title()
+                if cand and len(cand) > 2: dv_candidates.append(cand); break
         for pat in patterns_iv:
             m = _re.search(pat, all_text)
             if m:
-                candidate = m.group(1).strip().title()
-                if candidate and len(candidate) > 2:
-                    iv_candidates.append(candidate)
-                    break
+                cand = m.group(1).strip().title()
+                if cand and len(cand) > 2: iv_candidates.append(cand); break
+        for pat in patterns_control:
+            m = _re.search(pat, all_text)
+            if m: control_candidates.append(m.group(1).strip().title())
+        # Simplistic mediator/moderator detection for fallback
+        if any(x in all_text for x in ["mediates", "through", "pathway"]): mediator_candidates.append("Mechanism Variable")
+        if any(x in all_text for x in ["moderates", "interaction", "condition"]): moderator_candidates.append("Interaction Variable")
 
-        return dv_candidates, iv_candidates
+        return dv_candidates, iv_candidates, control_candidates, mediator_candidates, moderator_candidates
 
-    heuristic_dv, heuristic_iv = extract_heuristic()
+    heuristic_dv, heuristic_iv, h_ctrl, h_med, h_mod = extract_heuristic()
 
     # ── Try Claude AI for rich contextual suggestions ────────────────────────
     try:
@@ -1890,7 +1916,18 @@ Return ONLY valid JSON. No markdown, no explanation outside JSON.
             "n_groups": 2,
             "example_column_names": [iv_name] if iv_name else [],
         },
-        "control_variables": [],
+        "control_variables": [
+            {"name": v, "why": "Detected as a control/covariate from your research text.", "scale": "continuous"}
+            for v in h_ctrl
+        ],
+        "mediating_variables": [
+            {"name": v, "why": "Mediating language detected in your research text — please specify the exact variable.", "scale": "continuous"}
+            for v in h_med
+        ],
+        "moderating_variables": [
+            {"name": v, "why": "Moderating language detected in your research text — please specify the exact variable.", "scale": "continuous"}
+            for v in h_mod
+        ],
         "implied_test": implied_test,
         "implied_test_reason": implied_reason,
         "confidence": "low" if not (dv_name and iv_name) else "medium",
@@ -1898,3 +1935,191 @@ Return ONLY valid JSON. No markdown, no explanation outside JSON.
         "source": "heuristic",
     }
 
+
+# ── AI Scale Advisor ──────────────────────────────────────────────────────────
+@router.post("/scale-advisor")
+async def scale_advisor(request: Request, current_user: Optional[User] = Depends(get_optional_user)):
+    """
+    Accepts dataset column metadata + research brief and returns
+    AI-suggested variable_scales and likert_constructs.
+    Falls back to heuristic inference if Claude is unavailable.
+    """
+    import json as _json
+    import re as _re
+    import logging
+    _logger = logging.getLogger(__name__)
+
+    body = await request.json()
+    brief = body.get("brief", {})
+    columns = body.get("columns", [])  # [{name, dtype, n_unique, sample}]
+
+    if not columns:
+        raise HTTPException(400, "No columns provided")
+
+    topic       = brief.get("topic", "").strip()
+    population  = brief.get("population", "").strip()
+    dv          = brief.get("dependent_variable", "").strip()
+    iv          = brief.get("independent_variable", "").strip()
+    rqs         = [q for q in brief.get("research_questions", []) if q and q.strip()]
+    hypotheses  = [h for h in brief.get("hypotheses", []) if h and h.strip()]
+
+    # ── Build column info block for the prompt ────────────────────────────────
+    col_lines = []
+    for c in columns[:60]:  # Cap at 60 columns
+        name = c.get("name", "")
+        dtype = c.get("dtype", "")
+        nu = c.get("n_unique", "?")
+        sample = c.get("sample", [])[:5]
+        col_lines.append(f'  "{name}": dtype={dtype}, unique_values={nu}, sample={sample}')
+    col_block = "\n".join(col_lines)
+
+    # ── Try Claude AI ────────────────────────────────────────────────────────
+    try:
+        import anthropic
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "") or getattr(settings, "ANTHROPIC_API_KEY", "")
+        if not api_key:
+            # Try OpenRouter
+            or_key = os.environ.get("OPENROUTER_API_KEY", "") or getattr(settings, "OPENROUTER_API_KEY", "")
+            if not or_key:
+                raise ValueError("No AI API key available")
+
+        prompt = f"""You are an expert research methodologist. Analyse these dataset columns and research context to determine the correct measurement scale type for each variable and identify Likert construct groupings.
+
+RESEARCH CONTEXT:
+Topic: {topic or '(not specified)'}
+Population: {population or '(not specified)'}
+Dependent Variable: {dv or '(not specified)'}
+Independent Variable: {iv or '(not specified)'}
+Research Questions:
+{chr(10).join(f"  RQ{i+1}: {q}" for i,q in enumerate(rqs)) if rqs else "  (none)"}
+Hypotheses:
+{chr(10).join(f"  H{i+1}: {h}" for i,h in enumerate(hypotheses)) if hypotheses else "  (none)"}
+
+DATASET COLUMNS:
+{col_block}
+
+TASK 1 - VARIABLE SCALE TYPES:
+For EACH column, assign one of these scale types:
+- "nominal": Unordered categories (e.g. Gender, Region, Department)
+- "binary": Two categories only (e.g. Yes/No, Male/Female, Pass/Fail)
+- "categorical": Multi-class unordered groups (3+ categories)
+- "ordinal": Ordered categories (e.g. Low/Medium/High, education level)
+- "likert_5": 5-point Likert agreement scale (1-5)
+- "likert_7": 7-point Likert agreement scale (1-7)
+- "interval": Equal-interval, no true zero (e.g. temperature, year)
+- "ratio": True zero, continuous (e.g. age, income, score, GPA)
+
+TASK 2 - LIKERT CONSTRUCTS:
+If you detect groups of Likert items that measure the same construct (e.g. q1_satisfaction through q5_satisfaction → "Job Satisfaction"), group them. Only create constructs for genuine multi-item scales (3+ items minimum).
+
+Return ONLY valid JSON:
+{{
+  "variable_scales": {{
+    "column_name": {{"scale": "scale_type", "reason": "1-sentence reason"}},
+    ...
+  }},
+  "likert_constructs": [
+    {{"name": "Construct Name", "columns": ["col1", "col2", "col3"], "reason": "why these belong together"}}
+  ],
+  "source": "ai"
+}}"""
+
+        if api_key:
+            client = anthropic.Anthropic(api_key=api_key)
+            msg = client.messages.create(
+                model="claude-3-5-haiku-20241022",
+                max_tokens=2000,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            raw = msg.content[0].text.strip()
+        else:
+            import httpx
+            or_key = os.environ.get("OPENROUTER_API_KEY", "") or getattr(settings, "OPENROUTER_API_KEY", "")
+            resp = httpx.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={"Authorization": f"Bearer {or_key}", "Content-Type": "application/json"},
+                json={"model": "anthropic/claude-3.5-haiku", "max_tokens": 2000,
+                      "messages": [{"role": "user", "content": prompt}]},
+                timeout=30,
+            )
+            raw = resp.json()["choices"][0]["message"]["content"]
+
+        # Strip markdown fences
+        if raw.startswith("```"):
+            raw = _re.sub(r"^```[a-zA-Z]*\s*", "", raw)
+            raw = _re.sub(r"\s*```$", "", raw)
+
+        result = _json.loads(raw)
+        result["source"] = "ai"
+        return result
+
+    except Exception as e:
+        _logger.warning(f"[ScaleAdvisor] AI call failed, using heuristic fallback: {e}")
+
+    # ── Heuristic fallback ────────────────────────────────────────────────────
+    scales = {}
+    for c in columns:
+        name = c.get("name", "")
+        dtype = (c.get("dtype") or "").lower()
+        nu = c.get("n_unique")
+        nl = name.lower()
+
+        # Binary
+        if nu is not None and nu <= 2:
+            scales[name] = {"scale": "binary", "reason": "Only 2 unique values detected"}
+            continue
+        # Name-based
+        if _re.search(r'^(gender|sex)$', nl):
+            scales[name] = {"scale": "binary", "reason": "Gender/sex variable is typically binary"}; continue
+        if _re.search(r'^(age|years?|income|salary|score|gpa|duration|hours|count|weight|height|bmi)', nl):
+            scales[name] = {"scale": "ratio", "reason": "Continuous measurement with true zero"}; continue
+        if _re.search(r'(department|dept|profession|shift|hospital|site|region|type|category|group|faculty|program)', nl):
+            scales[name] = {"scale": "categorical", "reason": "Multi-class grouping variable"}; continue
+        if _re.search(r'(_score$|composite|index|total|average|mean)', nl):
+            scales[name] = {"scale": "ratio", "reason": "Computed continuous score"}; continue
+        # Likert by prefix
+        if _re.search(r'^q\d+', nl):
+            if nu is not None and nu <= 5:
+                scales[name] = {"scale": "likert_5", "reason": "Survey item with ≤5 response levels"}; continue
+            elif nu is not None and nu <= 7:
+                scales[name] = {"scale": "likert_7", "reason": "Survey item with ≤7 response levels"}; continue
+        # Dtype fallback
+        if 'int' in dtype or 'float' in dtype:
+            if nu is not None and nu <= 7:
+                scales[name] = {"scale": "likert_5" if nu <= 5 else "likert_7", "reason": "Numeric with few unique values — likely Likert"}
+            else:
+                scales[name] = {"scale": "ratio", "reason": "Numeric column with many unique values"}
+            continue
+        if 'object' in dtype or 'str' in dtype or 'bool' in dtype:
+            if nu is not None and nu <= 2:
+                scales[name] = {"scale": "binary", "reason": "Text column with 2 categories"}
+            elif nu is not None and nu <= 10:
+                scales[name] = {"scale": "categorical", "reason": "Text column with few categories"}
+            else:
+                scales[name] = {"scale": "nominal", "reason": "Text column — classified as nominal"}
+            continue
+        scales[name] = {"scale": "nominal", "reason": "Default classification"}
+
+    # Simple construct grouping by common prefix
+    from collections import defaultdict
+    prefix_groups = defaultdict(list)
+    for c in columns:
+        nl = c.get("name", "").lower()
+        m = _re.match(r'^([a-z]+)\d+', nl)
+        if m and scales.get(c["name"], {}).get("scale", "").startswith("likert"):
+            prefix_groups[m.group(1)].append(c["name"])
+
+    constructs = []
+    for prefix, cols in prefix_groups.items():
+        if len(cols) >= 3:
+            constructs.append({
+                "name": f"{prefix.upper()} Scale",
+                "columns": cols,
+                "reason": f"Items sharing '{prefix}' prefix with Likert scale type"
+            })
+
+    return {
+        "variable_scales": scales,
+        "likert_constructs": constructs,
+        "source": "heuristic"
+    }

@@ -92,11 +92,20 @@ def run_simple_linear(df, variables, brief, alpha=0.05):
         model = sm.OLS(y, X).fit()
         table = _coef_table(model, [x_col])
         robust_table, robust_f_pvalue = _robust_coef_table(model, 'HC3')
+        r2 = round(float(model.rsquared), 4)
         return build_result("Simple Linear Regression", "simple_linear_regression",
                             "F", model.fvalue, p_value=model.f_pvalue, n=len(data),
+                            df_val=int(model.df_model),
                             significant=bool(model.f_pvalue < alpha),
+                            effect_size_name="R²", effect_size_value=r2,
+                            effect_size_interpretation=interpret_effect_size("R²", r2),
+                            conclusion=(
+                                f"F({int(model.df_model)},{int(model.df_resid)}) = {model.fvalue:.3f}, "
+                                f"p = {model.f_pvalue:.4f}, R² = {r2}. "
+                                f"{'Model is statistically significant.' if model.f_pvalue < alpha else 'Model is not statistically significant.'}"
+                            ),
                             additional_stats={
-                                "r_squared": round(float(model.rsquared), 4),
+                                "r_squared": r2,
                                 "adj_r_squared": round(float(model.rsquared_adj), 4),
                                 "F": round(float(model.fvalue), 4),
                                 "p_F": round(float(model.f_pvalue), 4),
@@ -135,11 +144,20 @@ def run_multiple_regression(df, variables, brief, alpha=0.05):
             if i < len(robust_table):
                 robust_table[i]["beta_std"] = round(std_beta, 4) if std_beta else None
         eq = f"{dv} = {table[0]['b']:.3f} + " + " + ".join([f"{r['b']:.3f}×{r['predictor']}" for r in table[1:]])
+        r2 = round(float(model.rsquared), 4)
         return build_result("Multiple Linear Regression", "multiple_regression",
                             "F", model.fvalue, p_value=model.f_pvalue, n=len(data),
+                            df_val=int(model.df_model),
                             significant=bool(model.f_pvalue < alpha),
+                            effect_size_name="R²", effect_size_value=r2,
+                            effect_size_interpretation=interpret_effect_size("R²", r2),
+                            conclusion=(
+                                f"F({int(model.df_model)},{int(model.df_resid)}) = {model.fvalue:.3f}, "
+                                f"p = {model.f_pvalue:.4f}, R² = {r2} (adj. R² = {round(float(model.rsquared_adj),4)}). "
+                                f"{'Model explains significant variance.' if model.f_pvalue < alpha else 'Model does not explain significant variance.'}"
+                            ),
                             additional_stats={
-                                "r_squared": round(float(model.rsquared), 4),
+                                "r_squared": r2,
                                 "adj_r_squared": round(float(model.rsquared_adj), 4),
                                 "F": round(float(model.fvalue), 4),
                                 "df1": int(model.df_model), "df2": int(model.df_resid),
@@ -538,7 +556,11 @@ def run_moderation_analysis(df, variables, brief, alpha=0.05):
         r2_change = float(model.rsquared - model_no.rsquared)
         df_change = 1
         mse_full  = float(model.mse_resid)
-        F_change  = float(r2_change / (mse_full * (1 / n))) if mse_full > 0 else 0.0
+        # F for the R² increment attributable to the interaction term:
+        # F = (ΔR²_SS / df_change) / MSE  where ΔR²_SS = r2_change * SS_total
+        ss_total  = float((model.centered_tss))
+        delta_ss  = r2_change * ss_total
+        F_change  = float(delta_ss / df_change / mse_full) if mse_full > 0 else 0.0
         p_int     = float(model.pvalues["interaction"])
 
         # Bootstrap CI for interaction coefficient (BCa)
@@ -602,14 +624,18 @@ def run_moderation_analysis(df, variables, brief, alpha=0.05):
 
         int_b   = round(float(model.params["interaction"]), 4)
         int_t   = round(float(model.tvalues["interaction"]), 4)
+        r2_full = round(float(model.rsquared), 4)
         return build_result(
             "Moderation Analysis (Interaction + Spotlight)", "moderation_analysis",
-            "interaction_b", int_b, p_value=p_int, n=n,
+            "t", int_t, p_value=p_int, n=n,
+            df_val=int(n - 4),
             significant=bool(p_int < alpha),
+            effect_size_name="R²", effect_size_value=r2_full,
+            effect_size_interpretation=interpret_effect_size("R²", r2_full),
             conclusion=(
-                f"Interaction b = {int_b}, t = {int_t}, p = {round(p_int,4)}. "
+                f"Interaction b = {int_b}, t({n-4}) = {int_t}, p = {round(p_int,4)}. "
                 f"{'Significant moderation detected.' if p_int < alpha else 'No significant moderation.'} "
-                f"R2 change = {round(r2_change,4)}."
+                f"R² = {r2_full} (ΔR² for interaction = {round(r2_change,4)})."
             ),
             additional_stats={
                 "main_IV_b":            round(float(model.params["iv_c"]),      4),
@@ -618,8 +644,9 @@ def run_moderation_analysis(df, variables, brief, alpha=0.05):
                 "interaction_t":        int_t,
                 "interaction_p":        round(p_int, 4),
                 "interaction_CI_boot":  boot_int_ci,
-                "R2":                   round(float(model.rsquared), 4),
+                "R2":                   r2_full,
                 "R2_change_interaction":round(r2_change, 4),
+                "F_change":             round(F_change, 4),
                 "simple_slopes":        simple_slopes,
                 "iv_centered":          iv,
                 "moderator_centered":   mod_var,

@@ -50,8 +50,46 @@ def run_descriptive_stats(df, variables, brief, alpha=0.05):
 
 
 def run_frequency_analysis(df, variables, brief, alpha=0.05):
+    import re as _re
+    _UUID_SLUG = _re.compile(
+        r'^[0-9a-f]{8}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{12}$',
+        _re.IGNORECASE
+    )
+
     try:
-        cols = [c for c in variables if c in df.columns] or list(df.select_dtypes(exclude=[np.number]).columns)
+        n_rows = len(df)
+
+        def _is_high_cardinality(col: str) -> bool:
+            """Return True if column looks like an ID or free-text — not suitable for frequency table."""
+            n_unique = df[col].nunique()
+            return n_unique > min(50, n_rows * 0.5)
+
+        def _is_phantom(col: str) -> bool:
+            """Skip UUID-named columns and columns whose values are all empty."""
+            if _UUID_SLUG.match(col):
+                return True
+            s = df[col].dropna().astype(str).str.strip()
+            unique_vals = s.unique()
+            # All values are empty string
+            if len(unique_vals) == 0 or (len(unique_vals) == 1 and unique_vals[0] == ''):
+                return True
+            # Only 1 unique non-empty value — no distribution to show
+            if len(unique_vals) == 1:
+                return True
+            return False
+
+        # Use researcher-specified variables first; fall back to all non-numeric columns
+        candidate_cols = [c for c in variables if c in df.columns] \
+            or list(df.select_dtypes(exclude=[np.number]).columns)
+
+        # Filter out high-cardinality and phantom columns
+        cols = [c for c in candidate_cols if not _is_high_cardinality(c) and not _is_phantom(c)]
+
+        if not cols:
+            return build_error("Frequency Analysis", "frequency_analysis",
+                               "No suitable categorical columns found (all columns have too many unique values).",
+                               "Check that nominal/categorical variables are included.")
+
         freq = {}
         for col in cols:
             s = df[col].dropna()
@@ -64,10 +102,12 @@ def run_frequency_analysis(df, variables, brief, alpha=0.05):
                 "cumulative_count": cum_count.to_dict(), "cumulative_pct": cum_pct.to_dict(),
                 "n_valid": int(s.count()), "n_missing": int(df[col].isna().sum()),
             }
-        return build_result("Frequency Analysis", "frequency_analysis", "N", len(df), n=len(df),
+        return build_result("Frequency Analysis", "frequency_analysis", "N", n_rows, n=n_rows,
                             additional_stats={"frequencies": freq})
     except Exception as e:
         return build_error("Frequency Analysis", "frequency_analysis", str(e), "Check column names.")
+
+
 
 
 def run_mean_median_mode(df, variables, brief, alpha=0.05):

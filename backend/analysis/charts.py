@@ -337,42 +337,56 @@ def create_visualisations(results: dict, df, brief: dict, job_id: str,
     #  CHART 1 + TABLE: Frequency bar & pie  one pair per column 
     try:
         raw_freq   = results.get("frequencies", {})
-        add_stats  = raw_freq.get("frequencies", {}).get("additional_stats", {})
-        frequencies = add_stats.get("columns") or add_stats or raw_freq
-        if not frequencies:
+        # Navigate: results.frequencies.frequency_analysis.additional_stats.frequencies
+        add_stats  = raw_freq.get("frequency_analysis", {}).get("additional_stats", {})
+        if not add_stats:
+            # fallback: old structure
+            add_stats = raw_freq.get("frequencies", {}).get("additional_stats", {})
+        freq_cols = add_stats.get("frequencies") or add_stats.get("columns") or {}
+
+        # If still empty, try flat dict at raw_freq level
+        if not freq_cols:
+            freq_cols = raw_freq
+
+        # Also try descriptive fallback
+        if not freq_cols:
             raw_desc2 = results.get("descriptive", {})
             dcols = (raw_desc2.get("descriptive_stats", {})
                      .get("additional_stats", {}).get("columns", {}))
-            frequencies = {k: v.get("value_counts")
-                           for k, v in dcols.items() if "value_counts" in v}
+            freq_cols = {k: {"counts": v.get("value_counts", {})}
+                         for k, v in dcols.items() if "value_counts" in v}
 
-        for i, col in enumerate(list(frequencies.keys())[:6]):
-            freq = frequencies[col]
-            if not freq or not isinstance(freq, dict):
+        for i, col in enumerate(list(freq_cols.keys())[:6]):
+            fdata = freq_cols[col]
+            if not fdata or not isinstance(fdata, dict):
                 continue
-            raw_keys = list(freq.keys())[:14]
-            clean_keys, clean_labels, clean_values = [], [], []
-            for k in raw_keys:
-                v = freq[k]
-                val = 0.0
-                if isinstance(v, (int, float)):
-                    val = float(v)
-                elif isinstance(v, dict):
-                    val = float(v.get("count", 0) or v.get("n", 0) or 0)
-                elif isinstance(v, str):
-                    try:
-                        val = float(v.replace(",", "").strip())
-                    except ValueError:
-                        val = 0.0
-                clean_keys.append(k)
-                clean_labels.append(_trunc(str(k)))
-                clean_values.append(val)
 
-            keys   = clean_keys
-            labels = clean_labels
-            values = clean_values
+            # Determine if this is the nested structure {counts: {label: n}, percent: {label: pct}, ...}
+            # or the old flat structure {label: n, ...}
+            if "counts" in fdata and isinstance(fdata["counts"], dict):
+                # Nested structure (current backend output)
+                counts_dict  = fdata["counts"]
+                percent_dict = fdata.get("percent", {})
+                cum_pct_dict = fdata.get("cumulative_pct", {})
+                n_valid      = fdata.get("n_valid", sum(counts_dict.values()) or 1)
+            else:
+                # Old flat structure: {label: int_count, ...} — skip metadata keys
+                meta_keys = {"counts", "percent", "cumulative_count", "cumulative_pct", "n_valid", "n_missing"}
+                counts_dict  = {k: v for k, v in fdata.items()
+                                if k not in meta_keys and isinstance(v, (int, float))}
+                n_valid      = sum(counts_dict.values()) or 1
+                percent_dict = {k: v / n_valid * 100 for k, v in counts_dict.items()}
+                cum_pct_dict = {}
+
+            # Skip high-cardinality (ID-like) columns
+            if len(counts_dict) > 30:
+                continue
+
+            keys   = list(counts_dict.keys())[:20]
+            values = [float(counts_dict[k]) for k in keys]
+            labels = [_trunc(str(k), 20) for k in keys]
+            pcts   = [float(percent_dict.get(k, v / (n_valid or 1) * 100)) for k, v in zip(keys, values)]
             total  = sum(values) or 1.0
-            pcts   = [v / total * 100 for v in values]
 
             #  Bar chart 
             fig = go.Figure()
@@ -384,7 +398,7 @@ def create_visualisations(results: dict, df, brief: dict, job_id: str,
                     showscale=False,
                     line=dict(color="white", width=1.5),
                 ),
-                text=[f"{v:,}<br>({p:.1f}%)" for v, p in zip(values, pcts)],
+                text=[f"{int(v):,}<br>({p:.1f}%)" for v, p in zip(values, pcts)],
                 textposition="outside",
                 textfont=dict(size=11, color="#374151"),
                 hovertemplate="<b>%{x}</b><br>Count: %{y:,}<extra></extra>",
@@ -419,20 +433,24 @@ def create_visualisations(results: dict, df, brief: dict, job_id: str,
                 ))
                 save(fig2, f"chart_freq_{i+1}_{_safe_col(col)}_pie.png", w=900, h=700)
 
-
-            #  Frequency Table 
+            #  Frequency Table  (includes cumulative %)
             if _want_table('frequency'):
-                trows = [[str(k), f"{v:,}", f"{v/total*100:.1f}%"]
-                         for k, v in zip(keys, values)]
-                trows.append(["Total", f"{total:,}", "100%"])
-                fig3 = _table_fig(["Category", "Count", "Percentage"],
+                trows = []
+                cumulative_pct = 0.0
+                for k, v, p in zip(keys, values, pcts):
+                    cp = float(cum_pct_dict.get(k, 0)) if cum_pct_dict else (cumulative_pct + p)
+                    cumulative_pct = cp
+                    trows.append([str(k), f"{int(v):,}", f"{p:.1f}%", f"{cp:.1f}%"])
+                trows.append(["Total", f"{int(total):,}", "100.0%", ""])
+                fig3 = _table_fig(["Category", "Count", "%", "Cum. %"],
                                    trows, f"Frequency Table — {lbl(col)}",
-                                   col_widths=[250, 120, 120])
+                                   col_widths=[230, 100, 80, 90])
                 h = max(300, 60 + len(trows) * 32)
                 save(fig3, f"table_freq_{i+1}_{_safe_col(col)}.png", w=600, h=h)
 
     except Exception:
         traceback.print_exc()
+
 
     #  CHART 2: Variable means  sorted gradient bar 
     try:

@@ -31,7 +31,7 @@ from .transforms.missing_handler import handle_missing
 from .dictionary.builder import build_dictionary, to_json_serializable
 
 
-def decode_file(file_path: str, job_id: str = None, user_id: str = None) -> dict:
+def decode_file(file_path: str, job_id: str = None, user_id: str = None, brief: dict = None) -> dict:
     """Decode an uploaded file (xlsx, csv, sav)."""
     ext = os.path.splitext(file_path)[1].lower().lstrip(".")
 
@@ -48,10 +48,12 @@ def decode_file(file_path: str, job_id: str = None, user_id: str = None) -> dict
     else:
         raise ValueError(f"Unsupported file type: .{ext}")
 
-    return _run_decode(df, meta, source_type, source_filename=os.path.basename(file_path), job_id=job_id, user_id=user_id)
+    return _run_decode(df, meta, source_type,
+                       source_filename=os.path.basename(file_path),
+                       job_id=job_id, user_id=user_id, brief=brief)
 
 
-def decode_from_db(survey_id: str, db, job_id: str = None, user_id: str = None) -> dict:
+def decode_from_db(survey_id: str, db, job_id: str = None, user_id: str = None, brief: dict = None) -> dict:
     """Decode responses stored in the database."""
     from config import settings
 
@@ -75,12 +77,17 @@ def decode_from_db(survey_id: str, db, job_id: str = None, user_id: str = None) 
                 "n_complete_rows": 3,
                 "dataframe_pkl": None
             }
-    return _run_decode(df, meta, "survey_db", survey_id=survey_id, job_id=job_id, user_id=user_id)
+    return _run_decode(df, meta, "survey_db", survey_id=survey_id,
+                       job_id=job_id, user_id=user_id, brief=brief)
+
 
 
 def _run_decode(df: pd.DataFrame, meta: dict, source_type: str,
-                source_filename: str = None, survey_id: str = None, job_id: str = None, user_id: str = None) -> dict:
+                source_filename: str = None, survey_id: str = None,
+                job_id: str = None, user_id: str = None,
+                brief: dict = None) -> dict:
     warnings = []
+    brief = brief or {}
 
     # 2.3 Column name sanitisation
     df, col_map = clean_columns(df, meta, job_id=job_id, user_id=user_id)
@@ -88,13 +95,13 @@ def _run_decode(df: pd.DataFrame, meta: dict, source_type: str,
     # 2.4 Value label resolution
     df, value_labels = resolve_labels(df, meta, col_map)
 
-    # 2.5 Measurement level inference
+    # 2.5 Measurement level inference (stores detail in meta['_inferred_detail'])
     levels = infer_levels(df, meta, col_map, warnings)
 
     # 2.6 Missing value handling
     df, missing_stats = handle_missing(df, warnings)
 
-    # 2.7 Build data dictionary
+    # 2.7 Build data dictionary — now receives brief for role + scale override stamping
     data_dict = build_dictionary(
         df=df,
         col_map=col_map,
@@ -106,6 +113,7 @@ def _run_decode(df: pd.DataFrame, meta: dict, source_type: str,
         source_filename=source_filename,
         survey_id=survey_id,
         warnings=warnings,
+        brief=brief,
     )
 
     # Pickle dataframe for pipeline stages 4-7

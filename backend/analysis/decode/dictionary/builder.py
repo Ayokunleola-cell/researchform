@@ -1,5 +1,6 @@
 from datetime import datetime, date, time
 import math
+import re
 
 def _clean_key(k):
     if k is None:
@@ -26,7 +27,6 @@ def to_json_serializable(val):
         return None
     if isinstance(val, (datetime, date, time)):
         return val.isoformat()
-    # Check for pandas/numpy datetime/timestamp/timedelta
     type_name = type(val).__name__
     if type_name in ("Timestamp", "Timedelta", "Period"):
         return str(val)
@@ -35,15 +35,12 @@ def to_json_serializable(val):
             return val.isoformat()
         except Exception:
             return str(val)
-    # Check for float NaN / Inf
     if isinstance(val, float):
         if math.isnan(val) or math.isinf(val):
             return None
         return float(val)
-    # Check for integer types
     if isinstance(val, int) and not isinstance(val, bool):
         return int(val)
-    # NumPy scalar types
     if hasattr(val, "item") and callable(val.item):
         try:
             native = val.item()
@@ -54,7 +51,6 @@ def to_json_serializable(val):
             return native
         except Exception:
             pass
-    # Pandas DataFrame / Series / Index
     if hasattr(val, "to_dict") and callable(val.to_dict):
         try:
             return to_json_serializable(val.to_dict())
@@ -72,8 +68,91 @@ def to_json_serializable(val):
     return val
 
 
+# ── Scale alias normalisation (same as pipeline._ML_COERCE) ─────────────────
+_SCALE_COERCE = {
+    "continuous": "ratio", "numeric": "ratio", "scale": "ratio", "quantitative": "ratio",
+    "categorical": "nominal", "qualitative": "nominal", "binary": "nominal",
+    "dichotomous": "nominal", "dummy": "nominal",
+    "ranked": "ordinal", "rank": "ordinal", "likert": "ordinal",
+    "likert_5": "ordinal", "likert_7": "ordinal", "ordered": "ordinal",
+    "interval": "interval",
+}
+_VALID_ML = {"nominal", "ordinal", "interval", "ratio", "text"}
+
+# Scale subtype → measurement_level mapping
+_SUBTYPE_TO_ML = {
+    "likert_5": "ordinal", "likert_7": "ordinal", "binary": "nominal",
+    "categorical": "nominal", "id": "nominal", "open_ended": "text",
+    "year": "ordinal",
+}
+
+
+def _split_vars(raw: str):
+    """Split a comma/semicolon-separated variable string into a clean list."""
+    if not raw:
+        return []
+    return [v.strip() for v in re.split(r"[,;]+", raw) if v.strip()]
+
+
 def build_dictionary(df, col_map, value_labels, levels, missing_stats, meta, source_type,
-                     source_filename=None, survey_id=None, warnings=None):
+                     source_filename=None, survey_id=None, warnings=None, brief=None):
+    """
+    Build the data dictionary for the job.
+
+    New in this version:
+    - Reads scale_subtype + inferred_by from meta['_inferred_detail'] (set by level_inferrer)
+    - Applies brief.variable_scales overrides to measurement_level at decode time
+    - Stamps variable 'role' (dependent/independent/control/mediating/moderating) from brief fields
+    - Exposes n_unique on every variable entry for frontend display
+    """
+    brief = brief or {}
+    detail = meta.get("_inferred_detail", {})  # from level_inferrer
+
+    # ── Build role lookup from brief fields ──────────────────────────────────
+    # Maps clean_col_name → role string
+    role_map: dict = {}
+    _ROLE_FIELDS = [
+        ("dependent_variable",   "dependent"),
+        ("independent_variable", "independent"),
+        ("control_variable",     "control"),
+        ("mediating_variable",   "mediating"),
+        ("moderating_variable",  "moderating"),
+        ("covariate_variable",   "covariate"),
+        ("exclude_variable",     "exclude"),
+        ("group_variable",       "group"),
+    ]
+    all_clean_cols = [str(col) for col in df.columns]
+    for field, role_label in _ROLE_FIELDS:
+        for var_name in _split_vars(brief.get(field, "")):
+            # Exact match first
+            if var_name in all_clean_cols:
+                role_map[var_name] = role_label
+            else:
+                # Fuzzy: case-insensitive / underscore-normalised
+                norm = var_name.lower().replace(" ", "_")
+                for col in all_clean_cols:
+                    if col.lower().replace(" ", "_") == norm:
+                        role_map[col] = role_label
+                        break
+
+    # ── Build per-variable scale overrides from brief.variable_scales ────────
+    # Keys in variable_scales may be exact col names or display names
+    vs_overrides: dict = brief.get("variable_scales") or {}
+    scale_override_map: dict = {}
+    for var_name, scale_val in vs_overrides.items():
+        if not scale_val:
+            continue
+        norm_scale = _SCALE_COERCE.get(scale_val.lower(), scale_val.lower())
+        if var_name in all_clean_cols:
+            scale_override_map[var_name] = norm_scale
+        else:
+            norm_var = var_name.lower().replace(" ", "_")
+            for col in all_clean_cols:
+                if col.lower().replace(" ", "_") == norm_var:
+                    scale_override_map[col] = norm_scale
+                    break
+
+    # ── Build variable entries ────────────────────────────────────────────────
     variables = []
     for col in df.columns:
         s = df[col]
@@ -81,22 +160,47 @@ def build_dictionary(df, col_map, value_labels, levels, missing_stats, meta, sou
         n_total = len(s)
         n_missing = int(ms.get("n_missing", 0))
         n_valid = n_total - n_missing
+        n_unique = int(s.nunique())
+
+        # Base level from inferrer
         level = levels.get(col, "nominal")
+        det = detail.get(col, {})
+        scale_subtype = det.get("scale_subtype")
+        inferred_by   = det.get("inferred_by", "heuristic")
+
+        # Apply brief.variable_scales override (highest priority after SPSS)
+        if col in scale_override_map:
+            override_ml = scale_override_map[col]
+            if override_ml in _VALID_ML:
+                level = override_ml
+                inferred_by = "user_defined"
+                # Derive scale_subtype from the original scale value if it's a Likert
+                orig_scale = (vs_overrides.get(col) or "").lower()
+                if orig_scale == "likert_5":
+                    scale_subtype = "likert_5"
+                elif orig_scale == "likert_7":
+                    scale_subtype = "likert_7"
+                elif orig_scale in ("binary", "nominal") and n_unique <= 2:
+                    scale_subtype = "binary"
+                elif orig_scale == "categorical":
+                    scale_subtype = "categorical"
+                else:
+                    scale_subtype = None
+
+        # Role from brief (if not already set by a previous pass)
+        role = role_map.get(col, "")
+
         col_labels = meta.get("column_labels", {})
         orig = col_map.get(col, col)
         lbl = col_labels.get(orig) or col_labels.get(col) or col
 
-        # Clean unique and sample values through to_json_serializable
         raw_uniques = s.dropna().unique().tolist()[:20]
         uniques = [to_json_serializable(u) for u in raw_uniques]
 
         raw_samples = s.dropna().head(5).tolist()
         samples = [to_json_serializable(sm) for sm in raw_samples]
 
-        # Numeric stats with safe bounds
-        val_min = None
-        val_max = None
-        val_mean = None
+        val_min = val_max = val_mean = None
         if str(s.dtype) in ("float64", "int64", "float32", "int32"):
             try:
                 min_v = s.min()
@@ -118,19 +222,31 @@ def build_dictionary(df, col_map, value_labels, levels, missing_stats, meta, sou
                 pass
 
         v = {
-            "original_name": str(orig), "clean_name": str(col), "label": str(lbl)[:100],
-            "dtype": str(s.dtype), "measurement_level": level,
-            "inferred_by": "spss_metadata" if orig in meta.get("measurement_levels", {}) else "heuristic",
-            "n_total": n_total, "n_valid": n_valid, "n_missing": n_missing,
+            "original_name": str(orig),
+            "clean_name":    str(col),
+            "label":         str(lbl)[:100],
+            "dtype":         str(s.dtype),
+            "measurement_level": level,
+            "scale_subtype": scale_subtype,     # e.g. "likert_5", "binary", "categorical"
+            "inferred_by":   inferred_by,        # "spss_metadata" | "name_heuristic" | "numeric_unique" | "user_defined"
+            "role":          role,               # "dependent" | "independent" | "control" | "mediating" | "moderating" | ""
+            "n_total":    n_total,
+            "n_valid":    n_valid,
+            "n_missing":  n_missing,
+            "n_unique":   n_unique,
             "pct_missing": float(ms.get("pct_missing", 0.0)),
-            "value_labels": to_json_serializable(value_labels.get(col)),
+            "value_labels":  to_json_serializable(value_labels.get(col)),
             "unique_values": uniques if len(uniques) <= 20 else None,
-            "value_min": val_min,
-            "value_max": val_max,
+            "value_min":  val_min,
+            "value_max":  val_max,
             "value_mean": val_mean,
             "sample_values": samples,
-            "high_missing": bool(ms.get("pct_missing", 0) > 20),
-            "level_uncertain": bool(level in ("ordinal", "nominal") and str(s.dtype) in ("float64", "int64")),
+            "high_missing":   bool(ms.get("pct_missing", 0) > 20),
+            "level_uncertain": bool(
+                level in ("ordinal", "nominal")
+                and str(s.dtype) in ("float64", "int64")
+                and inferred_by != "user_defined"
+            ),
             "has_value_labels": bool(col in value_labels),
         }
         variables.append(v)
@@ -140,21 +256,48 @@ def build_dictionary(df, col_map, value_labels, levels, missing_stats, meta, sou
     interval = [v["clean_name"] for v in variables if v["measurement_level"] == "interval"]
     ratio    = [v["clean_name"] for v in variables if v["measurement_level"] == "ratio"]
 
-    # Build LLM context string
+    # Build LLM context string — now includes role and scale_subtype
     llm_lines = [f"Dataset: {source_type} | {len(df)} rows | {len(df.columns)} variables"]
     for v in variables:
-        llm_lines.append(f"  {v['clean_name']} ({v['measurement_level']}) label={v['label'][:50]} dtype={v['dtype']} n_valid={v['n_valid']}")
+        role_tag = f" [{v['role'].upper()}]" if v["role"] else ""
+        sub_tag  = f"/{v['scale_subtype']}" if v["scale_subtype"] else ""
+        llm_lines.append(
+            f"  {v['clean_name']} ({v['measurement_level']}{sub_tag}){role_tag}"
+            f" label={v['label'][:50]} dtype={v['dtype']} n_unique={v['n_unique']} n_valid={v['n_valid']}"
+            f" inferred_by={v['inferred_by']}"
+        )
     llm_context = "\n".join(llm_lines)
 
     result_dict = {
-        "source_type": source_type, "source_filename": source_filename, "survey_id": survey_id,
-        "decoded_at": datetime.utcnow().isoformat(),
-        "n_rows": len(df), "n_columns": len(df.columns),
-        "n_complete_rows": int(df.dropna().shape[0]),
-        "variables": variables,
-        "nominal_vars": nominal, "ordinal_vars": ordinal,
-        "interval_vars": interval, "ratio_vars": ratio,
-        "warnings": warnings or [],
-        "llm_context": llm_context,
+        "source_type":      source_type,
+        "source_filename":  source_filename,
+        "survey_id":        survey_id,
+        "decoded_at":       datetime.utcnow().isoformat(),
+        "n_rows":           len(df),
+        "n_columns":        len(df.columns),
+        "n_complete_rows":  int(df.dropna().shape[0]),
+        "variables":        variables,
+        "nominal_vars":     nominal,
+        "ordinal_vars":     ordinal,
+        "interval_vars":    interval,
+        "ratio_vars":       ratio,
+        "warnings":         warnings or [],
+        "llm_context":      llm_context,
     }
     return to_json_serializable(result_dict)
+
+    if k is None:
+        return "null"
+    if isinstance(k, (datetime, date, time)):
+        return k.isoformat()
+    type_name = type(k).__name__
+    if type_name in ("Timestamp", "Timedelta", "Period"):
+        return str(k)
+    if hasattr(k, "item") and callable(k.item):
+        try:
+            return str(k.item())
+        except Exception:
+            pass
+    return str(k)
+
+

@@ -17,7 +17,10 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   },
   images: {
-    domains: ['localhost', '127.0.0.1'],
+    remotePatterns: [
+      { protocol: 'http',  hostname: 'localhost' },
+      { protocol: 'http',  hostname: '127.0.0.1' },
+    ],
   },
   async headers() {
     return [

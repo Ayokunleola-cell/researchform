@@ -816,9 +816,34 @@ function DecodeReview({ job, onApprove }: { job: any; onApprove: () => void }) {
 }
 
 // ──────────────────────────────────────── Chart Image Component ────────────────────────────────────────
-function ChartImage({ url, index, isPaid, onPreview }: { url: string, index: number, isPaid: boolean, onPreview?: () => void }) {
+function ChartImage({ url, index, isPaid, onPreview, isHtml }: { url: string, index: number, isPaid: boolean, onPreview?: () => void, isHtml?: boolean }) {
   const [error, setError] = useState(false);
   const [retries, setRetries] = useState(0);
+
+  // Interactive HTML chart (Plotly fallback — e.g. correlation heatmap)
+  if (isHtml) {
+    return (
+      <div className="relative group/img w-full h-full flex flex-col items-stretch" style={{ minHeight: 320 }}>
+        <iframe
+          src={url}
+          title={`Interactive Chart ${index + 1}`}
+          style={{ width: '100%', height: 340, border: 'none', borderRadius: 4, background: '#fff', pointerEvents: isPaid ? 'auto' : 'none' }}
+          sandbox="allow-scripts allow-same-origin"
+        />
+        {onPreview && (
+          <button
+            onClick={onPreview}
+            className="absolute opacity-0 group-hover/img:opacity-100 transition-all duration-200"
+            style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'rgba(0,0,0,0.75)', border: 'none', borderRadius: 24, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, color: '#fff', fontSize: 13, fontWeight: 600, backdropFilter: 'blur(8px)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
+            title="Preview full size"
+          >
+            <RiEyeFill size={16} />
+            Preview
+          </button>
+        )}
+      </div>
+    );
+  }
 
   if (error && retries > 3) {
     return (
@@ -859,8 +884,9 @@ function ChartImage({ url, index, isPaid, onPreview }: { url: string, index: num
   );
 }
 
+
 // ──────────────────────────────────────── Image Preview Lightbox ────────────────────────────────────────
-function ImagePreviewModal({ url, label, onClose, onPrev, onNext, hasPrev, hasNext }: { url: string, label: string, onClose: () => void, onPrev?: () => void, onNext?: () => void, hasPrev?: boolean, hasNext?: boolean }) {
+function ImagePreviewModal({ url, label, isHtml, onClose, onPrev, onNext, hasPrev, hasNext }: { url: string, label: string, isHtml?: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void, hasPrev?: boolean, hasNext?: boolean }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -886,7 +912,10 @@ function ImagePreviewModal({ url, label, onClose, onPrev, onNext, hasPrev, hasNe
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', flexShrink: 0 }}>
-          <span style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>{label}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>{label}</span>
+            {isHtml && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>INTERACTIVE</span>}
+          </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {hasPrev && (
               <button onClick={onPrev} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: '#374151', fontWeight: 600, fontSize: 13 }}>
@@ -903,16 +932,25 @@ function ImagePreviewModal({ url, label, onClose, onPrev, onNext, hasPrev, hasNe
             </button>
           </div>
         </div>
-        {/* Image */}
-        <div style={{ flex: 1, padding: 24, overflow: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', position: 'relative' }}>
+        {/* Content: iframe for HTML charts, img for PNG */}
+        <div style={{ flex: 1, padding: isHtml ? 0 : 24, overflow: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', position: 'relative' }}>
           {hasPrev && (
-            <button onClick={onPrev} style={{ position: 'absolute', left: 16, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <button onClick={onPrev} style={{ position: 'absolute', left: 16, zIndex: 10, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
               <RiArrowLeftSFill size={28} color="#000" />
             </button>
           )}
-          <img src={url} alt={label} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 8, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #e5e7eb', background: '#fff' }} />
+          {isHtml ? (
+            <iframe
+              src={url}
+              title={label}
+              style={{ width: '100%', height: '100%', border: 'none', background: '#fff' }}
+              sandbox="allow-scripts allow-same-origin"
+            />
+          ) : (
+            <img src={url} alt={label} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 8, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #e5e7eb', background: '#fff' }} />
+          )}
           {hasNext && (
-            <button onClick={onNext} style={{ position: 'absolute', right: 16, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <button onClick={onNext} style={{ position: 'absolute', right: 16, zIndex: 10, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
               <RiArrowRightSFill size={28} color="#000" />
             </button>
           )}
@@ -922,6 +960,7 @@ function ImagePreviewModal({ url, label, onClose, onPrev, onNext, hasPrev, hasNe
     document.body
   );
 }
+
 
 // ──────────────────────────────────────── Stat Formatting Helpers ────────────────────────────────────────
 function fmtP(p: any): string {
@@ -946,19 +985,41 @@ function fmtNum(val: any, d = 3): string {
   return n.toFixed(d);
 }
 function effectLabel(name: string, value: number): string {
+  if (!name || value === undefined || value === null || isNaN(value)) return '';
   const n = (name || '').toLowerCase();
   const v = Math.abs(value);
-  if (n.includes('d') || n.includes('cohen') || n.includes('delta')) {
+
+  // Cohen's d / Hedges' g
+  if (n.includes('d') || n.includes('cohen') || n.includes('delta') || n.includes("hedges")) {
     if (v >= 0.8) return 'Large'; if (v >= 0.5) return 'Medium'; if (v >= 0.2) return 'Small'; return 'Negligible';
   }
-  if (n.includes('\u03b7') || n.includes('eta') || n.includes('omega') || n.includes('f2')) {
+  // η² (eta squared) / ω² / partial η² / f² / ANOVA effect sizes
+  if (n.includes('η') || n.includes('eta') || n.includes('omega') || n.includes('ω') || n === 'f2' || n.includes('f²')) {
     if (v >= 0.14) return 'Large'; if (v >= 0.06) return 'Medium'; if (v >= 0.01) return 'Small'; return 'Negligible';
   }
-  if (n === 'r' || n.includes('rho') || n.includes('phi') || n.includes('tau') || n.includes('corr')) {
+  // R² (regression) — Cohen's benchmarks for R²
+  if (n === 'r²' || n === 'r2' || n === 'rsquared' || n.includes('r-sq') || n.includes('r sq')) {
+    if (v >= 0.26) return 'Large'; if (v >= 0.13) return 'Medium'; if (v >= 0.02) return 'Small'; return 'Negligible';
+  }
+  // Pearson r / Spearman rho / Kendall tau / point-biserial r
+  if (n === 'r' || n === 'rho' || n.includes('spearman') || n.includes('pearson') || n === 'tau' || n === 'τ' || n.includes('point') || n.includes('biserial')) {
+    if (v >= 0.5) return 'Large'; if (v >= 0.3) return 'Medium'; if (v >= 0.1) return 'Small'; return 'Negligible';
+  }
+  // Cramér's V / phi coefficient / phi (chi-square family)
+  if (n.includes('cram') || n === 'v' || n === 'φ' || n.includes('phi') || n.includes('cramers')) {
+    if (v >= 0.5) return 'Large'; if (v >= 0.3) return 'Medium'; if (v >= 0.1) return 'Small'; return 'Negligible';
+  }
+  // Kendall's W (Friedman) — small effect for W is harder to define; use as-is
+  if (n === 'w' || n.includes("kendall's w")) {
+    if (v >= 0.7) return 'Large'; if (v >= 0.5) return 'Medium'; if (v >= 0.3) return 'Small'; return 'Negligible';
+  }
+  // Generic correlation fallback (if name suggests a correlation)
+  if (n.includes('corr')) {
     if (v >= 0.5) return 'Large'; if (v >= 0.3) return 'Medium'; if (v >= 0.1) return 'Small'; return 'Negligible';
   }
   return '';
 }
+
 function alphaQuality(a: number) {
   if (a >= 0.90) return { label: 'Excellent',    color: '#10b981' };
   if (a >= 0.80) return { label: 'Good',         color: '#10b981' };
@@ -1113,29 +1174,44 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
       ?? r.test_stat ?? r.stat ?? r.chi2 ?? r.F ?? r.t ?? r.r ?? r.beta ?? r.U ?? r.H ?? r.W ?? r.z;
 
     // ── statistic label ──────────────────────────────────────────────────────
-    const statName =
+    const rawStatName =
       r.statistic_name                                // new flat field
       ?? (typeof statObj === 'object' ? statObj?.label : null)     // nested
       ?? r.stat_name ?? r.test_statistic_name
       ?? (r.chi2 !== undefined ? 'χ²' : r.F !== undefined ? 'F' : r.t !== undefined ? 't'
         : r.r !== undefined ? 'r' : r.beta !== undefined ? 'β' : r.U !== undefined ? 'U' : r.H !== undefined ? 'H' : r.W !== undefined ? 'W'
         : r.z !== undefined ? 'z' : 'Stat');
+    // Translate legacy 'interaction_b' label (old moderation results) → 't'
+    const statName = rawStatName === 'interaction_b' ? 't' : rawStatName;
 
     // ── p-value ──────────────────────────────────────────────────────────────
     const pValue = r.p_value ?? r.p ?? r.pvalue ?? r.p_val;
 
     // ── effect size — normalise to { name, value } shape the card renderer uses ──
     const effObj = r.effect_size;
-    const effValue =
+    let effValue: any =
       r.effect_size_value                             // new flat field
       ?? (typeof effObj === 'object' ? effObj?.value : effObj)
       ?? r.eta_sq ?? r.cohen_d ?? r.r ?? r.omega_sq ?? r.cramer_v ?? r.epsilon_sq;
-    const effName =
+    let effName: string | null =
       r.effect_size_name                              // new flat field
       ?? (typeof effObj === 'object' ? effObj?.name : null);
-    const effInterp =
+    let effInterp: string | null =
       r.effect_size_interpretation
       ?? (typeof effObj === 'object' ? effObj?.interpretation : null);
+
+    // Recover R² from additional_stats for regression tests that are missing effect size
+    if (!effName || effValue == null) {
+      const as = r.additional_stats || {};
+      const r2 = as.r2 ?? as.r_squared ?? as.R2 ?? as['R²'];
+      if (r2 !== undefined && r2 !== null) { effName = 'R²'; effValue = r2; }
+    }
+
+    // Fallback interpretation: compute magnitude from effectLabel() when null or 'see guidelines'
+    if (effName && effValue != null && (!effInterp || effInterp === 'see guidelines')) {
+      const computed = effectLabel(effName, Number(effValue));
+      if (computed) effInterp = computed.toLowerCase();
+    }
 
     // ── significance ─────────────────────────────────────────────────────────
     const significant =
@@ -1196,11 +1272,58 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
   const reliability = results.reliability || {};
 
   const allCharts = job.chart_paths || [];
-  const chartItems = allCharts.map((path: string, i: number) => ({ path, originalIndex: i })).filter((item: any) => !item.path.includes('table_'));
-  const tableItems = allCharts.map((path: string, i: number) => ({ path, originalIndex: i })).filter((item: any) => item.path.includes('table_'));
+
+  // Helper: derive human-readable caption from chart filename convention used by charts.py
+  function captionFromPath(path: string): string {
+    const fname = path.split(/[\\/]/).pop() || path;
+    const base  = fname.replace(/\.(png|html)$/i, '');
+    // Strip leading "chart_" or "table_"
+    const core  = base.replace(/^(chart|table)_/, '');
+    // Known prefixes → readable labels
+    const knownPrefixes: Record<string, string> = {
+      'dist_':      'Distribution',
+      'violin_':    'Violin Plot',
+      'qq_':        'Q-Q Plot',
+      'boxplot':    'Box Plot',
+      'boxplots':   'Box Plots',
+      'scatter':    'Scatter Plot',
+      'regression': 'Regression Plot',
+      'means':      'Group Means',
+      'correlation':'Correlation Heatmap',
+      'freq_':      'Frequency Chart',
+    };
+    for (const [prefix, label] of Object.entries(knownPrefixes)) {
+      const prefixClean = prefix.endsWith('_') ? prefix.slice(0, -1) : prefix;
+      if (core.startsWith(prefix) || core === prefixClean) {
+        const varPart = core.replace(new RegExp('^' + prefix), '').replace(/^\d+_/, '').replace(/_/g, ' ');
+        return varPart ? `${label}: ${varPart}` : label;
+      }
+    }
+    // Generic: replace underscores and title-case
+    return core.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  const chartItems = allCharts
+    .map((path: string, i: number) => ({
+      path,
+      originalIndex: i,
+      isHtml: path.toLowerCase().endsWith('.html'),
+      caption: captionFromPath(path),
+    }))
+    .filter((item: any) => !item.path.includes('table_'));
+
+  const tableItems = allCharts
+    .map((path: string, i: number) => ({
+      path,
+      originalIndex: i,
+      isHtml: path.toLowerCase().endsWith('.html'),
+      caption: captionFromPath(path),
+    }))
+    .filter((item: any) => item.path.includes('table_'));
 
   let currentPreviewUrl = '';
   let currentPreviewLabel = '';
+  let currentPreviewIsHtml = false;
   let hasPrev = false;
   let hasNext = false;
   let handlePrev = () => {};
@@ -1215,11 +1338,12 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
       const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
       currentPreviewUrl = `${cleanBaseUrl}/analysis/jobs/${job.id}/charts/${i}?v=${job.completed_at || job.id}`;
-      currentPreviewLabel = `${labelPrefix} ${previewState.index + 1}`;
-      
+      currentPreviewLabel = `${labelPrefix} ${previewState.index + 1}${item.caption ? ` — ${item.caption}` : ''}`;
+      currentPreviewIsHtml = !!item.isHtml;
+
       hasPrev = previewState.index > 0;
       hasNext = previewState.index < list.length - 1;
-      
+
       handlePrev = () => setPreviewState({ type: previewState.type, index: previewState.index - 1 });
       handleNext = () => setPreviewState({ type: previewState.type, index: previewState.index + 1 });
     }
@@ -1665,52 +1789,105 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
               </div>
             </div>
           )}
-          {Object.keys(freqs).length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Frequency Distributions</p>
-                {Object.keys(freqs).length > 4 && (
-                  <button onClick={() => setShowAllFreqs(f => !f)} style={{ fontSize: 12, color: 'var(--brand)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
-                    {showAllFreqs ? 'Show fewer' : `Show all ${Object.keys(freqs).length}`}
-                  </button>
-                )}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
-                {Object.entries(freqs).slice(0, showAllFreqs ? undefined : 4).map(([col, freq]: [string, any]) => {
-                  // Backend returns { counts: {...}, percent: {...}, n_valid: N, n_missing: N }
-                  const rawCounts: Record<string, number> = freq?.counts ?? (typeof freq === 'object' && !Array.isArray(freq) ? freq : {});
-                  const total: number = freq?.n_valid ?? Object.values(rawCounts).reduce((a: number, v: any) => a + Number(v), 0);
-                  const entries = Object.entries(rawCounts);
-                  const sorted = [...entries].sort(([, a], [, b]) => Number(b) - Number(a));
-                  return (
-                    <div key={col} className="card p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>{col}</p>
-                        <span style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'JetBrains Mono, monospace' }}>n = {total}</span>
+          {Object.keys(freqs).length > 0 && (() => {
+            // UUID-slug pattern: 8-4-4-4-12 hex segments separated by underscores or dashes
+            const isUuidSlug = (name: string) =>
+              /^[0-9a-f]{8}[_-][0-9a-f]{4}[_-][0-9a-f]{4}[_-][0-9a-f]{4}[_-][0-9a-f]{12}$/i.test(name);
+
+            const validFreqs = Object.entries(freqs).filter(([col, freq]: [string, any]) => {
+              // Skip UUID-named phantom columns
+              if (isUuidSlug(col)) return false;
+              const counts = freq?.counts ?? (typeof freq === 'object' && !Array.isArray(freq) ? freq : {});
+              const keys = Object.keys(counts);
+              const nCats = keys.length;
+              const nValid = freq?.n_valid ?? nCats;
+              // Skip if only category is empty string or whitespace
+              if (nCats === 0) return false;
+              if (nCats === 1 && String(keys[0]).trim() === '') return false;
+              // Skip single-value (no distribution to show) unless it's meaningful
+              if (nCats === 1) return false;
+              // High-cardinality guard: skip if too many unique values relative to N
+              return nCats <= 50 && nCats <= nValid * 0.6;
+            });
+            if (validFreqs.length === 0) return null;
+            return (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>Frequency Distributions</p>
+                  {validFreqs.length > 4 && (
+                    <button onClick={() => setShowAllFreqs(f => !f)} style={{ fontSize: 12, color: 'var(--brand)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                      {showAllFreqs ? 'Show fewer' : `Show all ${validFreqs.length}`}
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-4">
+                  {validFreqs.slice(0, showAllFreqs ? undefined : 4).map(([col, freq]: [string, any]) => {
+                    const rawCounts: Record<string, number> = freq?.counts ?? (typeof freq === 'object' && !Array.isArray(freq) ? freq : {});
+                    const rawPct: Record<string, number>   = freq?.percent ?? {};
+                    const rawCumPct: Record<string, number> = freq?.cumulative_pct ?? {};
+                    const total: number  = freq?.n_valid  ?? Object.values(rawCounts).reduce((a: number, v: any) => a + Number(v), 0);
+                    const missing: number = freq?.n_missing ?? 0;
+                    // Sort by count descending
+                    const sorted = Object.entries(rawCounts).sort(([, a], [, b]) => Number(b) - Number(a));
+                    const maxCount = sorted.length > 0 ? Number(sorted[0][1]) : 1;
+
+                    return (
+                      <div key={col} className="card overflow-hidden">
+                        {/* Table header */}
+                        <div className="flex items-center justify-between px-4 py-2.5" style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)' }}>
+                          <p className="font-bold text-sm" style={{ color: 'var(--text)', margin: 0 }}>{col}</p>
+                          <div className="flex items-center gap-3">
+                            {missing > 0 && <span style={{ fontSize: 10, color: '#f59e0b', fontFamily: 'JetBrains Mono, monospace' }}>{missing} missing</span>}
+                            <span style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'JetBrains Mono, monospace' }}>N = {total}</span>
+                          </div>
+                        </div>
+                        {/* Frequency table */}
+                        <div className="overflow-x-auto">
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                            <thead>
+                              <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)' }}>
+                                {['Value', 'Frequency', '%', 'Cumulative %', ''].map(h => (
+                                  <th key={h} style={{ padding: '7px 12px', textAlign: h === 'Value' ? 'left' : h === '' ? 'left' : 'center', fontSize: 10, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sorted.map(([val, count], ri) => {
+                                const pct    = rawPct[val]    !== undefined ? Number(rawPct[val])    : total > 0 ? (Number(count) / total) * 100 : 0;
+                                const cumPct = rawCumPct[val] !== undefined ? Number(rawCumPct[val]) : 0;
+                                const barW   = maxCount > 0 ? (Number(count) / maxCount) * 100 : 0;
+                                return (
+                                  <tr key={val} style={{ borderTop: '1px solid var(--border)', background: ri % 2 === 0 ? 'transparent' : 'var(--surface-2)' }}>
+                                    <td style={{ padding: '7px 12px', fontWeight: 600, color: 'var(--text)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={String(val)}>{String(val)}</td>
+                                    <td style={{ padding: '7px 12px', textAlign: 'center', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text)' }}>{Number(count)}</td>
+                                    <td style={{ padding: '7px 12px', textAlign: 'center', fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, color: 'var(--brand)' }}>{pct.toFixed(1)}%</td>
+                                    <td style={{ padding: '7px 12px', textAlign: 'center', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-3)' }}>{cumPct > 0 ? `${cumPct.toFixed(1)}%` : '—'}</td>
+                                    <td style={{ padding: '7px 12px', minWidth: 80 }}>
+                                      <div style={{ height: 5, background: 'var(--surface-3)', borderRadius: 3, overflow: 'hidden' }}>
+                                        <div style={{ height: '100%', borderRadius: 3, background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', width: `${barW}%`, transition: 'width 0.5s ease' }} />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                              {/* Total row */}
+                              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface-2)' }}>
+                                <td style={{ padding: '7px 12px', fontWeight: 700, color: 'var(--text)', fontSize: 11 }}>Total</td>
+                                <td style={{ padding: '7px 12px', textAlign: 'center', fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: 'var(--text)' }}>{total}</td>
+                                <td style={{ padding: '7px 12px', textAlign: 'center', fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: 'var(--text)' }}>100.0%</td>
+                                <td colSpan={2} />
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        {sorted.slice(0, 10).map(([val, count]) => {
-                          const pct = total > 0 ? (Number(count) / total) * 100 : 0;
-                          return (
-                            <div key={val}>
-                              <div className="flex items-center justify-between mb-0.5">
-                                <span style={{ fontSize: 11, color: 'var(--text-2)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }} title={String(val)}>{String(val)}</span>
-                                <span style={{ fontSize: 11, fontFamily: 'JetBrains Mono, monospace', color: 'var(--text)', fontWeight: 600, flexShrink: 0, marginLeft: 8 }}>{Number(count)} <span style={{ color: 'var(--text-3)', fontWeight: 400 }}>({pct.toFixed(1)}%)</span></span>
-                              </div>
-                              <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 4, overflow: 'hidden' }}>
-                                <div style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', width: `${pct}%`, transition: 'width 0.6s cubic-bezier(0.4,0,0.2,1)' }} />
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {sorted.length > 10 && <p style={{ fontSize: 10, color: 'var(--text-3)', textAlign: 'right', margin: 0 }}>+{sorted.length - 10} more categories</p>}
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
+
 
           {/* Descriptive Visualizations (Charts & Figures) */}
           {chartItems.length > 0 && (
@@ -1731,8 +1908,7 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 12 }}>
                 {chartItems.slice(0, 6).map((item: any, idx: number) => {
-                  const meta = (job.chart_metadata || [])[item.originalIndex] || {};
-                  const caption = meta.title || meta.label || meta.description || `Figure ${idx + 1}`;
+                  const caption = item.caption || `Figure ${idx + 1}`;
                   const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/$/, '');
                   const mkUrl = `${baseUrl}/analysis/jobs/${job.id}/charts/${item.originalIndex}?v=${job.completed_at || job.id}`;
                   return (
@@ -1744,7 +1920,7 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
                         </button>
                       </div>
                       <div style={{ background: '#fff', minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 6, cursor: 'pointer' }} onClick={() => setPreviewState({ type: 'chart', index: idx })}>
-                        <ChartImage url={mkUrl} index={item.originalIndex} isPaid={!!job.report_paid} onPreview={() => setPreviewState({ type: 'chart', index: idx })} />
+                        <ChartImage url={mkUrl} index={item.originalIndex} isPaid={!!job.report_paid} isHtml={item.isHtml} onPreview={() => setPreviewState({ type: 'chart', index: idx })} />
                       </div>
                       <div style={{ padding: '6px 10px', borderTop: '1px solid var(--border)', background: 'var(--surface-2)' }}>
                         <p style={{ margin: 0, fontSize: 11, color: 'var(--text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={caption}>
@@ -2185,48 +2361,34 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
                   {chartItems.map((item: any, idx: number) => {
-                    // Derive caption from chart_metadata if available; never show raw file path
-                    const meta = (job.chart_metadata || [])[item.originalIndex] || {};
-                    const caption = meta.title || meta.label || meta.description || `Figure ${idx + 1}`;
-                    const varName = meta.variable || meta.x_var || null;
-                    // Frequency data for this variable (if categorical)
-                    const varFreq = varName ? (freqs[varName] || freqs[varName?.replace(/[^a-zA-Z0-9]/g, '_')] || null) : null;
+                    const caption = item.caption || `Figure ${idx + 1}`;
                     return (
                     <div key={item.originalIndex} className="card overflow-hidden"
                       style={{ border: '1px solid var(--border)', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
                       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 24px rgba(99,102,241,0.15)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(99,102,241,0.3)'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}>
                       <div className="flex items-center justify-between px-3 py-2" style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)' }}>
-                        <div>
+                        <div className="flex items-center gap-2">
                           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-2)' }}>Figure {idx + 1}</span>
-                          {varName && <span style={{ fontSize: 10, color: 'var(--text-3)', marginLeft: 6 }}>{varName}</span>}
+                          {item.isHtml && (
+                            <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8, background: 'rgba(99,102,241,0.12)', color: 'var(--brand)', letterSpacing: '0.04em' }}>INTERACTIVE</span>
+                          )}
                         </div>
                         <div className="flex items-center gap-1">
                           <button onClick={() => setPreviewState({ type: 'chart', index: idx })} className="btn btn-ghost btn-icon p-1" style={{ width: 26, height: 26 }} title="Full screen"><RiEyeFill size={13} style={{ color: 'var(--brand)' }} /></button>
-                          <button onClick={() => dlChart(item.originalIndex, `Figure_${idx+1}`)} className="btn btn-ghost btn-icon p-1" style={{ width: 26, height: 26 }} title={job.report_paid ? 'Download' : 'Unlock to download'}><RiDownload2Fill size={13} style={{ color: job.report_paid ? 'var(--brand)' : 'var(--text-3)' }} /></button>
+                          {!item.isHtml && (
+                            <button onClick={() => dlChart(item.originalIndex, `Figure_${idx+1}`)} className="btn btn-ghost btn-icon p-1" style={{ width: 26, height: 26 }} title={job.report_paid ? 'Download' : 'Unlock to download'}><RiDownload2Fill size={13} style={{ color: job.report_paid ? 'var(--brand)' : 'var(--text-3)' }} /></button>
+                          )}
                         </div>
                       </div>
-                      <div style={{ background: '#fff', minHeight: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8, cursor: 'pointer' }} onClick={() => setPreviewState({ type: 'chart', index: idx })}>
-                        <ChartImage url={mkUrl(item.originalIndex)} index={item.originalIndex} isPaid={!!job.report_paid} onPreview={() => setPreviewState({ type: 'chart', index: idx })} />
+                      <div style={{ background: '#fff', minHeight: item.isHtml ? 340 : 180, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: item.isHtml ? 0 : 8, cursor: 'pointer' }} onClick={() => !item.isHtml && setPreviewState({ type: 'chart', index: idx })}>
+                        <ChartImage url={mkUrl(item.originalIndex)} index={item.originalIndex} isPaid={!!job.report_paid} isHtml={item.isHtml} onPreview={() => setPreviewState({ type: 'chart', index: idx })} />
                       </div>
-                      {/* Caption + optional frequency summary */}
+                      {/* Caption */}
                       <div style={{ padding: '8px 12px', borderTop: '1px solid var(--border)', background: 'var(--surface-2)' }}>
                         <p style={{ margin: 0, fontSize: 11, fontStyle: 'italic', color: 'var(--text-2)' }}>
                           <strong>Figure {idx + 1}.</strong> {caption}
                         </p>
-                        {varFreq && typeof varFreq === 'object' && Object.keys(varFreq).length > 0 && (
-                          <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                            {Object.entries(varFreq).slice(0, 8).map(([label, fdata]: [string, any]) => {
-                              const cnt = typeof fdata === 'object' ? (fdata.count ?? fdata.n ?? fdata.frequency ?? fdata) : fdata;
-                              const pct = typeof fdata === 'object' ? (fdata.percent ?? fdata.pct ?? fdata.percentage) : null;
-                              return (
-                                <span key={label} style={{ fontSize: 10, padding: '1px 7px', borderRadius: 10, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-2)' }}>
-                                  {label}: <strong>{cnt}</strong>{pct !== null && pct !== undefined ? ` (${Number(pct).toFixed(1)}%)` : ''}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        )}
                       </div>
                     </div>
                     );
@@ -2299,6 +2461,7 @@ function ResultsDisplay({ job, onRefresh }: { job: any, onRefresh?: () => void }
         <ImagePreviewModal
           url={currentPreviewUrl}
           label={currentPreviewLabel}
+          isHtml={currentPreviewIsHtml}
           onClose={() => setPreviewState(null)}
           onPrev={handlePrev}
           onNext={handleNext}
